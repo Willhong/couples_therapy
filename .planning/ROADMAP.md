@@ -25,8 +25,8 @@ CouplesAI delivers AI-powered couples therapy through four phases: establishing 
   1. User can create account with email/password and stay logged in across app restarts
   2. User can generate invite code and link with partner (verified connection visible to both)
   3. User sees and accepts "not therapy replacement" disclaimer before using app
-  4. User completes abuse screening during onboarding (high-risk users directed to resources)
-  5. Recording consent prompt appears before any audio capture with both partners' explicit agreement
+  4. Recording consent prompt appears before any audio capture with both partners' explicit agreement
+  5. User completes mandatory tutorial (coach-mark tour) after onboarding
 **Plans**: TBD
 
 Plans:
