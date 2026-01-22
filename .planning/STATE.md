@@ -5,35 +5,35 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** 갈등 상황에서 상대방의 관점을 이해하도록 돕는 리프레이밍
-**Current focus:** Phase 1 - Foundation & Safety
+**Current focus:** Phase 1 - Foundation & Safety (COMPLETE - pending verification)
 
 ## Current Position
 
 Phase: 1 of 4 (Foundation & Safety)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-01-23 - Completed 01-03-PLAN.md (Partner Invitation Flow)
+Plan: 4 of 4 in current phase
+Status: Awaiting human verification
+Last activity: 2026-01-23 - Completed 01-04-PLAN.md (Onboarding Tutorial & Dual Consent)
 
-Progress: [███░░░░░░░] 27%
+Progress: [████░░░░░░] 36%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 9 min
-- Total execution time: 27 min
+- Total plans completed: 4
+- Average duration: 8 min
+- Total execution time: 32 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Foundation & Safety | 3/4 | 27m | 9m |
+| 1. Foundation & Safety | 4/4 | 32m | 8m |
 | 2. Core Reframing | 0/3 | - | - |
 | 3. Audio Pipeline | 0/2 | - | - |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 13m, 10m, 4m
+- Last 5 plans: 13m, 10m, 4m, 5m
 - Trend: Improving
 
 *Updated after each plan completion*
@@ -57,6 +57,10 @@ Recent decisions affecting current work:
 | expo-clipboard for copy | Expo SDK compatible clipboard | 01-03 |
 | DeepLinkHandler component | Access router inside providers | 01-03 |
 | Korean error mapping | User-facing errors in Korean | 01-03 |
+| JWT auth via query string for WebSocket | WebSocket API doesn't support custom headers | 01-04 |
+| Channel groups scoped to couple_id | Ensures messages only go to connected partners | 01-04 |
+| 5-minute consent expiration | Reasonable timeout for partner response | 01-04 |
+| No skip button on tutorial | Per CONTEXT.md - mandatory tutorial for all users | 01-04 |
 
 ### Pending Todos
 
@@ -78,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 01-03-PLAN.md (Partner Invitation Flow)
+Stopped at: Completed 01-04-PLAN.md (awaiting human verification)
 Resume file: None
