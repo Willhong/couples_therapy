@@ -37,7 +37,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Conflict Recording & Analysis
 
 - [ ] **CONF-01**: "갈등 기록" 버튼으로 녹음 시작 (싸움 전/후 선택)
-- [ ] **CONF-02**: 녹음 완료 후 음성 → 텍스트 전사
+- [ ] **CONF-02**: 녹음 완료 후 음성 -> 텍스트 전사
 - [ ] **CONF-03**: 전사된 대화에서 화자 분리 (Speaker Diarization)
 - [ ] **CONF-04**: 갈등 내용 AI 분석 및 리프레이밍 생성
 
@@ -108,44 +108,44 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| SAFE-01 | TBD | Pending |
-| SAFE-02 | TBD | Pending |
-| SAFE-03 | TBD | Pending |
-| SAFE-04 | TBD | Pending |
-| ONBD-01 | TBD | Pending |
-| ONBD-02 | TBD | Pending |
-| ONBD-03 | TBD | Pending |
-| RECR-01 | TBD | Pending |
-| RECR-02 | TBD | Pending |
-| RECR-03 | TBD | Pending |
-| RECR-04 | TBD | Pending |
-| CONF-01 | TBD | Pending |
-| CONF-02 | TBD | Pending |
-| CONF-03 | TBD | Pending |
-| CONF-04 | TBD | Pending |
-| REFR-01 | TBD | Pending |
-| REFR-02 | TBD | Pending |
-| REFR-03 | TBD | Pending |
-| REFR-04 | TBD | Pending |
-| PATN-01 | TBD | Pending |
-| PATN-02 | TBD | Pending |
-| PATN-03 | TBD | Pending |
-| COOL-01 | TBD | Pending |
-| COOL-02 | TBD | Pending |
-| COOL-03 | TBD | Pending |
-| COMM-01 | TBD | Pending |
-| COMM-02 | TBD | Pending |
-| COMM-03 | TBD | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| AUTH-03 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Pending |
+| SAFE-01 | Phase 1 | Pending |
+| SAFE-02 | Phase 1 | Pending |
+| SAFE-03 | Phase 1 | Pending |
+| SAFE-04 | Phase 1 | Pending |
+| ONBD-01 | Phase 2 | Pending |
+| ONBD-02 | Phase 2 | Pending |
+| ONBD-03 | Phase 4 | Pending |
+| RECR-01 | Phase 2 | Pending |
+| RECR-02 | Phase 3 | Pending |
+| RECR-03 | Phase 2 | Pending |
+| RECR-04 | Phase 2 | Pending |
+| CONF-01 | Phase 3 | Pending |
+| CONF-02 | Phase 3 | Pending |
+| CONF-03 | Phase 3 | Pending |
+| CONF-04 | Phase 3 | Pending |
+| REFR-01 | Phase 2 | Pending |
+| REFR-02 | Phase 2 | Pending |
+| REFR-03 | Phase 2 | Pending |
+| REFR-04 | Phase 2 | Pending |
+| PATN-01 | Phase 3 | Pending |
+| PATN-02 | Phase 3 | Pending |
+| PATN-03 | Phase 3 | Pending |
+| COOL-01 | Phase 4 | Pending |
+| COOL-02 | Phase 4 | Pending |
+| COOL-03 | Phase 4 | Pending |
+| COMM-01 | Phase 4 | Pending |
+| COMM-02 | Phase 4 | Pending |
+| COMM-03 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 32 total
-- Mapped to phases: 0
-- Unmapped: 32 ⚠️
+- Mapped to phases: 32
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-22*
-*Last updated: 2026-01-22 after initial definition*
+*Last updated: 2026-01-23 after roadmap creation*
