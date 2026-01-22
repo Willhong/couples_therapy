@@ -1,0 +1,13 @@
+Django>=5.0,<6.0
+djangorestframework>=3.15
+djangorestframework-simplejwt>=5.3
+dj-rest-auth[with_social]>=6.0
+django-allauth>=0.61
+channels>=4.3
+channels-redis>=4.2
+daphne>=4.1
+djfernet>=0.8
+psycopg[binary]>=3.1
+redis>=5.0
+django-cors-headers>=4.3
+python-dotenv>=1.0
