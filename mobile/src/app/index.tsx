@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
+import { usePartner } from '@/hooks/usePartner';
 
 /**
  * Root index component
- * Handles initial routing based on authentication state
+ * Handles initial routing based on authentication and partner connection state
  */
 export default function Index(): React.ReactElement {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { connectionStatus, loading: partnerLoading } = usePartner();
 
-  // Show loading indicator while checking auth
-  if (loading) {
+  // Show loading indicator while checking auth and partner status
+  if (authLoading || partnerLoading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#4B5563" />
@@ -24,7 +26,13 @@ export default function Index(): React.ReactElement {
     return <Redirect href="/(auth)/sign-up" />;
   }
 
-  // User exists but hasn't completed tutorial - redirect to onboarding
+  // User exists but hasn't completed onboarding (no partner and not skipped)
+  // Check if partner connection is needed
+  if (!user.onboarding_completed && connectionStatus === 'none') {
+    return <Redirect href="/onboarding/partner-link" />;
+  }
+
+  // User exists but hasn't completed tutorial
   if (!user.tutorial_completed) {
     return <Redirect href="/onboarding/tutorial" />;
   }
