@@ -1,69 +1,93 @@
 # Phase 1: Foundation & Safety - Research
 
 **Researched:** 2026-01-23
-**Domain:** Authentication, Partner Connection, Data Encryption, Legal Compliance (Korea)
+**Domain:** Django Backend Authentication, Partner Connection, Data Encryption, Real-time WebSocket
 **Confidence:** HIGH
 
 ---
 
 ## Summary
 
-Phase 1 establishes secure authentication, partner linking, and legal safeguards for a couples therapy app targeting Korean users. The stack is well-defined: Supabase Auth for email/password authentication with expo-secure-store for encrypted session storage, Supabase RLS for partner data isolation, and deep linking for partner invitation codes.
+Phase 1 establishes secure authentication, partner linking, and legal safeguards for a couples therapy app using **Django 5.x + Django REST Framework** backend with **Expo** mobile frontend. This research replaces the previous Supabase-based approach.
 
 Key findings:
-- **Supabase Auth** works seamlessly with Expo, but requires a custom storage adapter for secure session persistence (expo-secure-store has 2KB limit)
-- **Partner connection** should use a database-backed invite code system with 24-hour expiration and both code + deep link options
-- **Korean recording law** (통신비밀보호법) allows one-party consent for recording, but the app's ethical position mandates dual consent for relationship safety
-- **Coach mark tutorials** are well-supported by react-native-copilot with Expo SDK 53 compatibility
+- **djangorestframework-simplejwt** provides production-ready JWT authentication with token rotation and blacklisting for mobile apps
+- **Django Channels + Redis** enables real-time WebSocket for dual consent synchronization
+- **django-cryptography** or **djfernet** provides transparent AES-256 field encryption for sensitive data
+- **dj-rest-auth** simplifies registration/login API endpoints with email verification support
+- **expo-secure-store** securely stores JWT tokens on device using iOS Keychain / Android Keystore
 
-**Primary recommendation:** Use Supabase Auth with a hybrid storage approach (expo-secure-store for tokens, expo-sqlite/localStorage for larger session data) and implement partner linking via invite codes stored in Supabase with RLS policies for couple data isolation.
+**Primary recommendation:** Use djangorestframework-simplejwt with 30-minute access tokens and 7-day refresh tokens (with rotation and blacklisting). Implement Django Channels with Redis channel layer for real-time consent synchronization. Use djfernet for encrypting sensitive model fields at the database level.
 
 ---
 
 ## Standard Stack
 
-### Core Authentication & Security
+### Core Backend
 
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
-| **@supabase/supabase-js** | 2.x | Authentication & Database | Official SDK, built-in email/password auth, session management, integrates with RLS |
-| **expo-secure-store** | SDK 53+ | Sensitive token storage | Hardware-backed encryption (iOS Keychain, Android Keystore), official Expo solution |
-| **expo-sqlite** | SDK 53+ | Session data storage | For larger auth data that exceeds SecureStore 2KB limit, localStorage polyfill |
-| **expo-linking** | SDK 53+ | Deep linking | Partner invite links, URL parsing, scheme handling |
+| **Django** | 5.x | Web framework | User's confirmed choice, mature ecosystem, excellent ORM |
+| **djangorestframework** | 3.15+ | REST API | De-facto standard for Django APIs, excellent serialization |
+| **djangorestframework-simplejwt** | 5.3+ | JWT authentication | Jazzband maintained, token rotation, blacklist support, mobile-optimized |
+| **dj-rest-auth** | 6.0+ | Auth endpoints | Complete registration/login/password-reset endpoints out of box |
+| **django-allauth** | 0.61+ | Account management | Required by dj-rest-auth, handles email verification |
+| **Django Channels** | 4.3+ | WebSocket/async | Official Django project, ASGI support |
+| **channels-redis** | 4.2+ | Channel layer | Official Redis backend for Channels, production-ready |
 
-### Onboarding & Tutorial
+### Database & Encryption
 
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
-| **react-native-copilot** | 3.x+ | Coach mark tutorial | 2.4k GitHub stars, Expo compatible, SVG overlay with smooth animations |
-| **react-native-svg** | SDK 53+ | SVG rendering | Required by copilot for overlay, included in Expo |
+| **PostgreSQL** | 15+ | Database | User's confirmed choice, excellent JSON support, ACID compliance |
+| **psycopg** | 3.x | DB adapter | Modern async-capable PostgreSQL adapter |
+| **djfernet** | 0.9+ | Field encryption | AES-128-CBC + HMAC-SHA256, transparent encryption, key rotation support |
 
-### UI Components
+### Deployment
 
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| **@react-native-community/checkbox** | Latest | Disclaimer checkbox | Deprecated built-in, use community package |
-| **NativeWind** | 4.1+ | Styling | Already in stack, use for form styling |
+| Library | Version | Purpose | Why Standard |
+|---------|---------|---------|--------------|
+| **Daphne** | 4.1+ | ASGI server | Official Channels server, HTTP/WebSocket protocol negotiation |
+| **Redis** | 7.x | Channel layer + cache | Required for Channels in production, also useful for caching |
+| **gunicorn** | 22+ | WSGI server (optional) | For HTTP-only endpoints if splitting traffic |
+
+### Mobile (Frontend - unchanged)
+
+| Library | Version | Purpose | Why Standard |
+|---------|---------|---------|--------------|
+| **expo-secure-store** | SDK 53+ | JWT token storage | Hardware-backed encryption (iOS Keychain, Android Keystore) |
+| **expo-linking** | SDK 53+ | Deep linking | Partner invite links |
+| **react-native-copilot** | 3.x+ | Coach mark tutorial | Expo compatible, SVG overlay |
 
 ### Alternatives Considered
 
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
-| expo-secure-store | react-native-mmkv with encryption | MMKV faster but requires additional encryption setup; SecureStore is simpler |
-| expo-sqlite localStorage | AsyncStorage | AsyncStorage is unencrypted; not recommended for auth data |
-| react-native-copilot | @blazejkustra/react-native-onboarding | Onboarding is for swipe screens, not coach marks; Copilot better for in-app tour |
+| simplejwt | django-rest-knox | Knox stores tokens in DB (more control but less stateless) |
+| dj-rest-auth | djoser | Djoser is lighter but requires more manual setup for email verification |
+| djfernet | django-cryptography | django-cryptography uses same Fernet but djfernet has better maintained Django 5 support |
+| Django Channels | Pusher/Firebase | Third-party services add latency and cost; Channels is self-hosted |
 
 **Installation:**
 ```bash
-# Core authentication
-npx expo install @supabase/supabase-js expo-secure-store expo-sqlite expo-linking
+# Backend dependencies
+pip install django djangorestframework djangorestframework-simplejwt
+pip install dj-rest-auth[with_social] django-allauth
+pip install channels channels-redis daphne
+pip install djfernet psycopg[binary]
 
-# Tutorial/onboarding
-npm install react-native-copilot
-npx expo install react-native-svg
-
-# Checkbox (for disclaimer)
-npm install @react-native-community/checkbox
+# Or in requirements.txt
+Django>=5.0,<6.0
+djangorestframework>=3.15
+djangorestframework-simplejwt>=5.3
+dj-rest-auth[with_social]>=6.0
+django-allauth>=0.61
+channels>=4.3
+channels-redis>=4.2
+daphne>=4.1
+djfernet>=0.9
+psycopg[binary]>=3.1
+redis>=5.0
 ```
 
 ---
@@ -72,317 +96,699 @@ npm install @react-native-community/checkbox
 
 ### Recommended Project Structure
 ```
-src/
-├── lib/
-│   ├── supabase.ts          # Supabase client with secure storage adapter
-│   └── storage.ts           # Hybrid storage adapter implementation
-├── hooks/
-│   ├── useAuth.ts           # Authentication state and methods
-│   ├── usePartner.ts        # Partner connection state
-│   └── useOnboarding.ts     # Onboarding progress tracking
-├── screens/
-│   ├── auth/
-│   │   ├── SignUpScreen.tsx # Email/password signup with disclaimer
-│   │   ├── SignInScreen.tsx # Login screen
-│   │   └── components/
-│   │       └── DisclaimerCheckbox.tsx
-│   ├── onboarding/
-│   │   ├── PartnerLinkScreen.tsx   # Invite code generation/entry
-│   │   └── TutorialScreen.tsx      # Coach mark tour wrapper
-│   └── recording/
-│       └── ConsentModal.tsx  # Dual consent recording UI
-├── components/
-│   ├── onboarding/
-│   │   └── ProgressBar.tsx   # Onboarding progress indicator
-│   └── consent/
-│       └── DualConsentPrompt.tsx
-└── utils/
-    ├── inviteCode.ts         # Code generation/validation
-    └── deepLink.ts           # Link parsing utilities
+backend/
+├── config/
+│   ├── settings/
+│   │   ├── base.py          # Common settings
+│   │   ├── development.py   # Dev settings
+│   │   └── production.py    # Production settings
+│   ├── asgi.py              # ASGI application with Channels routing
+│   ├── urls.py              # Root URL configuration
+│   └── wsgi.py              # WSGI application (optional)
+├── apps/
+│   ├── users/
+│   │   ├── models.py        # Custom User model
+│   │   ├── serializers.py   # User serializers
+│   │   ├── views.py         # Custom auth views (if needed)
+│   │   └── urls.py
+│   ├── couples/
+│   │   ├── models.py        # Couple, InviteCode models
+│   │   ├── serializers.py
+│   │   ├── views.py         # Partner linking endpoints
+│   │   └── urls.py
+│   ├── consents/
+│   │   ├── models.py        # RecordingConsent, DisclaimerConsent
+│   │   ├── serializers.py
+│   │   ├── views.py
+│   │   ├── consumers.py     # WebSocket consumer for consent sync
+│   │   └── routing.py       # WebSocket URL routing
+│   └── core/
+│       ├── middleware.py    # Custom middleware
+│       └── permissions.py   # Custom DRF permissions
+├── manage.py
+└── requirements.txt
 ```
 
-### Pattern 1: Hybrid Secure Storage Adapter
+### Pattern 1: JWT Authentication Configuration
 
-**What:** Custom storage adapter combining expo-secure-store for tokens and expo-sqlite for larger session data
-**When to use:** Always for Supabase Auth in production apps
-**Why:** expo-secure-store has 2KB limit; OAuth sessions can exceed this
+**What:** Configure simplejwt for mobile app authentication with token rotation
+**When to use:** Always for mobile app backends
 
-```typescript
-// lib/storage.ts
-import * as SecureStore from 'expo-secure-store';
-import 'expo-sqlite/localStorage/install';
+```python
+# config/settings/base.py
+from datetime import timedelta
 
-const LARGE_VALUE_THRESHOLD = 1800; // bytes, under 2KB limit
+INSTALLED_APPS = [
+    'daphne',  # Must be before django.contrib.staticfiles
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.sites',
 
-export const HybridSecureStorage = {
-  async getItem(key: string): Promise<string | null> {
-    try {
-      // Try SecureStore first
-      const value = await SecureStore.getItemAsync(key);
-      if (value) return value;
+    # Third party
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',  # Enable blacklist
+    'corsheaders',
+    'allauth',
+    'allauth.account',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'channels',
 
-      // Fall back to localStorage for large values
-      return localStorage.getItem(key);
-    } catch {
-      return localStorage.getItem(key);
+    # Local apps
+    'apps.users',
+    'apps.couples',
+    'apps.consents',
+]
+
+SITE_ID = 1  # Required for django-allauth
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '20/minute',
+        'user': '100/minute',
+        'auth': '5/minute',  # For login/token endpoints
     }
-  },
-
-  async setItem(key: string, value: string): Promise<void> {
-    const byteSize = new Blob([value]).size;
-
-    if (byteSize < LARGE_VALUE_THRESHOLD) {
-      // Small values go to SecureStore
-      await SecureStore.setItemAsync(key, value);
-    } else {
-      // Large values go to localStorage (still encrypted at rest by SQLite)
-      localStorage.setItem(key, value);
-    }
-  },
-
-  async removeItem(key: string): Promise<void> {
-    await SecureStore.deleteItemAsync(key);
-    localStorage.removeItem(key);
-  },
-};
-```
-
-### Pattern 2: Supabase Client with Secure Storage
-
-**What:** Configure Supabase client with hybrid storage and app state handling
-**When to use:** Client initialization
-
-```typescript
-// lib/supabase.ts
-import { AppState, Platform } from 'react-native';
-import 'react-native-url-polyfill/auto';
-import { createClient } from '@supabase/supabase-js';
-import { HybridSecureStorage } from './storage';
-
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: HybridSecureStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
-
-// Handle app state for token refresh
-if (Platform.OS !== 'web') {
-  AppState.addEventListener('change', (state) => {
-    if (state === 'active') {
-      supabase.auth.startAutoRefresh();
-    } else {
-      supabase.auth.stopAutoRefresh();
-    }
-  });
 }
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+
+    'TOKEN_OBTAIN_SERIALIZER': 'rest_framework_simplejwt.serializers.TokenObtainPairSerializer',
+}
+
+# dj-rest-auth settings
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_HTTPONLY': False,  # Allow mobile app to receive refresh token
+    'SESSION_LOGIN': False,  # Disable session auth for API
+    'REGISTER_SERIALIZER': 'apps.users.serializers.CustomRegisterSerializer',
+}
+
+# django-allauth settings (email-based auth)
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional' for development
+ACCOUNT_UNIQUE_EMAIL = True
+```
+
+### Pattern 2: Custom User Model with Encrypted Fields
+
+**What:** Custom User model with disclaimer consent tracking and encrypted sensitive data
+**When to use:** Foundation of the authentication system
+
+```python
+# apps/users/models.py
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db import models
+from djfernet.fields import EncryptedCharField
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('Email is required')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(email, password, **extra_fields)
+
+class User(AbstractUser):
+    username = None  # Remove username field
+    email = models.EmailField('email address', unique=True)
+
+    # Disclaimer consent tracking (SAFE-04)
+    disclaimer_accepted = models.BooleanField(default=False)
+    disclaimer_accepted_at = models.DateTimeField(null=True, blank=True)
+    disclaimer_version = models.CharField(max_length=10, blank=True)
+
+    # Onboarding progress
+    onboarding_completed = models.BooleanField(default=False)
+    tutorial_completed = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
+    class Meta:
+        db_table = 'users'
+
+# settings.py
+AUTH_USER_MODEL = 'users.User'
 ```
 
 ### Pattern 3: Partner Invite Code System
 
-**What:** Database schema and logic for 6-digit invite codes with expiration
-**When to use:** Partner connection feature
+**What:** Database model and API for 6-digit invite codes with 24-hour expiration
+**When to use:** Partner connection feature (AUTH-03, AUTH-04)
 
-```sql
--- Supabase SQL for invite codes table
-CREATE TABLE invite_codes (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  code VARCHAR(6) NOT NULL UNIQUE,
-  creator_id UUID REFERENCES auth.users(id) NOT NULL,
-  expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '24 hours'),
-  used_by UUID REFERENCES auth.users(id),
-  used_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+```python
+# apps/couples/models.py
+import secrets
+import string
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
--- Index for fast code lookup
-CREATE INDEX idx_invite_codes_code ON invite_codes(code);
+def generate_invite_code():
+    """Generate 6-character alphanumeric code (excluding confusing chars)"""
+    chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'  # No 0, O, 1, I
+    return ''.join(secrets.choice(chars) for _ in range(6))
 
--- RLS policies
-ALTER TABLE invite_codes ENABLE ROW LEVEL SECURITY;
+class Couple(models.Model):
+    """Represents a linked couple relationship"""
 
--- Users can only see their own codes
-CREATE POLICY "Users can view own codes" ON invite_codes
-  FOR SELECT TO authenticated
-  USING (creator_id = auth.uid() OR used_by = auth.uid());
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        ACTIVE = 'active', 'Active'
+        DISCONNECTED = 'disconnected', 'Disconnected'
 
--- Users can create codes
-CREATE POLICY "Users can create codes" ON invite_codes
-  FOR INSERT TO authenticated
-  WITH CHECK (creator_id = auth.uid());
+    user1 = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='couple_as_user1'
+    )
+    user2 = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='couple_as_user2',
+        null=True, blank=True
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+    connected_at = models.DateTimeField(null=True, blank=True)
+    disconnected_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
--- Function to generate unique 6-digit code
-CREATE OR REPLACE FUNCTION generate_invite_code()
-RETURNS VARCHAR(6) AS $$
-DECLARE
-  chars VARCHAR := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; -- Exclude confusing chars
-  code VARCHAR(6) := '';
-  i INT;
-BEGIN
-  FOR i IN 1..6 LOOP
-    code := code || substr(chars, floor(random() * length(chars) + 1)::int, 1);
-  END LOOP;
-  RETURN code;
-END;
-$$ LANGUAGE plpgsql;
+    class Meta:
+        db_table = 'couples'
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(user1=models.F('user2')),
+                name='cannot_couple_with_self'
+            )
+        ]
+
+    def get_partner(self, user):
+        """Get the partner of the given user in this couple"""
+        if user == self.user1:
+            return self.user2
+        elif user == self.user2:
+            return self.user1
+        return None
+
+class InviteCode(models.Model):
+    """Partner invitation code with 24-hour expiration"""
+
+    code = models.CharField(max_length=6, unique=True, default=generate_invite_code)
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='created_invite_codes'
+    )
+    couple = models.ForeignKey(
+        Couple,
+        on_delete=models.CASCADE,
+        related_name='invite_codes'
+    )
+    expires_at = models.DateTimeField()
+    used_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='used_invite_codes'
+    )
+    used_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'invite_codes'
+        indexes = [
+            models.Index(fields=['code']),
+            models.Index(fields=['expires_at']),
+        ]
+
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(hours=24)
+        super().save(*args, **kwargs)
+
+    @property
+    def is_valid(self):
+        return (
+            self.used_by is None and
+            self.expires_at > timezone.now()
+        )
+
+    @classmethod
+    def create_for_user(cls, user):
+        """Create a new invite code for a user, creating couple if needed"""
+        # Check if user already has an active couple
+        existing_couple = Couple.objects.filter(
+            models.Q(user1=user) | models.Q(user2=user),
+            status=Couple.Status.ACTIVE
+        ).first()
+
+        if existing_couple:
+            raise ValueError("User already in an active couple")
+
+        # Create or get pending couple
+        couple, _ = Couple.objects.get_or_create(
+            user1=user,
+            status=Couple.Status.PENDING
+        )
+
+        # Invalidate any existing codes
+        cls.objects.filter(creator=user, used_by__isnull=True).update(
+            expires_at=timezone.now()
+        )
+
+        # Create new code
+        return cls.objects.create(creator=user, couple=couple)
 ```
 
-```typescript
-// utils/inviteCode.ts
-export async function createInviteCode(supabase: SupabaseClient): Promise<string> {
-  const { data, error } = await supabase
-    .rpc('generate_invite_code')
-    .single();
+### Pattern 4: Consent Models with Encryption
 
-  if (error) throw error;
+**What:** Recording consent and disclaimer consent tracking with encrypted storage
+**When to use:** SAFE-01 (dual consent), SAFE-03 (encryption), SAFE-04 (disclaimer)
 
-  const code = data as string;
+```python
+# apps/consents/models.py
+from django.db import models
+from django.conf import settings
+from djfernet.fields import EncryptedTextField
 
-  await supabase.from('invite_codes').insert({
-    code,
-    creator_id: (await supabase.auth.getUser()).data.user?.id,
-  });
+class RecordingConsent(models.Model):
+    """Tracks dual consent for recording sessions (SAFE-01)"""
 
-  return code;
-}
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        BOTH_CONSENTED = 'both_consented', 'Both Consented'
+        DECLINED = 'declined', 'Declined'
+        EXPIRED = 'expired', 'Expired'
 
-export async function validateInviteCode(
-  supabase: SupabaseClient,
-  code: string
-): Promise<{ valid: boolean; creatorId?: string }> {
-  const { data, error } = await supabase
-    .from('invite_codes')
-    .select('creator_id, expires_at, used_by')
-    .eq('code', code.toUpperCase())
-    .single();
+    couple = models.ForeignKey(
+        'couples.Couple',
+        on_delete=models.CASCADE,
+        related_name='recording_consents'
+    )
+    session_id = models.UUIDField(unique=True)  # Unique identifier for consent session
 
-  if (error || !data) return { valid: false };
-  if (data.used_by) return { valid: false }; // Already used
-  if (new Date(data.expires_at) < new Date()) return { valid: false }; // Expired
+    requester = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='consent_requests_made'
+    )
+    requester_consented = models.BooleanField(default=True)
+    requester_consented_at = models.DateTimeField(auto_now_add=True)
 
-  return { valid: true, creatorId: data.creator_id };
-}
+    responder = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='consent_requests_received',
+        null=True
+    )
+    responder_consented = models.BooleanField(null=True)
+    responder_consented_at = models.DateTimeField(null=True, blank=True)
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+
+    # IP addresses encrypted for privacy (optional audit trail)
+    requester_ip = EncryptedTextField(blank=True, null=True)
+    responder_ip = EncryptedTextField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()  # Consent request expires after X minutes
+
+    class Meta:
+        db_table = 'recording_consents'
+        ordering = ['-created_at']
+
+    def process_response(self, user, consented: bool, ip_address: str = None):
+        """Process consent response from partner"""
+        if user != self.responder:
+            raise ValueError("Only responder can respond to consent")
+
+        self.responder_consented = consented
+        self.responder_consented_at = timezone.now()
+        self.responder_ip = ip_address
+
+        if consented and self.requester_consented:
+            self.status = self.Status.BOTH_CONSENTED
+        else:
+            self.status = self.Status.DECLINED
+
+        self.save()
+        return self.status
+
+
+class DisclaimerConsent(models.Model):
+    """Tracks disclaimer acknowledgment (SAFE-04)"""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='disclaimer_consents'
+    )
+    version = models.CharField(max_length=10)  # e.g., "1.0", "1.1"
+    content_hash = models.CharField(max_length=64)  # SHA-256 of disclaimer text
+    consented_at = models.DateTimeField(auto_now_add=True)
+    ip_address = EncryptedTextField(blank=True, null=True)
+    user_agent = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'disclaimer_consents'
+        unique_together = ['user', 'version']
 ```
 
-### Pattern 4: Couples RLS Pattern
+### Pattern 5: WebSocket Consumer for Real-time Consent
 
-**What:** Row-level security for partner data isolation
-**When to use:** All tables containing couple-specific data
+**What:** Django Channels consumer for real-time consent synchronization
+**When to use:** Dual consent recording feature (SAFE-01)
 
-```sql
--- Couples/Relationships table
-CREATE TABLE couples (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user1_id UUID REFERENCES auth.users(id) NOT NULL,
-  user2_id UUID REFERENCES auth.users(id),
-  status VARCHAR(20) DEFAULT 'pending', -- pending, active, disconnected
-  connected_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+```python
+# apps/consents/consumers.py
+import json
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.db import database_sync_to_async
+from django.utils import timezone
+from .models import RecordingConsent
 
-ALTER TABLE couples ENABLE ROW LEVEL SECURITY;
+class ConsentConsumer(AsyncJsonWebsocketConsumer):
+    """WebSocket consumer for real-time consent synchronization"""
 
--- Users can see couples they're part of
-CREATE POLICY "Users see own couples" ON couples
-  FOR SELECT TO authenticated
-  USING (user1_id = auth.uid() OR user2_id = auth.uid());
+    async def connect(self):
+        self.user = self.scope['user']
 
--- Helper function to get partner's couple_id
-CREATE OR REPLACE FUNCTION get_couple_id()
-RETURNS UUID AS $$
-  SELECT id FROM couples
-  WHERE (user1_id = auth.uid() OR user2_id = auth.uid())
-  AND status = 'active'
-  LIMIT 1;
-$$ LANGUAGE sql SECURITY DEFINER;
+        if not self.user.is_authenticated:
+            await self.close(code=4001)
+            return
 
--- Example: Recordings table with couple isolation
-CREATE TABLE recordings (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  couple_id UUID REFERENCES couples(id) NOT NULL,
-  -- ... other fields
-);
+        # Get user's active couple
+        self.couple = await self.get_active_couple()
+        if not self.couple:
+            await self.close(code=4002)
+            return
 
-ALTER TABLE recordings ENABLE ROW LEVEL SECURITY;
+        # Join couple-specific group
+        self.room_group_name = f'consent_{self.couple.id}'
 
-CREATE POLICY "Couples see own recordings" ON recordings
-  FOR ALL TO authenticated
-  USING (couple_id = get_couple_id());
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+
+        # Notify partner of presence
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'user_joined',
+                'user_id': self.user.id,
+            }
+        )
+
+    async def disconnect(self, close_code):
+        if hasattr(self, 'room_group_name'):
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'user_left',
+                    'user_id': self.user.id,
+                }
+            )
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+
+    async def receive_json(self, content):
+        action = content.get('action')
+
+        if action == 'request_consent':
+            await self.handle_consent_request(content)
+        elif action == 'respond_consent':
+            await self.handle_consent_response(content)
+        elif action == 'withdraw_consent':
+            await self.handle_consent_withdrawal(content)
+
+    async def handle_consent_request(self, content):
+        """Handle new consent request from requester"""
+        session_id = content.get('session_id')
+
+        consent = await self.create_consent_request(session_id)
+
+        # Broadcast to partner
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'consent_requested',
+                'session_id': str(consent.session_id),
+                'requester_id': self.user.id,
+                'expires_at': consent.expires_at.isoformat(),
+            }
+        )
+
+    async def handle_consent_response(self, content):
+        """Handle consent response from responder"""
+        session_id = content.get('session_id')
+        consented = content.get('consented', False)
+
+        status = await self.process_consent_response(session_id, consented)
+
+        # Broadcast result to both partners
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'consent_updated',
+                'session_id': session_id,
+                'responder_id': self.user.id,
+                'consented': consented,
+                'status': status,
+            }
+        )
+
+    # Event handlers (called by group_send)
+    async def consent_requested(self, event):
+        await self.send_json(event)
+
+    async def consent_updated(self, event):
+        await self.send_json(event)
+
+    async def user_joined(self, event):
+        await self.send_json(event)
+
+    async def user_left(self, event):
+        await self.send_json(event)
+
+    @database_sync_to_async
+    def get_active_couple(self):
+        from apps.couples.models import Couple
+        return Couple.objects.filter(
+            models.Q(user1=self.user) | models.Q(user2=self.user),
+            status=Couple.Status.ACTIVE
+        ).first()
+
+    @database_sync_to_async
+    def create_consent_request(self, session_id):
+        import uuid
+        partner = self.couple.get_partner(self.user)
+        return RecordingConsent.objects.create(
+            couple=self.couple,
+            session_id=uuid.UUID(session_id),
+            requester=self.user,
+            responder=partner,
+            expires_at=timezone.now() + timezone.timedelta(minutes=5)
+        )
+
+    @database_sync_to_async
+    def process_consent_response(self, session_id, consented):
+        consent = RecordingConsent.objects.get(session_id=session_id)
+        consent.process_response(self.user, consented)
+        return consent.status
 ```
 
-### Pattern 5: Deep Link for Partner Invite
+```python
+# apps/consents/routing.py
+from django.urls import re_path
+from . import consumers
 
-**What:** Deep link configuration and handling for invite links
-**When to use:** Partner invitation via shared link
-
-```json
-// app.json
-{
-  "expo": {
-    "scheme": "couplesai",
-    "android": {
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "data": [{ "scheme": "couplesai", "host": "invite" }],
-          "category": ["BROWSABLE", "DEFAULT"]
-        }
-      ]
-    },
-    "ios": {
-      "associatedDomains": ["applinks:couplesai.app"]
-    }
-  }
-}
+websocket_urlpatterns = [
+    re_path(r'ws/consent/$', consumers.ConsentConsumer.as_asgi()),
+]
 ```
 
-```typescript
-// utils/deepLink.ts
-import * as Linking from 'expo-linking';
+### Pattern 6: JWT Authentication Middleware for Channels
 
-export function createInviteLink(code: string): string {
-  return Linking.createURL('invite', {
-    queryParams: { code },
-  });
-  // Returns: couplesai://invite?code=ABC123
-}
+**What:** Custom middleware to authenticate WebSocket connections using JWT
+**When to use:** All WebSocket connections
 
-export function parseInviteLink(url: string): string | null {
-  const { hostname, queryParams } = Linking.parse(url);
-  if (hostname === 'invite' && queryParams?.code) {
-    return queryParams.code as string;
-  }
-  return null;
-}
+```python
+# apps/core/middleware.py
+from channels.db import database_sync_to_async
+from channels.middleware import BaseMiddleware
+from django.contrib.auth.models import AnonymousUser
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from django.contrib.auth import get_user_model
 
-// Hook to handle incoming links
-export function useInviteLink() {
-  const url = Linking.useURL();
+User = get_user_model()
 
-  useEffect(() => {
-    if (url) {
-      const code = parseInviteLink(url);
-      if (code) {
-        // Navigate to partner link screen with code
-        router.push({ pathname: '/onboarding/partner-link', params: { code } });
-      }
-    }
-  }, [url]);
-}
+@database_sync_to_async
+def get_user_from_token(token_string):
+    try:
+        token = AccessToken(token_string)
+        user_id = token.payload.get('user_id')
+        return User.objects.get(id=user_id)
+    except (InvalidToken, TokenError, User.DoesNotExist):
+        return AnonymousUser()
+
+class JWTAuthMiddleware(BaseMiddleware):
+    """
+    Custom middleware for JWT authentication in WebSocket connections.
+    Token is passed via query string: ws://.../?token=<jwt_token>
+    """
+
+    async def __call__(self, scope, receive, send):
+        # Get token from query string
+        query_string = scope.get('query_string', b'').decode()
+        query_params = dict(
+            param.split('=') for param in query_string.split('&') if '=' in param
+        )
+        token = query_params.get('token')
+
+        if token:
+            scope['user'] = await get_user_from_token(token)
+        else:
+            scope['user'] = AnonymousUser()
+
+        return await super().__call__(scope, receive, send)
+
+def JWTAuthMiddlewareStack(inner):
+    """Convenience function to wrap with JWT auth middleware"""
+    return JWTAuthMiddleware(inner)
+```
+
+```python
+# config/asgi.py
+import os
+from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import AllowedHostsOriginValidator
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')
+
+django_asgi_app = get_asgi_application()
+
+# Import after Django setup
+from apps.core.middleware import JWTAuthMiddlewareStack
+from apps.consents import routing as consent_routing
+
+application = ProtocolTypeRouter({
+    'http': django_asgi_app,
+    'websocket': AllowedHostsOriginValidator(
+        JWTAuthMiddlewareStack(
+            URLRouter(
+                consent_routing.websocket_urlpatterns
+            )
+        )
+    ),
+})
+```
+
+### Pattern 7: API Endpoints Structure
+
+**What:** RESTful API endpoint design for mobile app
+**When to use:** All API communications
+
+```python
+# config/urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+
+    # Auth endpoints (dj-rest-auth)
+    path('api/v1/auth/', include('dj_rest_auth.urls')),
+    path('api/v1/auth/registration/', include('dj_rest_auth.registration.urls')),
+
+    # JWT token endpoints
+    path('api/v1/auth/token/', include('apps.users.urls')),
+
+    # App endpoints
+    path('api/v1/couples/', include('apps.couples.urls')),
+    path('api/v1/consents/', include('apps.consents.urls')),
+]
+```
+
+```python
+# apps/users/urls.py
+from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
+
+urlpatterns = [
+    path('', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('verify/', TokenVerifyView.as_view(), name='token_verify'),
+]
 ```
 
 ### Anti-Patterns to Avoid
 
-- **Storing auth tokens in AsyncStorage:** Unencrypted, accessible to anyone with device access. Always use SecureStore or encrypted storage.
-- **Hardcoding Supabase keys in app code:** Use environment variables via `EXPO_PUBLIC_` prefix.
-- **RLS policies without enabling RLS:** Tables are public by default. Always `ALTER TABLE x ENABLE ROW LEVEL SECURITY` first.
-- **Checking partner access in app code only:** Defense-in-depth requires RLS at database level, not just app logic.
-- **Storing invite codes without expiration:** Creates security risk. Always set `expires_at` and clean up old codes.
+- **Storing JWT tokens in localStorage/AsyncStorage:** Unencrypted, accessible to anyone with device access. Always use expo-secure-store.
+- **Long access token lifetimes:** Access tokens should be 15-30 minutes max. Use refresh tokens for longer sessions.
+- **Not enabling token blacklist:** Without blacklist, rotated tokens remain valid until expiry.
+- **Synchronous ORM calls in async consumers:** Use `database_sync_to_async` decorator or async ORM methods.
+- **Sending JWT in WebSocket headers:** WebSocket API doesn't support custom headers. Use query string for initial auth.
+- **Not throttling auth endpoints:** Login/token endpoints are attack targets. Rate limit aggressively.
 
 ---
 
@@ -392,338 +798,328 @@ Problems that look simple but have existing solutions:
 
 | Problem | Don't Build | Use Instead | Why |
 |---------|-------------|-------------|-----|
-| Session encryption | Custom encryption layer | expo-secure-store | Hardware-backed, OS-maintained keys, can't access from outside app |
-| Token refresh | Manual refresh logic | Supabase `autoRefreshToken: true` | Handles edge cases, app state changes, race conditions |
-| Code uniqueness | Application-level uniqueness check | Database unique constraint + retry | Race conditions, distributed systems need DB-level enforcement |
-| Partner data isolation | `WHERE user_id = X OR partner_id = X` everywhere | Supabase RLS policies | Single point of truth, can't bypass at application level |
-| Coach mark positioning | Manual element measurement | react-native-copilot | Handles scroll views, keyboard, orientation changes |
-| Deep link parsing | Regex on URL strings | expo-linking `parse()` | Handles edge cases, URL encoding, query params |
+| JWT token management | Custom token logic | djangorestframework-simplejwt | Handles rotation, blacklist, refresh, claims, all edge cases |
+| User registration API | Custom registration views | dj-rest-auth | Email verification, password reset, standardized endpoints |
+| WebSocket auth | Custom auth protocol | JWTAuthMiddleware + Channels | Battle-tested patterns, proper async handling |
+| Field encryption | Custom AES wrapper | djfernet / django-cryptography | Key rotation, proper HMAC, transparent ORM integration |
+| Partner invite codes | Simple random strings | Database unique + retry | Collision handling, expiration, audit trail |
+| Real-time sync | Polling | Django Channels + Redis | Sub-second latency, proper connection management |
 
-**Key insight:** Security features (encryption, data isolation, token management) must be handled by battle-tested libraries. Custom implementations invariably have edge cases that lead to vulnerabilities.
+**Key insight:** Security features (JWT management, encryption, auth flows) must be handled by battle-tested libraries. Custom implementations invariably have edge cases that lead to vulnerabilities.
 
 ---
 
 ## Common Pitfalls
 
-### Pitfall 1: SecureStore 2KB Limit
+### Pitfall 1: JWT Token Not Refreshing on Mobile
 
-**What goes wrong:** OAuth sessions (Google, Apple) often exceed 2KB, causing silent failures or crashes on SDK 35+
-**Why it happens:** SecureStore designed for small tokens, not full session objects
-**How to avoid:** Use hybrid storage pattern (SecureStore for small data, expo-sqlite for large)
-**Warning signs:** "Provided value to SecureStore is larger than 2048 bytes" warning
+**What goes wrong:** App logs out user unexpectedly when access token expires
+**Why it happens:** Mobile app doesn't implement token refresh before API calls
+**How to avoid:** Implement axios/fetch interceptor that checks token expiry and refreshes
+**Warning signs:** Users complaining about being logged out after 30 minutes
 
-### Pitfall 2: RLS Not Enabled
+```typescript
+// Mobile-side solution (Expo/React Native)
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
 
-**What goes wrong:** All data publicly accessible, even with policies defined
-**Why it happens:** Supabase creates tables with RLS disabled by default
-**How to avoid:** Always run `ALTER TABLE x ENABLE ROW LEVEL SECURITY` before creating policies
-**Warning signs:** Users can see other users' data; 170+ apps exposed in CVE-2025-48757
+const api = axios.create({ baseURL: API_URL });
 
-### Pitfall 3: Offline Session Loss
+api.interceptors.response.use(
+  response => response,
+  async error => {
+    if (error.response?.status === 401) {
+      const refreshToken = await SecureStore.getItemAsync('refreshToken');
+      if (refreshToken) {
+        const { data } = await axios.post(`${API_URL}/auth/token/refresh/`, {
+          refresh: refreshToken
+        });
+        await SecureStore.setItemAsync('accessToken', data.access);
+        if (data.refresh) {
+          await SecureStore.setItemAsync('refreshToken', data.refresh);
+        }
+        // Retry original request
+        error.config.headers.Authorization = `Bearer ${data.access}`;
+        return api.request(error.config);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+```
 
-**What goes wrong:** Users logged out when app starts offline
-**Why it happens:** `startAutoRefresh()` tries to refresh while offline, clears session on failure
-**How to avoid:** Only call `startAutoRefresh()` when app has network connectivity
-**Warning signs:** Session works when online, disappears after offline app restart
+### Pitfall 2: WebSocket Connection Lost Without Reconnection
 
-### Pitfall 4: Deep Link Not Working After Install
+**What goes wrong:** Real-time consent sync stops working, users don't know
+**Why it happens:** Network changes, app backgrounding kills WebSocket
+**How to avoid:** Implement reconnection logic with exponential backoff
+**Warning signs:** Consent updates not appearing in real-time
 
-**What goes wrong:** Partner invite links don't open app, go to browser instead
-**Why it happens:** Deep links require app to be installed; URL scheme not registered
-**How to avoid:** Test with development build (not Expo Go), implement universal links for uninstalled case
-**Warning signs:** Links work in Expo Go but not production build
+### Pitfall 3: Channels Redis Not Configured for Production
 
-### Pitfall 5: Invite Code Collisions
+**What goes wrong:** WebSocket works locally but fails in production
+**Why it happens:** Using InMemoryChannelLayer (dev only) instead of Redis
+**How to avoid:** Always use `channels_redis.core.RedisChannelLayer` in production
+**Warning signs:** "Channel layer does not support groups" errors
 
-**What goes wrong:** Two users get same invite code, one overwrites the other
-**Why it happens:** No unique constraint, or retry logic on collision
-**How to avoid:** Database unique index + application retry on constraint violation
-**Warning signs:** Random "already used" errors on fresh codes
+### Pitfall 4: Token Blacklist Table Not Migrated
 
-### Pitfall 6: Missing Disclaimer Record
+**What goes wrong:** Token rotation works but old tokens remain valid
+**Why it happens:** Forgot to add `rest_framework_simplejwt.token_blacklist` to INSTALLED_APPS and run migrations
+**How to avoid:** Add to INSTALLED_APPS immediately when setting up simplejwt
+**Warning signs:** Logging out doesn't invalidate tokens
 
-**What goes wrong:** User disputes they agreed to terms, no proof of consent
-**Why it happens:** Only storing boolean, not timestamp/version
-**How to avoid:** Store consent timestamp, IP (if web), and terms version in database
-**Warning signs:** Legal team asks for consent proof, can't provide
+### Pitfall 5: Encryption Key Not Rotated
+
+**What goes wrong:** Compromised key means all historical data exposed
+**Why it happens:** Using single FERNET_KEY without rotation strategy
+**How to avoid:** Use FERNET_KEYS list, add new keys to front, keep old keys for decryption
+**Warning signs:** No key rotation procedure documented
+
+### Pitfall 6: Missing CORS Configuration
+
+**What goes wrong:** Mobile app can't reach API in development
+**Why it happens:** Django doesn't allow cross-origin requests by default
+**How to avoid:** Configure django-cors-headers properly
+
+```python
+# settings.py
+INSTALLED_APPS = [
+    ...
+    'corsheaders',
+]
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Must be high in list
+    ...
+]
+
+# Development
+CORS_ALLOW_ALL_ORIGINS = True  # Only for dev!
+
+# Production
+CORS_ALLOWED_ORIGINS = [
+    'https://your-app-domain.com',
+]
+```
 
 ---
 
 ## Code Examples
 
-### Email/Password Sign Up with Disclaimer
+### Custom Registration Serializer with Disclaimer
 
-```typescript
-// screens/auth/SignUpScreen.tsx
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-import Checkbox from '@react-native-community/checkbox';
-import { supabase } from '@/lib/supabase';
+```python
+# apps/users/serializers.py
+from dj_rest_auth.registration.serializers import RegisterSerializer
+from rest_framework import serializers
+from django.utils import timezone
 
-export function SignUpScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
-  const [loading, setLoading] = useState(false);
+class CustomRegisterSerializer(RegisterSerializer):
+    disclaimer_accepted = serializers.BooleanField(required=True)
+    disclaimer_version = serializers.CharField(required=True)
 
-  async function signUp() {
-    if (!disclaimerAccepted) {
-      Alert.alert('동의 필요', '서비스 이용약관에 동의해주세요.');
-      return;
-    }
+    def validate_disclaimer_accepted(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                "면책조항에 동의해야 합니다."
+            )
+        return value
 
-    setLoading(true);
+    def custom_signup(self, request, user):
+        user.disclaimer_accepted = True
+        user.disclaimer_accepted_at = timezone.now()
+        user.disclaimer_version = self.validated_data.get('disclaimer_version')
+        user.save()
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          disclaimer_accepted_at: new Date().toISOString(),
-          disclaimer_version: '1.0',
-        },
-      },
-    });
-
-    if (error) {
-      Alert.alert('오류', error.message);
-    } else if (!data.session) {
-      Alert.alert('확인', '이메일 인증 링크를 확인해주세요.');
-    }
-
-    setLoading(false);
-  }
-
-  return (
-    <View className="flex-1 p-6 justify-center">
-      <TextInput
-        className="border border-gray-300 rounded-lg p-4 mb-4"
-        placeholder="이메일"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-
-      <TextInput
-        className="border border-gray-300 rounded-lg p-4 mb-4"
-        placeholder="비밀번호"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      <View className="flex-row items-center mb-6">
-        <Checkbox
-          value={disclaimerAccepted}
-          onValueChange={setDisclaimerAccepted}
-        />
-        <Text className="ml-2 flex-1">
-          본 서비스는 전문 상담을 대체하지 않습니다.
-          <Text className="text-blue-600" onPress={() => {/* Show full terms */}}>
-            이용약관
-          </Text>
-          에 동의합니다.
-        </Text>
-      </View>
-
-      <TouchableOpacity
-        className={`p-4 rounded-lg ${disclaimerAccepted ? 'bg-primary' : 'bg-gray-300'}`}
-        onPress={signUp}
-        disabled={loading || !disclaimerAccepted}
-      >
-        <Text className="text-white text-center font-semibold">
-          {loading ? '처리 중...' : '가입하기'}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
+        # Also create DisclaimerConsent record for audit
+        from apps.consents.models import DisclaimerConsent
+        DisclaimerConsent.objects.create(
+            user=user,
+            version=user.disclaimer_version,
+            content_hash=self.validated_data.get('disclaimer_version'),  # In prod, hash the actual content
+            ip_address=request.META.get('REMOTE_ADDR'),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+        )
 ```
 
-### Dual Consent Recording Prompt
+### Partner Invite API Views
 
-```typescript
-// components/consent/DualConsentPrompt.tsx
-import { useState, useEffect } from 'react';
-import { View, Text, Modal, TouchableOpacity } from 'react-native';
-import { supabase } from '@/lib/supabase';
+```python
+# apps/couples/views.py
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
+from .models import InviteCode, Couple
+from .serializers import InviteCodeSerializer, CoupleSerializer
 
-interface Props {
-  visible: boolean;
-  onConsent: () => void;
-  onDecline: () => void;
-  coupleId: string;
-}
+class InviteCodeViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
 
-export function DualConsentPrompt({ visible, onConsent, onDecline, coupleId }: Props) {
-  const [myConsent, setMyConsent] = useState(false);
-  const [partnerConsent, setPartnerConsent] = useState(false);
+    @action(detail=False, methods=['post'])
+    def generate(self, request):
+        """Generate new invite code for current user"""
+        try:
+            invite_code = InviteCode.create_for_user(request.user)
+            return Response({
+                'code': invite_code.code,
+                'expires_at': invite_code.expires_at.isoformat(),
+                'deep_link': f'couplesai://invite?code={invite_code.code}'
+            }, status=status.HTTP_201_CREATED)
+        except ValueError as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-  // Subscribe to partner's consent in real-time
-  useEffect(() => {
-    const channel = supabase
-      .channel(`consent:${coupleId}`)
-      .on('broadcast', { event: 'consent' }, (payload) => {
-        if (payload.payload.userId !== supabase.auth.user?.id) {
-          setPartnerConsent(payload.payload.consented);
-        }
-      })
-      .subscribe();
+    @action(detail=False, methods=['post'])
+    def redeem(self, request):
+        """Redeem invite code to connect with partner"""
+        code = request.data.get('code', '').upper()
 
-    return () => { supabase.removeChannel(channel); };
-  }, [coupleId]);
+        try:
+            invite_code = InviteCode.objects.get(code=code)
+        except InviteCode.DoesNotExist:
+            return Response(
+                {'error': '유효하지 않은 코드입니다.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-  // Broadcast my consent
-  async function handleMyConsent(consented: boolean) {
-    setMyConsent(consented);
+        if not invite_code.is_valid:
+            return Response(
+                {'error': '만료되었거나 이미 사용된 코드입니다.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-    await supabase.channel(`consent:${coupleId}`).send({
-      type: 'broadcast',
-      event: 'consent',
-      payload: {
-        userId: supabase.auth.user?.id,
-        consented,
-        timestamp: new Date().toISOString(),
-      },
-    });
+        if invite_code.creator == request.user:
+            return Response(
+                {'error': '본인의 코드는 사용할 수 없습니다.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-    if (consented && partnerConsent) {
-      // Both consented - log consent record
-      await supabase.from('recording_consents').insert({
-        couple_id: coupleId,
-        consented_at: new Date().toISOString(),
-      });
-      onConsent();
-    }
-  }
+        # Check if user already in a couple
+        existing = Couple.objects.filter(
+            models.Q(user1=request.user) | models.Q(user2=request.user),
+            status=Couple.Status.ACTIVE
+        ).exists()
 
-  return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View className="flex-1 justify-end bg-black/50">
-        <View className="bg-white rounded-t-3xl p-6">
-          <Text className="text-xl font-bold mb-4">녹음 동의</Text>
+        if existing:
+            return Response(
+                {'error': '이미 파트너와 연결되어 있습니다.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-          <Text className="text-gray-600 mb-6">
-            녹음을 시작하려면 두 분 모두의 동의가 필요합니다.
-            녹음된 대화는 분석을 위해서만 사용됩니다.
-          </Text>
+        # Connect the couple
+        couple = invite_code.couple
+        couple.user2 = request.user
+        couple.status = Couple.Status.ACTIVE
+        couple.connected_at = timezone.now()
+        couple.save()
 
-          <View className="flex-row justify-between mb-6">
-            <View className="items-center">
-              <View className={`w-12 h-12 rounded-full ${myConsent ? 'bg-green-500' : 'bg-gray-300'} items-center justify-center`}>
-                <Text className="text-white">나</Text>
-              </View>
-              <Text className="mt-2">{myConsent ? '동의함' : '대기 중'}</Text>
-            </View>
+        # Mark code as used
+        invite_code.used_by = request.user
+        invite_code.used_at = timezone.now()
+        invite_code.save()
 
-            <View className="items-center">
-              <View className={`w-12 h-12 rounded-full ${partnerConsent ? 'bg-green-500' : 'bg-gray-300'} items-center justify-center`}>
-                <Text className="text-white">파트너</Text>
-              </View>
-              <Text className="mt-2">{partnerConsent ? '동의함' : '대기 중'}</Text>
-            </View>
-          </View>
+        # TODO: Send push notification to partner
 
-          <View className="flex-row gap-4">
-            <TouchableOpacity
-              className="flex-1 p-4 bg-gray-200 rounded-lg"
-              onPress={onDecline}
-            >
-              <Text className="text-center">거절</Text>
-            </TouchableOpacity>
+        return Response({
+            'message': '파트너와 연결되었습니다!',
+            'couple': CoupleSerializer(couple).data
+        })
 
-            <TouchableOpacity
-              className={`flex-1 p-4 rounded-lg ${myConsent ? 'bg-gray-400' : 'bg-primary'}`}
-              onPress={() => handleMyConsent(true)}
-              disabled={myConsent}
-            >
-              <Text className="text-white text-center">
-                {myConsent ? '동의 완료' : '동의하기'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-}
+
+class CoupleViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        """Get current user's couple info"""
+        couple = Couple.objects.filter(
+            models.Q(user1=request.user) | models.Q(user2=request.user),
+            status=Couple.Status.ACTIVE
+        ).first()
+
+        if not couple:
+            return Response({'couple': None})
+
+        return Response({
+            'couple': CoupleSerializer(couple).data,
+            'partner': {
+                'id': couple.get_partner(request.user).id,
+                'email': couple.get_partner(request.user).email,
+            }
+        })
+
+    @action(detail=False, methods=['post'])
+    def disconnect(self, request):
+        """Disconnect from partner"""
+        couple = Couple.objects.filter(
+            models.Q(user1=request.user) | models.Q(user2=request.user),
+            status=Couple.Status.ACTIVE
+        ).first()
+
+        if not couple:
+            return Response(
+                {'error': '연결된 파트너가 없습니다.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        couple.status = Couple.Status.DISCONNECTED
+        couple.disconnected_at = timezone.now()
+        couple.save()
+
+        # TODO: Send push notification to ex-partner
+
+        return Response({'message': '파트너 연결이 해제되었습니다.'})
 ```
 
-### Coach Mark Tutorial Setup
+### Mobile JWT Token Storage (Expo)
 
 ```typescript
-// screens/onboarding/TutorialScreen.tsx
-import { CopilotProvider, CopilotStep, walkthroughable, useCopilot } from 'react-native-copilot';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useEffect } from 'react';
+// lib/auth.ts (React Native / Expo)
+import * as SecureStore from 'expo-secure-store';
 
-const CopilotText = walkthroughable(Text);
-const CopilotView = walkthroughable(View);
+const ACCESS_TOKEN_KEY = 'access_token';
+const REFRESH_TOKEN_KEY = 'refresh_token';
 
-function TutorialContent() {
-  const { start, currentStep, isLastStep } = useCopilot();
+export const TokenStorage = {
+  async getAccessToken(): Promise<string | null> {
+    return SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+  },
 
-  // Auto-start tutorial
-  useEffect(() => {
-    start();
-  }, []);
+  async getRefreshToken(): Promise<string | null> {
+    return SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+  },
 
-  return (
-    <View className="flex-1 p-6">
-      <CopilotStep
-        text="여기서 오늘의 감정과 상황을 기록할 수 있어요."
-        order={1}
-        name="record"
-      >
-        <CopilotView className="bg-primary p-4 rounded-lg mb-4">
-          <Text className="text-white">기록하기</Text>
-        </CopilotView>
-      </CopilotStep>
+  async setTokens(access: string, refresh: string): Promise<void> {
+    await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, access);
+    await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refresh);
+  },
 
-      <CopilotStep
-        text="파트너와 함께 녹음을 시작하려면 여기를 눌러주세요."
-        order={2}
-        name="recording"
-      >
-        <CopilotView className="bg-secondary p-4 rounded-lg mb-4">
-          <Text className="text-white">갈등 녹음</Text>
-        </CopilotView>
-      </CopilotStep>
+  async clearTokens(): Promise<void> {
+    await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+    await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+  },
+};
 
-      <CopilotStep
-        text="AI가 분석한 리프레이밍 결과를 확인할 수 있어요."
-        order={3}
-        name="insights"
-      >
-        <CopilotView className="bg-accent p-4 rounded-lg">
-          <Text>인사이트</Text>
-        </CopilotView>
-      </CopilotStep>
-    </View>
-  );
-}
+// Usage in login
+async function login(email: string, password: string) {
+  const response = await fetch(`${API_URL}/api/v1/auth/token/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
 
-export function TutorialScreen() {
-  return (
-    <CopilotProvider
-      overlay="svg"
-      labels={{
-        previous: '이전',
-        next: '다음',
-        skip: '', // No skip - mandatory tutorial per CONTEXT.md
-        finish: '시작하기',
-      }}
-      backdropColor="rgba(0, 0, 0, 0.7)"
-      tooltipStyle={{
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-      }}
-    >
-      <TutorialContent />
-    </CopilotProvider>
-  );
+  const data = await response.json();
+
+  if (response.ok) {
+    await TokenStorage.setTokens(data.access, data.refresh);
+    return { success: true };
+  }
+
+  return { success: false, error: data.detail };
 }
 ```
 
@@ -733,17 +1129,17 @@ export function TutorialScreen() {
 
 | Old Approach | Current Approach | When Changed | Impact |
 |--------------|------------------|--------------|--------|
-| AsyncStorage for all auth | expo-secure-store + hybrid | 2024 | Hardware-backed encryption mandatory for sensitive data |
-| Firebase Auth | Supabase Auth | 2023-2024 | Better RLS, PostgreSQL relations, predictable pricing |
-| Manual token refresh | Supabase autoRefreshToken | 2023 | Handles app lifecycle, background/foreground transitions |
-| expo-av for audio | expo-audio | SDK 53 (2025) | expo-av deprecated, new API more stable |
-| @react-native-community/checkbox built-in | Community package | 2022 | Built-in deprecated, use community version |
+| Session auth for mobile | JWT with simplejwt | 2022+ | Stateless, scalable, mobile-optimized |
+| Custom registration views | dj-rest-auth | 2020+ | Complete auth endpoints out of box |
+| Supabase/Firebase | Django + DRF | N/A (user choice) | Full control, self-hosted, existing infrastructure |
+| Polling for real-time | Django Channels | 2018+ | Sub-second latency, WebSocket native |
+| Plain text sensitive data | djfernet encryption | 2020+ | AES encryption at field level |
+| daphne only | daphne + gunicorn | 2023+ | Split HTTP/WebSocket for stability option |
 
 **Deprecated/outdated:**
-- **AsyncStorage for auth tokens:** Unencrypted, security risk
-- **expo-av for recording:** Deprecated in SDK 53, use expo-audio
-- **copilot() HOC:** Deprecated in v3, use CopilotStep component
-- **Firebase for therapy apps:** RLS harder to configure, NoSQL poor fit for relational data
+- **djangorestframework-jwt (jpadilla):** Unmaintained since 2020, use simplejwt instead
+- **django-rest-framework-simplejwt before v5:** Lacks important security features
+- **InMemoryChannelLayer in production:** Only for testing, no persistence or scaling
 
 ---
 
@@ -758,22 +1154,12 @@ export function TutorialScreen() {
 - **Ethical position:** Dual consent is mandatory for relationship safety
 - Recording without partner consent could enable abuse scenarios
 
-**Key considerations:**
-- Store consent records with timestamps
-- Both partners must explicitly consent before each recording session
-- Consent can be withdrawn at any time
-- If consent denied, recording cannot proceed (text input only)
-
 ### PIPA Compliance (개인정보보호법)
-
-**2025 Updates:**
-- Data portability rights effective March 13, 2025
-- Foreign companies need domestic representative by October 2, 2025
 
 **App requirements:**
 - Clear privacy notice in Korean
-- Explicit consent for data collection
-- Data encryption at rest (AES-256 via Supabase)
+- Explicit consent for data collection (disclaimer)
+- Data encryption at rest (AES-256 via djfernet)
 - User data deletion capability
 - Consent records with version tracking
 
@@ -783,52 +1169,52 @@ export function TutorialScreen() {
 
 Things that couldn't be fully resolved:
 
-1. **Email verification flow**
-   - What we know: Supabase requires email verification by default; can disable for testing
-   - What's unclear: Best UX for verification in mobile app (deep link back to app?)
-   - Recommendation: Enable verification in production, implement deep link handler for verification links
+1. **WebSocket reconnection strategy**
+   - What we know: Django Channels handles connections well, but mobile networks are unreliable
+   - What's unclear: Best reconnection backoff strategy for mobile apps
+   - Recommendation: Implement exponential backoff (1s, 2s, 4s, 8s, max 30s) with jitter
 
-2. **Offline session behavior**
-   - What we know: `startAutoRefresh()` can clear session when offline
-   - What's unclear: Exact conditions that trigger session loss
-   - Recommendation: Add network state check before calling `startAutoRefresh()`, test thoroughly
+2. **Push notification for partner connection**
+   - What we know: Need to notify partner when connected or consent requested
+   - What's unclear: Best push notification service integration (FCM, APNs)
+   - Recommendation: Implement in Phase 2, use in-app polling initially
 
-3. **Partner invite link for non-installed apps**
-   - What we know: Deep links only work if app installed
-   - What's unclear: Whether to implement universal links or just show fallback page
-   - Recommendation: Implement fallback web page with app store links; consider universal links for v2
+3. **Email verification UX for mobile**
+   - What we know: django-allauth requires email verification by default
+   - What's unclear: Best way to handle verification link on mobile (deep link back?)
+   - Recommendation: Consider disabling for MVP, implement deep link handler later
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- [Supabase Auth React Native Quickstart](https://supabase.com/docs/guides/auth/quickstarts/react-native)
+- [djangorestframework-simplejwt Documentation](https://django-rest-framework-simplejwt.readthedocs.io/)
+- [Django Channels Documentation](https://channels.readthedocs.io/en/latest/)
+- [dj-rest-auth Documentation](https://dj-rest-auth.readthedocs.io/)
+- [Django REST Framework Authentication](https://www.django-rest-framework.org/api-guide/authentication/)
 - [Expo SecureStore Documentation](https://docs.expo.dev/versions/latest/sdk/securestore/)
-- [Expo Linking Documentation](https://docs.expo.dev/linking/into-your-app/)
-- [Supabase RLS Documentation](https://supabase.com/docs/guides/database/postgres/row-level-security)
-- [react-native-copilot GitHub](https://github.com/mohebifar/react-native-copilot)
 
 ### Secondary (MEDIUM confidence)
-- [Expo + Supabase User Management Tutorial](https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native)
-- [Korea PIPA 2025 Updates](https://crossborderadvisorysolutions.com/personal-information-protection-act-pipa-updates-2025/)
-- [Korean 통신비밀보호법 Summary](https://www.haeonlaw.com/guide/view/39-%ED%97%88%EB%9D%BD%EB%B0%9B%EC%A7%80_%EC%95%8A%EC%9D%80_%EC%A0%84%ED%99%94_%EB%85%B9%EC%9D%8C_%EB%B6%88%EB%B2%95_%EC%95%84%EB%8B%8C%EA%B0%80%EC%9A%94)
-- [Supabase RLS Best Practices 2025](https://vibeappscanner.com/supabase-row-level-security)
+- [Django Channels Redis GitHub](https://github.com/django/channels_redis)
+- [djfernet GitHub](https://github.com/yourlabs/djfernet)
+- [Django Official Daphne Deployment](https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/daphne/)
+- [Django Custom User Model](https://docs.djangoproject.com/en/5.0/topics/auth/customizing/)
 
 ### Tertiary (LOW confidence)
-- WebSearch results for dual consent UI patterns (no authoritative source found)
-- WebSearch results for invite code generation patterns
+- WebSearch results for Django Channels JWT middleware patterns
+- WebSearch results for mobile JWT token refresh patterns
 
 ---
 
 ## Metadata
 
 **Confidence breakdown:**
-- Standard stack: HIGH - All libraries are official Expo/Supabase recommendations
-- Architecture: HIGH - Patterns verified against official documentation
-- Security: HIGH - Based on official docs and known CVEs
+- Standard stack: HIGH - All libraries are well-maintained, documented, Django ecosystem standards
+- Architecture patterns: HIGH - Based on official documentation and common patterns
+- Security: HIGH - Based on official docs and security best practices
 - Korean legal: MEDIUM - Based on web sources, recommend legal review
-- UI patterns (coach marks, consent): MEDIUM - Library docs verified, custom UI patterns extrapolated
+- Mobile integration: MEDIUM - expo-secure-store documented, but integration patterns extrapolated
 
 **Research date:** 2026-01-23
 **Valid until:** 2026-02-23 (30 days - stable domain)
