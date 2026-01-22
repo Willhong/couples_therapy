@@ -33,7 +33,7 @@ CouplesAI delivers AI-powered couples therapy through four phases: establishing 
 Plans:
 - [x] 01-01-PLAN.md — Django backend: project setup, models, JWT auth (Wave 1)
 - [x] 01-02-PLAN.md — Expo frontend: project setup, auth screens (Wave 2)
-- [ ] 01-03-PLAN.md — Partner invitation: deep links, code generation (Wave 3)
+- [x] 01-03-PLAN.md — Partner invitation: deep links, code generation (Wave 3)
 - [ ] 01-04-PLAN.md — Tutorial + recording consent with WebSocket (Wave 4)
 
 ### Phase 2: Core Reframing
@@ -92,7 +92,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Safety | 2/4 | In progress | - |
+| 1. Foundation & Safety | 3/4 | In progress | - |
 | 2. Core Reframing | 0/3 | Not started | - |
 | 3. Audio Pipeline | 0/2 | Not started | - |
 | 4. Partner & Engagement | 0/2 | Not started | - |
