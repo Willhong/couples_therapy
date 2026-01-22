@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',  # Required by dj_rest_auth.registration
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'channels',
@@ -202,6 +203,7 @@ ACCOUNT_LOGIN_METHODS = {'email'}  # Use email for login
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # Required signup fields
 ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Set to 'mandatory' for production
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # No username field in custom User model
 
 
 # Fernet encryption key for djfernet
