@@ -10,31 +10,31 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 1 of 4 (Foundation & Safety)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-01-23 - Roadmap created
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-23 - Completed 01-01-PLAN.md (Django Backend Foundation)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 13 min
+- Total execution time: 13 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Foundation & Safety | 0/3 | - | - |
+| 1. Foundation & Safety | 1/3 | 13m | 13m |
 | 2. Core Reframing | 0/3 | - | - |
 | 3. Audio Pipeline | 0/2 | - | - |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: -
-- Trend: N/A (no data yet)
+- Last 5 plans: 13m
+- Trend: N/A (need more data)
 
 *Updated after each plan completion*
 
@@ -45,7 +45,12 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- None yet (project just initialized)
+| Decision | Rationale | Phase |
+|----------|-----------|-------|
+| Email-only auth (no username) | Simpler UX, removed username field entirely | 01-01 |
+| Custom RegisterSerializer | dj-rest-auth's RegisterSerializer requires username | 01-01 |
+| fernet_fields for encryption | djfernet package imports as fernet_fields | 01-01 |
+| Korean error messages in API | User-facing errors in Korean as per CONTEXT.md | 01-01 |
 
 ### Pending Todos
 
@@ -61,8 +66,11 @@ None yet.
 - Prompt engineering for non-judgmental reframing needs iteration
 - Cultural adaptation for Korean communication styles (nunchi) needs deeper research
 
+**From 01-01 Execution:**
+- dj-rest-auth has deprecation warnings about allauth settings (library issue, not blocking)
+
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Roadmap created, ready to plan Phase 1
+Stopped at: Completed 01-01-PLAN.md (Django Backend Foundation)
 Resume file: None
