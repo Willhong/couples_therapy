@@ -21,4 +21,5 @@ urlpatterns = [
 
     # App endpoints
     path('api/v1/couples/', include('apps.couples.urls')),
+    path('api/v1/consents/', include('apps.consents.urls')),
 ]

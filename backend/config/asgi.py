@@ -1,5 +1,5 @@
 """
-ASGI config for config project.
+ASGI config for couples_therapy project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -21,16 +21,14 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 
 from apps.core.middleware import JWTAuthMiddlewareStack
-
-# WebSocket URL patterns will be added when consumers are created
-websocket_urlpatterns = []
+from apps.consents import routing as consent_routing
 
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
     'websocket': AllowedHostsOriginValidator(
         JWTAuthMiddlewareStack(
             URLRouter(
-                websocket_urlpatterns
+                consent_routing.websocket_urlpatterns
             )
         )
     ),
