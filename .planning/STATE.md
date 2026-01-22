@@ -10,31 +10,31 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 1 of 4 (Foundation & Safety)
-Plan: 1 of 3 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 01-01-PLAN.md (Django Backend Foundation)
+Last activity: 2026-01-23 - Completed 01-02-PLAN.md (Expo Mobile Project)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 13 min
-- Total execution time: 13 min
+- Total plans completed: 2
+- Average duration: 11.5 min
+- Total execution time: 23 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Foundation & Safety | 1/3 | 13m | 13m |
+| 1. Foundation & Safety | 2/4 | 23m | 11.5m |
 | 2. Core Reframing | 0/3 | - | - |
 | 3. Audio Pipeline | 0/2 | - | - |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 13m
-- Trend: N/A (need more data)
+- Last 5 plans: 13m, 10m
+- Trend: Improving
 
 *Updated after each plan completion*
 
@@ -51,6 +51,9 @@ Recent decisions affecting current work:
 | Custom RegisterSerializer | dj-rest-auth's RegisterSerializer requires username | 01-01 |
 | fernet_fields for encryption | djfernet package imports as fernet_fields | 01-01 |
 | Korean error messages in API | User-facing errors in Korean as per CONTEXT.md | 01-01 |
+| Expo SDK 53 with expo-router | Latest stable, file-based routing, typed routes | 01-02 |
+| expo-secure-store for JWT | Hardware-backed storage (Keychain/Keystore) | 01-02 |
+| Context API for auth state | Simpler than Redux for single concern | 01-02 |
 
 ### Pending Todos
 
@@ -72,5 +75,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 01-01-PLAN.md (Django Backend Foundation)
+Stopped at: Completed 01-02-PLAN.md (Expo Mobile Project)
 Resume file: None
