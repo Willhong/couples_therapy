@@ -21,19 +21,20 @@ CouplesAI delivers AI-powered couples therapy through four phases: establishing 
 **Goal**: Users can securely create accounts, link with partners, and trust their sensitive data is protected. Legal and ethical safeguards are in place before any therapy features.
 **Depends on**: Nothing (first phase)
 **Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, SAFE-01, SAFE-03, SAFE-04 (SAFE-02 deferred)
+**Stack**: Django 5.x + DRF (backend), Expo SDK 53+ (mobile)
 **Success Criteria** (what must be TRUE):
   1. User can create account with email/password and stay logged in across app restarts
   2. User can generate invite code and link with partner (verified connection visible to both)
   3. User sees and accepts "not therapy replacement" disclaimer before using app
   4. Recording consent prompt appears before any audio capture with both partners' explicit agreement
   5. User completes mandatory tutorial (coach-mark tour) after onboarding
-**Plans**: 4 plans in 3 waves
+**Plans**: 4 plans in 4 waves
 
 Plans:
-- [ ] 01-01-PLAN.md — Project setup & Supabase infrastructure (Wave 1)
-- [ ] 01-02-PLAN.md — Authentication UI with disclaimer (Wave 2)
-- [ ] 01-03-PLAN.md — Partner invitation system (Wave 2)
-- [ ] 01-04-PLAN.md — Tutorial & recording consent (Wave 3)
+- [ ] 01-01-PLAN.md — Django backend: project setup, models, JWT auth (Wave 1)
+- [ ] 01-02-PLAN.md — Expo frontend: project setup, auth screens (Wave 2)
+- [ ] 01-03-PLAN.md — Partner invitation: deep links, code generation (Wave 3)
+- [ ] 01-04-PLAN.md — Tutorial + recording consent with WebSocket (Wave 4)
 
 ### Phase 2: Core Reframing
 **Goal**: Users can log conflicts via text chat and receive AI-generated perspective reframing that helps them understand how their partner might have heard their words.
@@ -98,6 +99,6 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 
 ---
 *Roadmap created: 2026-01-23*
-*Phase 1 planned: 2026-01-23*
+*Phase 1 re-planned: 2026-01-23 (Django backend)*
 *Depth: quick (4 phases)*
 *Coverage: 32/32 v1 requirements mapped*
