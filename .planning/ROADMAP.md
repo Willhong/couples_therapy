@@ -10,7 +10,7 @@ CouplesAI delivers AI-powered couples therapy through four phases: establishing 
 - Integer phases (1, 2, 3, 4): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation & Safety** - Secure auth, partner linking, abuse screening, data encryption
+- [x] **Phase 1: Foundation & Safety** - Secure auth, partner linking, abuse screening, data encryption
 - [ ] **Phase 2: Core Reframing** - Text-based conflict logging with AI perspective reframing
 - [ ] **Phase 3: Audio Pipeline** - Recording, transcription, speaker separation, audio analysis
 - [ ] **Phase 4: Partner & Engagement** - Sharing features, cool-down tools, communication exercises
@@ -92,7 +92,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Safety | 4/4 | Awaiting verification | - |
+| 1. Foundation & Safety | 4/4 | ✓ Complete | 2026-01-23 |
 | 2. Core Reframing | 0/3 | Not started | - |
 | 3. Audio Pipeline | 0/2 | Not started | - |
 | 4. Partner & Engagement | 0/2 | Not started | - |
