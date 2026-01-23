@@ -1,7 +1,7 @@
 /**
  * Chat Screen component
  * Main chat interface using react-native-gifted-chat
- * Note: "관점 분석 보기" button will be added in 02-05
+ * Includes "관점 분석 보기" button on AI messages with reframing data
  */
 import React, { useState, useCallback } from 'react';
 import {
@@ -26,12 +26,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { useChat } from '../hooks/useChat';
 import { SuggestionChips } from './SuggestionChips';
 import { AIThinkingIndicator } from './AIThinkingIndicator';
+import { ReframingData, GiftedMessage } from '../types';
 
 interface Props {
   conversationId?: string;
+  onOpenReframing?: (reframingData: ReframingData, messageId: string) => void;
 }
 
-export function ChatScreen({ conversationId }: Props): React.ReactElement {
+export function ChatScreen({
+  conversationId,
+  onOpenReframing,
+}: Props): React.ReactElement {
   const [inputText, setInputText] = useState('');
   const { messages, loading, isStreaming, sendMessage, stopStreaming } =
     useChat(conversationId || null);
@@ -50,20 +55,42 @@ export function ChatScreen({ conversationId }: Props): React.ReactElement {
   }, []);
 
   const renderBubble = useCallback(
-    (props: BubbleProps<IMessage>) => (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          left: { backgroundColor: '#F3F4F6' },
-          right: { backgroundColor: '#6B7FD7' },
-        }}
-        textStyle={{
-          left: { color: '#1F2937' },
-          right: { color: '#FFFFFF' },
-        }}
-      />
-    ),
-    []
+    (props: BubbleProps<IMessage>) => {
+      const currentMessage = props.currentMessage as GiftedMessage;
+      const isAI = currentMessage?.user._id === 'ai';
+      const hasReframing = currentMessage?.reframingData;
+
+      return (
+        <View>
+          <Bubble
+            {...props}
+            wrapperStyle={{
+              left: { backgroundColor: '#F3F4F6' },
+              right: { backgroundColor: '#6B7FD7' },
+            }}
+            textStyle={{
+              left: { color: '#1F2937' },
+              right: { color: '#FFFFFF' },
+            }}
+          />
+          {isAI && hasReframing && onOpenReframing && (
+            <TouchableOpacity
+              style={styles.viewReframingButton}
+              onPress={() =>
+                onOpenReframing(
+                  currentMessage.reframingData!,
+                  String(currentMessage._id)
+                )
+              }
+            >
+              <Text style={styles.viewReframingText}>관점 분석 보기</Text>
+              <Ionicons name="chevron-forward" size={16} color="#6B7FD7" />
+            </TouchableOpacity>
+          )}
+        </View>
+      );
+    },
+    [onOpenReframing]
   );
 
   const renderFooter = useCallback(() => {
@@ -178,5 +205,17 @@ const styles = StyleSheet.create({
     color: '#EF4444',
     marginLeft: 4,
     fontSize: 14,
+  },
+  viewReframingButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 12,
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  viewReframingText: {
+    fontSize: 13,
+    color: '#6B7FD7',
+    fontWeight: '500',
   },
 });
