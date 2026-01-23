@@ -6,7 +6,13 @@ import { usePartner } from '@/hooks/usePartner';
 
 /**
  * Root index component
- * Handles initial routing based on authentication and partner connection state
+ * Handles initial routing based on authentication and onboarding state
+ *
+ * Onboarding flow:
+ * 1. Sign up/in -> questionnaire (profile & goals)
+ * 2. Questionnaire complete -> partner-link
+ * 3. Partner connected -> tutorial
+ * 4. Tutorial complete -> home
  */
 export default function Index(): React.ReactElement {
   const { user, loading: authLoading } = useAuth();
@@ -26,9 +32,14 @@ export default function Index(): React.ReactElement {
     return <Redirect href="/(auth)/sign-up" />;
   }
 
-  // User exists but hasn't completed onboarding (no partner and not skipped)
-  // Check if partner connection is needed
-  if (!user.onboarding_completed && connectionStatus === 'none') {
+  // User exists but hasn't completed onboarding questionnaire
+  // This is the first step after sign up
+  if (!user.onboarding_completed) {
+    return <Redirect href="/onboarding/questionnaire" />;
+  }
+
+  // Onboarding complete but partner not yet connected
+  if (connectionStatus === 'none') {
     return <Redirect href="/onboarding/partner-link" />;
   }
 

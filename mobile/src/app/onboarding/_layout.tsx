@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 
 /**
  * Onboarding stack layout
- * Contains partner invitation and tutorial screens
+ * Contains questionnaire, partner invitation and tutorial screens
  */
 export default function OnboardingLayout(): React.ReactElement {
   return (
@@ -14,6 +14,7 @@ export default function OnboardingLayout(): React.ReactElement {
         animation: 'slide_from_right',
       }}
     >
+      <Stack.Screen name="questionnaire" />
       <Stack.Screen name="partner-link" />
       <Stack.Screen name="tutorial" />
     </Stack>
