@@ -14,6 +14,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { usePartner } from '@/hooks/usePartner';
+import { useAuth } from '@/hooks/useAuth';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 
 /**
@@ -23,6 +24,7 @@ import { ProgressBar } from '@/components/onboarding/ProgressBar';
 export default function PartnerLinkScreen(): React.ReactElement {
   const router = useRouter();
   const params = useLocalSearchParams<{ code?: string }>();
+  const { user } = useAuth();
   const {
     connectionStatus,
     myInviteCode,
@@ -35,6 +37,11 @@ export default function PartnerLinkScreen(): React.ReactElement {
     clearError,
     refresh,
   } = usePartner();
+
+  // Determine next screen based on tutorial completion
+  const getNextScreen = () => {
+    return user?.tutorial_completed ? '/(main)/home' : '/onboarding/tutorial';
+  };
 
   const [inputCode, setInputCode] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -51,16 +58,16 @@ export default function PartnerLinkScreen(): React.ReactElement {
     }
   }, [params.code]);
 
-  // Auto-navigate to tutorial after successful connection
+  // Auto-navigate after successful connection
   useEffect(() => {
     if (connectionStatus === 'active' && couple?.partner) {
       // Small delay to show success state briefly
       const timer = setTimeout(() => {
-        router.replace('/onboarding/tutorial');
+        router.replace(getNextScreen() as any);
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [connectionStatus, couple?.partner, router]);
+  }, [connectionStatus, couple?.partner, router, user?.tutorial_completed]);
 
   // Poll for connection status when invite code is generated (for the code generator side)
   useEffect(() => {
@@ -151,15 +158,15 @@ export default function PartnerLinkScreen(): React.ReactElement {
     setSkipModalVisible(true);
   };
 
-  // Confirm skip and continue to tutorial
+  // Confirm skip and continue
   const handleConfirmSkip = () => {
     setSkipModalVisible(false);
-    router.replace('/onboarding/tutorial');
+    router.replace(getNextScreen() as any);
   };
 
-  // Continue to tutorial after successful connection
+  // Continue after successful connection
   const handleContinue = () => {
-    router.replace('/onboarding/tutorial');
+    router.replace(getNextScreen() as any);
   };
 
   // Format expiration time

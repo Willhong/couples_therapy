@@ -141,6 +141,8 @@ export function SignUpScreen(): React.ReactElement {
               placeholder="8자 이상 입력"
               placeholderTextColor="#9CA3AF"
               secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
               autoComplete="password-new"
             />
             {passwordError ? (
@@ -159,6 +161,8 @@ export function SignUpScreen(): React.ReactElement {
               placeholder="비밀번호를 다시 입력"
               placeholderTextColor="#9CA3AF"
               secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
               autoComplete="password-new"
             />
             {confirmError ? (

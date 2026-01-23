@@ -117,6 +117,8 @@ export function SignInScreen(): React.ReactElement {
               placeholder="비밀번호 입력"
               placeholderTextColor="#9CA3AF"
               secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
               autoComplete="password"
             />
           </View>

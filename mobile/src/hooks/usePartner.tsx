@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import { api, getApiErrorMessage } from '@/lib/api';
 import { createInviteLink } from '@/utils/deepLink';
+import { useAuth } from '@/hooks/useAuth';
 
 /**
  * Partner data
@@ -106,11 +107,36 @@ function getKoreanErrorMessage(error: unknown): string {
  * Partner provider component
  */
 export function PartnerProvider({ children }: PartnerProviderProps): React.ReactElement {
+  const { user } = useAuth();
+  const prevUserRef = useRef(user);
+
   const [couple, setCouple] = useState<Couple | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('none');
   const [myInviteCode, setMyInviteCode] = useState<InviteCode | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  /**
+   * Reset all partner state (called on logout)
+   */
+  const resetState = useCallback(() => {
+    setCouple(null);
+    setConnectionStatus('none');
+    setMyInviteCode(null);
+    setError(null);
+    setLoading(false);
+  }, []);
+
+  /**
+   * Reset state when user logs out
+   */
+  useEffect(() => {
+    // User was logged in but now logged out
+    if (prevUserRef.current && !user) {
+      resetState();
+    }
+    prevUserRef.current = user;
+  }, [user, resetState]);
 
   /**
    * Clear error state
