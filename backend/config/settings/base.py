@@ -7,8 +7,18 @@ This file contains settings common to all environments.
 from pathlib import Path
 from datetime import timedelta
 
+import environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Initialize environ
+env = environ.Env(
+    DEBUG=(bool, True),
+    LLM_PROVIDER=(str, 'openai'),
+    LLM_MAX_TOKENS=(int, 2048),
+    LLM_TEMPERATURE=(float, 0.7),
+)
 
 
 # Quick-start development settings - unsuitable for production
@@ -222,3 +232,28 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
     }
 }
+
+
+# LLM Configuration (LangChain + LangGraph)
+# Supported providers: "openai", "anthropic", "google"
+LLM_PROVIDER = env('LLM_PROVIDER', default='openai')
+
+# Model names per provider
+LLM_MODELS = {
+    'openai': {
+        'chat': env('OPENAI_CHAT_MODEL', default='gpt-4o'),
+        'summarization': env('OPENAI_SUMMARY_MODEL', default='gpt-4o-mini'),
+    },
+    'anthropic': {
+        'chat': env('ANTHROPIC_CHAT_MODEL', default='claude-sonnet-4-5-20250929'),
+        'summarization': env('ANTHROPIC_SUMMARY_MODEL', default='claude-haiku-3-5-20241022'),
+    },
+    'google': {
+        'chat': env('GOOGLE_CHAT_MODEL', default='gemini-2.0-flash'),
+        'summarization': env('GOOGLE_SUMMARY_MODEL', default='gemini-2.0-flash'),
+    },
+}
+
+# LLM parameters
+LLM_MAX_TOKENS = env.int('LLM_MAX_TOKENS', default=2048)
+LLM_TEMPERATURE = env.float('LLM_TEMPERATURE', default=0.7)
