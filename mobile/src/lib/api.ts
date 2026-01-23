@@ -4,6 +4,9 @@ import { TokenStorage } from './auth';
 // API base URL from environment variable with fallback
 export const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
 
+// WebSocket base URL (derived from API_URL)
+export const WS_BASE_URL = API_URL.replace(/^http/, 'ws');
+
 // Flag to prevent multiple simultaneous refresh attempts
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string) => void> = [];

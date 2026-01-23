@@ -22,13 +22,15 @@ from channels.security.websocket import AllowedHostsOriginValidator
 
 from apps.core.middleware import JWTAuthMiddlewareStack
 from apps.consents import routing as consent_routing
+from apps.chat import routing as chat_routing
 
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
     'websocket': AllowedHostsOriginValidator(
         JWTAuthMiddlewareStack(
             URLRouter(
-                consent_routing.websocket_urlpatterns
+                consent_routing.websocket_urlpatterns +
+                chat_routing.websocket_urlpatterns
             )
         )
     ),
