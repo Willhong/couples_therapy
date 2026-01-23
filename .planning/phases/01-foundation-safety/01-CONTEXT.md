@@ -52,6 +52,14 @@
 - 코치마크 투어 상세 UX
 - 오류 메시지 문구
 
+### 백엔드 스택 결정 (2026-01-23)
+- **선택:** Django 5.x + Django REST Framework
+- **이유:** 기존 Django 경험, 배포 환경 보유
+- **인증:** djangorestframework-simplejwt (JWT)
+- **실시간:** Django Channels (WebSocket) — 녹음 동의 동기화
+- **DB:** PostgreSQL + Django ORM
+- **Supabase 사용 안 함**
+
 </decisions>
 
 <specifics>
