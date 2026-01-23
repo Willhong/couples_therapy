@@ -40,18 +40,21 @@ Plans:
 **Goal**: Users can log conflicts via text chat and receive AI-generated perspective reframing that helps them understand how their partner might have heard their words.
 **Depends on**: Phase 1
 **Requirements**: RECR-01, RECR-03, RECR-04, REFR-01, REFR-02, REFR-03, REFR-04, ONBD-01, ONBD-02
+**Stack**: anthropic SDK (Claude API), react-native-gifted-chat, react-hook-form + zod
 **Success Criteria** (what must be TRUE):
   1. User can describe conflict situation in chat format and see conversation history
   2. User receives "how your partner might have heard this" reframing for each entry
   3. User receives concrete next-action suggestions (not generic advice)
   4. AI response never assigns blame or declares who is right/wrong
   5. User can share analysis with partner at chosen privacy level (full/summary/none)
-**Plans**: TBD
+**Plans**: 5 plans in 4 waves
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md — Backend models & core API for onboarding and chat (Wave 1)
+- [ ] 02-02-PLAN.md — Claude AI integration with streaming and context management (Wave 2)
+- [ ] 02-03-PLAN.md — Onboarding questionnaire UI for attachment style and goals (Wave 2)
+- [ ] 02-04-PLAN.md — Chat interface with streaming responses and suggestions (Wave 3)
+- [ ] 02-05-PLAN.md — Reframing modal and partner sharing with WebSocket (Wave 4)
 
 ### Phase 3: Audio Pipeline
 **Goal**: Users can record conflicts via voice and receive transcription with speaker-separated analysis, enabling capture of actual arguments for deeper insight.
@@ -93,12 +96,13 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Safety | 4/4 | ✓ Complete | 2026-01-23 |
-| 2. Core Reframing | 0/3 | Not started | - |
+| 2. Core Reframing | 0/5 | Planned | - |
 | 3. Audio Pipeline | 0/2 | Not started | - |
 | 4. Partner & Engagement | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
 *Phase 1 re-planned: 2026-01-23 (Django backend)*
+*Phase 2 planned: 2026-01-23 (5 plans in 4 waves)*
 *Depth: quick (4 phases)*
 *Coverage: 32/32 v1 requirements mapped*
