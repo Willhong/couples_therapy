@@ -5,36 +5,36 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** 갈등 상황에서 상대방의 관점을 이해하도록 돕는 리프레이밍
-**Current focus:** Phase 2 - Core Reframing (ready to plan)
+**Current focus:** Phase 2 - Core Reframing (in progress)
 
 ## Current Position
 
-Phase: 1 of 4 (Foundation & Safety) ✓ COMPLETE
-Plan: 4 of 4 in current phase
-Status: Human verified, ready for Phase 2
-Last activity: 2026-01-23 - Phase 1 human verification passed
+Phase: 2 of 4 (Core Reframing)
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-01-23 - Completed 02-01-PLAN.md
 
-Progress: [████░░░░░░] 36%
+Progress: [█████░░░░░] 45%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 8 min
-- Total execution time: 32 min
+- Total execution time: 39 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Foundation & Safety | 4/4 | 32m | 8m |
-| 2. Core Reframing | 0/3 | - | - |
+| 2. Core Reframing | 1/5 | 7m | 7m |
 | 3. Audio Pipeline | 0/2 | - | - |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 13m, 10m, 4m, 5m
-- Trend: Improving
+- Last 5 plans: 10m, 4m, 5m, 7m
+- Trend: Stable
 
 *Updated after each plan completion*
 
@@ -61,6 +61,10 @@ Recent decisions affecting current work:
 | Channel groups scoped to couple_id | Ensures messages only go to connected partners | 01-04 |
 | 5-minute consent expiration | Reasonable timeout for partner response | 01-04 |
 | No skip button on tutorial | Per CONTEXT.md - mandatory tutorial for all users | 01-04 |
+| drf-nested-routers for nested URLs | Clean /conversations/{id}/messages/ pattern | 02-01 |
+| Messages immutable (no update/delete) | Per CONTEXT.md - messages permanent for accountability | 02-01 |
+| UUID primary keys for chat models | Better for distributed systems and security | 02-01 |
+| Latest 50 messages pagination | Performance while maintaining usability | 02-01 |
 
 ### Pending Todos
 
@@ -82,5 +86,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 01-04-PLAN.md (awaiting human verification)
+Stopped at: Completed 02-01-PLAN.md
 Resume file: None
