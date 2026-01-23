@@ -33,6 +33,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
     enterCode,
     getInviteLink,
     clearError,
+    refresh,
   } = usePartner();
 
   const [inputCode, setInputCode] = useState('');
