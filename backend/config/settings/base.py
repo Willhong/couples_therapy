@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'apps.couples',
     'apps.consents',
     'apps.core',
+    'apps.onboarding',
 ]
 
 SITE_ID = 1  # Required for django-allauth
