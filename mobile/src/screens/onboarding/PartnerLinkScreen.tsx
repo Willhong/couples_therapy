@@ -50,6 +50,17 @@ export default function PartnerLinkScreen(): React.ReactElement {
     }
   }, [params.code]);
 
+  // Auto-navigate to tutorial after successful connection
+  useEffect(() => {
+    if (connectionStatus === 'active' && couple?.partner) {
+      // Small delay to show success state briefly
+      const timer = setTimeout(() => {
+        router.replace('/onboarding/tutorial');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [connectionStatus, couple?.partner, router]);
+
   // Handle code generation
   const handleGenerateCode = async () => {
     try {
