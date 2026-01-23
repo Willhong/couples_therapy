@@ -61,6 +61,24 @@ export default function PartnerLinkScreen(): React.ReactElement {
     }
   }, [connectionStatus, couple?.partner, router]);
 
+  // Poll for connection status when invite code is generated (for the code generator side)
+  useEffect(() => {
+    if (!myInviteCode || connectionStatus === 'active') {
+      return;
+    }
+
+    // Poll every 3 seconds to check if partner connected
+    const pollInterval = setInterval(async () => {
+      try {
+        await refresh();
+      } catch {
+        // Ignore errors during polling
+      }
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
+  }, [myInviteCode, connectionStatus, refresh]);
+
   // Handle code generation
   const handleGenerateCode = async () => {
     try {
