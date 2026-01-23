@@ -127,11 +127,11 @@ export function PartnerProvider({ children }: PartnerProviderProps): React.React
       setLoading(true);
       setError(null);
 
-      const response = await api.get<Couple | null>('/couples/');
+      const response = await api.get<{ couple: Couple | null }>('/couples/');
 
-      if (response.data && response.data.id) {
-        setCouple(response.data);
-        setConnectionStatus(response.data.status || 'active');
+      if (response.data.couple && response.data.couple.id) {
+        setCouple(response.data.couple);
+        setConnectionStatus(response.data.couple.status || 'active');
       } else {
         setCouple(null);
         setConnectionStatus('none');
@@ -176,9 +176,9 @@ export function PartnerProvider({ children }: PartnerProviderProps): React.React
     try {
       setError(null);
 
-      const response = await api.post<Couple>('/couples/invite/redeem/', { code });
+      const response = await api.post<{ message: string; couple: Couple }>('/couples/invite/redeem/', { code });
 
-      setCouple(response.data);
+      setCouple(response.data.couple);
       setConnectionStatus('active');
     } catch (err) {
       const koreanError = getKoreanErrorMessage(err);
