@@ -4,7 +4,14 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_nested import routers
 
-from .views import ConversationViewSet, MessageViewSet, SharedReframingViewSet
+from .views import (
+    ConversationViewSet,
+    MessageViewSet,
+    SharedReframingViewSet,
+    llm_info,
+    reframe_message,
+    stream_reframe,
+)
 
 # Main router for top-level resources
 router = DefaultRouter()
@@ -16,6 +23,12 @@ conversations_router = routers.NestedDefaultRouter(router, r'conversations', loo
 conversations_router.register(r'messages', MessageViewSet, basename='conversation-messages')
 
 urlpatterns = [
+    # LLM/Reframing endpoints
+    path('llm-info/', llm_info, name='llm-info'),
+    path('reframe/', reframe_message, name='reframe-message'),
+    path('stream-reframe/', stream_reframe, name='stream-reframe'),
+
+    # Router URLs
     path('', include(router.urls)),
     path('', include(conversations_router.urls)),
 ]
