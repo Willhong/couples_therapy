@@ -1,0 +1,373 @@
+/**
+ * ReframingModal component
+ * Displays structured reframing analysis with acknowledgment requirement
+ * Per CONTEXT.md: User must tap "I've read this" before closing
+ */
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Modal,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
+
+import { PerspectiveView } from './PerspectiveView';
+import { SuggestionList } from './SuggestionList';
+import { ReframingData } from '@/features/chat/types';
+
+interface Props {
+  visible: boolean;
+  data: ReframingData;
+  messageId: string;
+  onClose: () => void;
+  onShare: () => void;
+  onFollowUp: (prompt: string) => void;
+}
+
+export function ReframingModal({
+  visible,
+  data,
+  messageId,
+  onClose,
+  onShare,
+  onFollowUp,
+}: Props): React.ReactElement {
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const handleAcknowledge = () => {
+    setAcknowledged(true);
+  };
+
+  const handleClose = () => {
+    if (!acknowledged) {
+      Alert.alert(
+        '확인 필요',
+        '분석 내용을 읽으셨나요? "읽었습니다" 버튼을 눌러주세요.',
+        [{ text: '확인', style: 'default' }]
+      );
+      return;
+    }
+    setAcknowledged(false); // Reset for next open
+    onClose();
+  };
+
+  const handleCopy = async () => {
+    const text = `
+당신이 말한 것: ${data.what_you_said}
+
+상대방이 들었을 수 있는 것: ${data.how_they_heard}
+
+${data.how_you_heard_them ? `당신이 상대방의 말을 들은 방식: ${data.how_you_heard_them}\n\n` : ''}왜 이런 차이가 생겼을까요: ${data.why_the_gap}
+
+제안:
+${data.suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+    `.trim();
+
+    await Clipboard.setStringAsync(text);
+    Alert.alert('복사됨', '분석 내용이 클립보드에 복사되었습니다.');
+  };
+
+  const handleSave = () => {
+    setSaved(!saved);
+    // TODO: API call to save to collection
+  };
+
+  // Check for abuse flag
+  if (data.abuse_flag) {
+    return (
+      <Modal
+        visible={visible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <View style={styles.container}>
+          <View style={styles.abuseWarning}>
+            <Ionicons name="warning" size={48} color="#EF4444" />
+            <Text style={styles.abuseTitle}>안전이 우려됩니다</Text>
+            <Text style={styles.abuseText}>
+              말씀하신 내용에서 걱정되는 부분이 있습니다. 혼자 감당하지 않으셔도
+              됩니다.
+            </Text>
+            <View style={styles.resourceCard}>
+              <Text style={styles.resourceTitle}>도움받을 수 있는 곳</Text>
+              <Text style={styles.resourceText}>여성긴급전화 1366 (24시간)</Text>
+              <Text style={styles.resourceText}>경찰 112</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.acknowledgeButton}
+              onPress={onClose}
+            >
+              <Text style={styles.acknowledgeText}>확인했습니다</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+    >
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>관점 분석</Text>
+          <View style={styles.headerActions}>
+            <TouchableOpacity onPress={handleCopy} style={styles.iconButton}>
+              <Ionicons name="copy-outline" size={22} color="#6B7280" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSave} style={styles.iconButton}>
+              <Ionicons
+                name={saved ? 'heart' : 'heart-outline'}
+                size={22}
+                color={saved ? '#EF4444' : '#6B7280'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleClose}
+              style={styles.iconButton}
+              disabled={!acknowledged}
+            >
+              <Ionicons
+                name="close"
+                size={24}
+                color={acknowledged ? '#374151' : '#D1D5DB'}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Content */}
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {/* Acknowledgment from AI */}
+          {data.acknowledgment && (
+            <View style={styles.acknowledgmentCard}>
+              <Text style={styles.acknowledgmentText}>{data.acknowledgment}</Text>
+            </View>
+          )}
+
+          {/* What you said */}
+          <PerspectiveView
+            icon="chatbubble-outline"
+            title="당신이 말한 것"
+            content={data.what_you_said}
+            quotes={data.original_quotes}
+          />
+
+          {/* How they heard */}
+          <PerspectiveView
+            icon="ear-outline"
+            title="상대방이 들었을 수 있는 것"
+            content={data.how_they_heard}
+            highlight
+          />
+
+          {/* How you heard them (bidirectional) */}
+          {data.how_you_heard_them && (
+            <PerspectiveView
+              icon="swap-horizontal-outline"
+              title="당신이 상대방의 말을 들은 방식"
+              content={data.how_you_heard_them}
+            />
+          )}
+
+          {/* Why the gap */}
+          <PerspectiveView
+            icon="help-circle-outline"
+            title="왜 이런 차이가 생겼을까요"
+            content={data.why_the_gap}
+          />
+
+          {/* Suggestions */}
+          {data.suggestions.length > 0 && (
+            <SuggestionList suggestions={data.suggestions} />
+          )}
+        </ScrollView>
+
+        {/* Follow-up buttons */}
+        <View style={styles.followUpContainer}>
+          <TouchableOpacity
+            style={styles.followUpButton}
+            onPress={() => onFollowUp('이 부분에 대해 더 자세히 알려주세요')}
+          >
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={18}
+              color="#6B7FD7"
+            />
+            <Text style={styles.followUpText}>더 자세히</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.followUpButton}
+            onPress={() => onFollowUp('이 분석에 동의하지 않아요')}
+          >
+            <Ionicons name="hand-left-outline" size={18} color="#6B7FD7" />
+            <Text style={styles.followUpText}>동의하지 않아요</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Bottom actions */}
+        <View style={styles.bottomActions}>
+          {!acknowledged ? (
+            <TouchableOpacity
+              style={styles.acknowledgeButton}
+              onPress={handleAcknowledge}
+            >
+              <Text style={styles.acknowledgeText}>읽었습니다</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.shareButton} onPress={onShare}>
+              <Ionicons name="share-outline" size={20} color="#fff" />
+              <Text style={styles.shareText}>파트너와 공유하기</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  content: {
+    flex: 1,
+    padding: 16,
+  },
+  acknowledgmentCard: {
+    backgroundColor: '#EFF6FF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  acknowledgmentText: {
+    fontSize: 15,
+    color: '#1E40AF',
+    lineHeight: 22,
+  },
+  followUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  followUpButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginHorizontal: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#6B7FD7',
+  },
+  followUpText: {
+    fontSize: 14,
+    color: '#6B7FD7',
+    marginLeft: 6,
+  },
+  bottomActions: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  acknowledgeButton: {
+    backgroundColor: '#6B7FD7',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  acknowledgeText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  shareButton: {
+    backgroundColor: '#6B7FD7',
+    borderRadius: 12,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  shareText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  // Abuse warning styles
+  abuseWarning: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  abuseTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#EF4444',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  abuseText: {
+    fontSize: 16,
+    color: '#374151',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 24,
+  },
+  resourceCard: {
+    backgroundColor: '#FEF2F2',
+    borderRadius: 12,
+    padding: 16,
+    width: '100%',
+    marginBottom: 24,
+  },
+  resourceTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#991B1B',
+    marginBottom: 8,
+  },
+  resourceText: {
+    fontSize: 15,
+    color: '#7F1D1D',
+    marginBottom: 4,
+  },
+});
