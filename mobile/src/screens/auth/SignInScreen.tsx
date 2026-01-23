@@ -36,7 +36,8 @@ export function SignInScreen(): React.ReactElement {
 
     try {
       await signIn(email, password);
-      // Navigation is handled by the root layout based on auth state
+      // Navigate to index which will redirect based on user state
+      router.replace('/');
     } catch (err) {
       const message = err instanceof Error ? err.message : '로그인에 실패했습니다.';
 

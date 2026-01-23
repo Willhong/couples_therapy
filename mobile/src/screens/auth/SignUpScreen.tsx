@@ -68,7 +68,8 @@ export function SignUpScreen(): React.ReactElement {
     setLoading(true);
     try {
       await signUp(email, password, DISCLAIMER_VERSION);
-      // Navigation is handled by the root layout based on auth state
+      // Navigate to index which will redirect based on user state
+      router.replace('/');
     } catch (error) {
       const message = error instanceof Error ? error.message : '회원가입에 실패했습니다.';
 
