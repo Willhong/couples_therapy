@@ -1,18 +1,42 @@
-import React from 'react';
-import { Stack } from 'expo-router';
-
 /**
- * Main app layout (Phase 1: home only, no tabs)
- * Tabs will be added in later phases
+ * Main app layout with tab navigation
+ * Home and Chat tabs enabled
  */
+import React from 'react';
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
 export default function MainLayout(): React.ReactElement {
   return (
-    <Stack
+    <Tabs
       screenOptions={{
+        tabBarActiveTintColor: '#6B7FD7',
+        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E5E7EB',
+        },
         headerShown: false,
       }}
     >
-      <Stack.Screen name="home" />
-    </Stack>
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: '홈',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: '대화',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }
