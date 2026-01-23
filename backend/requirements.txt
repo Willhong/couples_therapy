@@ -1,5 +1,6 @@
 Django>=5.0,<6.0
 djangorestframework>=3.15
+drf-nested-routers>=0.94
 djangorestframework-simplejwt>=5.3
 dj-rest-auth[with_social]>=6.0
 django-allauth>=0.61
