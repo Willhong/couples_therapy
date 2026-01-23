@@ -126,7 +126,7 @@ function TutorialContent(): React.ReactElement {
     }
   };
 
-  // Start tutorial on mount
+  // Start tutorial on mount (only once)
   useEffect(() => {
     // Small delay to ensure layout is ready
     const timer = setTimeout(() => {
@@ -134,7 +134,8 @@ function TutorialContent(): React.ReactElement {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [start]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   // Listen for tutorial finish
   useEffect(() => {
@@ -147,7 +148,8 @@ function TutorialContent(): React.ReactElement {
     return () => {
       copilotEvents.off('stop', handleStop);
     };
-  }, [copilotEvents]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Set up listener only once
 
   return (
     <SafeAreaView style={styles.container}>
