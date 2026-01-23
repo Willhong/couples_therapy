@@ -10,30 +10,30 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 2 of 4 (Core Reframing)
-Plan: 1 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 02-01-PLAN.md
+Last activity: 2026-01-23 - Completed 02-03-PLAN.md
 
-Progress: [█████░░░░░] 45%
+Progress: [███████░░░] 64%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 7
 - Average duration: 8 min
-- Total execution time: 39 min
+- Total execution time: 55 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Foundation & Safety | 4/4 | 32m | 8m |
-| 2. Core Reframing | 1/5 | 7m | 7m |
+| 2. Core Reframing | 3/5 | 23m | 8m |
 | 3. Audio Pipeline | 0/2 | - | - |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 10m, 4m, 5m, 7m
+- Last 5 plans: 4m, 5m, 7m, 8m, 8m
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -65,6 +65,14 @@ Recent decisions affecting current work:
 | Messages immutable (no update/delete) | Per CONTEXT.md - messages permanent for accountability | 02-01 |
 | UUID primary keys for chat models | Better for distributed systems and security | 02-01 |
 | Latest 50 messages pagination | Performance while maintaining usability | 02-01 |
+| LangChain for unified LLM interface | Provider abstraction enables switching without code changes | 02-02 |
+| LangGraph StateGraph for reframing | Modular pipeline with conditional routing for safety | 02-02 |
+| Safety check routing (severe vs mild) | Severe cases get safety resources, mild get normal reframing | 02-02 |
+| 10 recent messages verbatim in context | Balance between context preservation and token cost | 02-02 |
+| SSE for streaming reframing | One-way streaming simpler than WebSocket for this use case | 02-02 |
+| @react-native-community/slider | Native slider component for attachment scale | 02-03 |
+| features/onboarding/ structure | Scalable feature-based organization | 02-03 |
+| Zod + @hookform/resolvers | Type-safe validation with TypeScript | 02-03 |
 
 ### Pending Todos
 
@@ -86,5 +94,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 02-01-PLAN.md
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
