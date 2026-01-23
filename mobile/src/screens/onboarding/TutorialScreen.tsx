@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
-  SafeAreaView,
   Alert,
+  Platform,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
   CopilotProvider,
@@ -96,12 +98,13 @@ function MockHomeLayout(): React.ReactElement {
  */
 function TutorialContent(): React.ReactElement {
   const router = useRouter();
-  const { start, copilotEvents } = useCopilot();
+  const { start, copilotEvents, currentStep } = useCopilot();
   const { markTutorialCompleted, loading } = useOnboarding();
   const [isCompleting, setIsCompleting] = useState(false);
+  const [tutorialStarted, setTutorialStarted] = useState(false);
 
   // Handle tutorial completion
-  const handleTutorialComplete = async () => {
+  const handleTutorialComplete = useCallback(async () => {
     if (isCompleting) return;
     setIsCompleting(true);
 
@@ -118,24 +121,25 @@ function TutorialContent(): React.ReactElement {
             text: '다시 시도',
             onPress: () => {
               setIsCompleting(false);
-              handleTutorialComplete();
             },
           },
         ]
       );
     }
-  };
+  }, [isCompleting, markTutorialCompleted, router]);
 
-  // Start tutorial on mount (only once)
+  // Auto-start tutorial on mount (only once)
   useEffect(() => {
-    // Small delay to ensure layout is ready
+    if (tutorialStarted) return;
+
+    // Delay to ensure layout is fully ready
     const timer = setTimeout(() => {
+      setTutorialStarted(true);
       start();
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
+  }, [tutorialStarted, start]);
 
   // Listen for tutorial finish
   useEffect(() => {
@@ -148,8 +152,7 @@ function TutorialContent(): React.ReactElement {
     return () => {
       copilotEvents.off('stop', handleStop);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Set up listener only once
+  }, [copilotEvents, handleTutorialComplete]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -160,6 +163,7 @@ function TutorialContent(): React.ReactElement {
         </Text>
       </View>
       <MockHomeLayout />
+
       {(loading || isCompleting) && (
         <View style={styles.loadingOverlay}>
           <Text style={styles.loadingText}>완료 처리 중...</Text>
@@ -175,6 +179,11 @@ function TutorialContent(): React.ReactElement {
  * CRITICAL: No skip button (mandatory per CONTEXT.md)
  */
 export default function TutorialScreen(): React.ReactElement {
+  // Android needs vertical offset adjustment for status bar
+  const androidOffset = Platform.OS === 'android'
+    ? -(StatusBar.currentHeight || 24)
+    : 0;
+
   return (
     <CopilotProvider
       labels={{
@@ -190,6 +199,7 @@ export default function TutorialScreen(): React.ReactElement {
       arrowColor="#FFFFFF"
       animated
       androidStatusBarVisible
+      verticalOffset={androidOffset}
     >
       <TutorialContent />
     </CopilotProvider>

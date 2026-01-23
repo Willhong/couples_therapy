@@ -5,9 +5,9 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
-  SafeAreaView,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { usePartner } from '@/hooks/usePartner';
@@ -77,6 +77,12 @@ export default function Home(): React.ReactElement {
     );
   };
 
+  // Handle sign out
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace('/(auth)/sign-in');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -86,7 +92,7 @@ export default function Home(): React.ReactElement {
             <Text style={styles.greeting}>안녕하세요,</Text>
             <Text style={styles.name}>{displayName}님</Text>
           </View>
-          <Pressable style={styles.settingsButton} onPress={signOut}>
+          <Pressable style={styles.settingsButton} onPress={handleSignOut}>
             <Text style={styles.settingsText}>로그아웃</Text>
           </Pressable>
         </View>

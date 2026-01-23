@@ -194,6 +194,7 @@ REST_AUTH = {
     'JWT_AUTH_HTTPONLY': False,  # Allow mobile app to receive refresh token
     'SESSION_LOGIN': False,  # Disable session auth for API
     'REGISTER_SERIALIZER': 'apps.users.serializers.CustomRegisterSerializer',
+    'USER_DETAILS_SERIALIZER': 'apps.users.serializers.UserSerializer',  # Custom user serializer with tutorial_completed
     'TOKEN_MODEL': None,  # We're using JWT only, no database tokens
 }
 

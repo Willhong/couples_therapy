@@ -57,6 +57,15 @@ class ConsentConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
+        # Request presence from existing members
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'presence_request',
+                'requester_id': self.user.id,
+            }
+        )
+
     async def disconnect(self, close_code):
         """Handle WebSocket disconnection."""
         if hasattr(self, 'room_group_name'):
@@ -226,6 +235,22 @@ class ConsentConsumer(AsyncJsonWebsocketConsumer):
             'type': 'user_left',
             'user_id': event['user_id'],
         })
+
+    async def presence_request(self, event):
+        """Respond to presence request from new user."""
+        # Don't respond to our own request
+        if event['requester_id'] == self.user.id:
+            return
+
+        # Send back our presence to the group
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'user_joined',
+                'user_id': self.user.id,
+                'email': self.user.email,
+            }
+        )
 
     # Database helpers
     @database_sync_to_async
