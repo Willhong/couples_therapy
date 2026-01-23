@@ -10,26 +10,26 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "expo": "~53.0.0",
-    "expo-checkbox": "~4.0.0",
-    "expo-clipboard": "~7.0.0",
-    "expo-linking": "~7.0.0",
-    "expo-router": "~4.0.0",
-    "expo-secure-store": "~14.0.0",
-    "expo-status-bar": "~2.2.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "react-native": "0.76.7",
+    "expo": "~54.0.0",
+    "expo-checkbox": "~4.1.4",
+    "expo-clipboard": "~7.1.5",
+    "expo-linking": "~7.1.7",
+    "expo-router": "~5.1.10",
+    "expo-secure-store": "~14.2.4",
+    "expo-status-bar": "~2.2.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-native": "^0.79.6",
     "react-native-copilot": "^3.0.0",
-    "react-native-safe-area-context": "~5.3.0",
-    "react-native-screens": "~4.7.0",
-    "react-native-svg": "15.8.0",
+    "react-native-safe-area-context": "^5.4.0",
+    "react-native-screens": "~4.11.1",
+    "react-native-svg": "^15.11.2",
     "react-native-url-polyfill": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@types/react": "~18.3.12",
-    "typescript": "~5.7.0"
+    "@types/react": "~19.0.10",
+    "typescript": "~5.8.3"
   },
   "private": true
 }
