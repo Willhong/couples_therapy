@@ -4,21 +4,27 @@ from .llm_service import (
     get_chat_model,
     get_summarization_model,
     get_provider_info,
+    LLMConfigurationError,
+)
+from .context_manager import ConversationContextManager
+from .reframing_graph import (
+    reframing_graph,
+    ReframingState,
+    run_reframing_pipeline,
+    stream_reframing_pipeline,
 )
 
 __all__ = [
+    # LLM service
     'get_chat_model',
     'get_summarization_model',
     'get_provider_info',
+    'LLMConfigurationError',
+    # Context manager
+    'ConversationContextManager',
+    # Reframing pipeline
+    'reframing_graph',
+    'ReframingState',
+    'run_reframing_pipeline',
+    'stream_reframing_pipeline',
 ]
-
-
-# Lazy imports for modules that may not exist yet during initial setup
-def __getattr__(name):
-    if name == 'ConversationContextManager':
-        from .context_manager import ConversationContextManager
-        return ConversationContextManager
-    if name == 'reframing_graph':
-        from .reframing_graph import reframing_graph
-        return reframing_graph
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
