@@ -34,11 +34,32 @@ export const api: AxiosInstance = axios.create({
   },
 });
 
+// Endpoints that don't require authentication
+const PUBLIC_ENDPOINTS = [
+  '/auth/registration/',
+  '/auth/token/',
+  '/auth/token/refresh/',
+];
+
+/**
+ * Check if the request URL is a public endpoint
+ */
+function isPublicEndpoint(url: string | undefined): boolean {
+  if (!url) return false;
+  return PUBLIC_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
+
 /**
  * Request interceptor - adds Authorization header with access token
+ * Skips adding token for public endpoints (registration, login, token refresh)
  */
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
+    // Skip adding token for public endpoints
+    if (isPublicEndpoint(config.url)) {
+      return config;
+    }
+
     const token = await TokenStorage.getAccessToken();
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
