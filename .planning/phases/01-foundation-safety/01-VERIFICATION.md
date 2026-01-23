@@ -41,6 +41,9 @@ score: 5/5 must-haves verified
 | Tutorial completion persistence | ✓ Pass | Fixed: USER_DETAILS_SERIALIZER in settings |
 | Partner online status sync | ✓ Pass | Fixed: presence_request broadcast |
 | Logout redirect | ✓ Pass | Fixed: router.replace after signOut |
+| Password input | ✓ Pass | Fixed: autoCapitalize="none" |
+| Partner state on logout | ✓ Pass | Fixed: usePartner resets on user change |
+| Partner link flow | ✓ Pass | Fixed: navigate to home if tutorial completed |
 
 ### Issues Found & Fixed During Verification
 
@@ -53,6 +56,9 @@ score: 5/5 must-haves verified
 | Partner B shows offline | No presence response on join | Added `presence_request` → `user_joined` response |
 | Logout stays on home | No navigation after signOut | Added `router.replace('/(auth)/sign-in')` |
 | SafeAreaView warning | Deprecated react-native import | Changed to react-native-safe-area-context |
+| Password first letter uppercase | Missing autoCapitalize prop | Added `autoCapitalize="none"` to password fields |
+| Partner state persists after logout | PartnerProvider not resetting | Added useEffect to reset on user change |
+| Partner link → tutorial loop | Always navigating to tutorial | Check tutorial_completed, go to home if done |
 
 ## Requirements Coverage
 
@@ -68,7 +74,7 @@ Note: SAFE-02 (abuse screening) deferred per ROADMAP.md
 
 **Phase 1 Foundation & Safety: PASSED**
 
-All 5 must-haves verified through code review and human testing. 7 issues discovered during human verification were fixed immediately.
+All 5 must-haves verified through code review and human testing. 10 issues discovered during human verification were fixed immediately.
 
 **Key deliverables working:**
 1. Email/password authentication with JWT token persistence
