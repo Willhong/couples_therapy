@@ -34,7 +34,7 @@ Plans:
 - [x] 01-01-PLAN.md — Django backend: project setup, models, JWT auth (Wave 1)
 - [x] 01-02-PLAN.md — Expo frontend: project setup, auth screens (Wave 2)
 - [x] 01-03-PLAN.md — Partner invitation: deep links, code generation (Wave 3)
-- [ ] 01-04-PLAN.md — Tutorial + recording consent with WebSocket (Wave 4)
+- [x] 01-04-PLAN.md — Tutorial + recording consent with WebSocket (Wave 4)
 
 ### Phase 2: Core Reframing
 **Goal**: Users can log conflicts via text chat and receive AI-generated perspective reframing that helps them understand how their partner might have heard their words.
@@ -92,7 +92,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Safety | 3/4 | In progress | - |
+| 1. Foundation & Safety | 4/4 | Awaiting verification | - |
 | 2. Core Reframing | 0/3 | Not started | - |
 | 3. Audio Pipeline | 0/2 | Not started | - |
 | 4. Partner & Engagement | 0/2 | Not started | - |
