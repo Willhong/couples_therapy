@@ -51,7 +51,7 @@ Recent decisions affecting current work:
 | Custom RegisterSerializer | dj-rest-auth's RegisterSerializer requires username | 01-01 |
 | fernet_fields for encryption | djfernet package imports as fernet_fields | 01-01 |
 | Korean error messages in API | User-facing errors in Korean as per CONTEXT.md | 01-01 |
-| Expo SDK 53 with expo-router | Latest stable, file-based routing, typed routes | 01-02 |
+| Expo SDK 54 with expo-router 6 | Upgraded for Expo Go compatibility, React 19.1, RN 0.81.5 | 01-02 |
 | expo-secure-store for JWT | Hardware-backed storage (Keychain/Keystore) | 01-02 |
 | Context API for auth state | Simpler than Redux for single concern | 01-02 |
 | expo-clipboard for copy | Expo SDK compatible clipboard | 01-03 |

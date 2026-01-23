@@ -20,13 +20,18 @@ affects: [01-03-PLAN, 01-04-PLAN, 02-core-reframing]
 # Tech tracking
 tech-stack:
   added:
-    - expo ~53.0.0
-    - expo-router ~4.0.0
-    - expo-secure-store ~14.0.0
-    - expo-checkbox ~4.0.0
+    - expo ~54.0.0
+    - expo-router ~6.0.22
+    - expo-secure-store ~15.0.8
+    - expo-checkbox ~5.0.8
+    - expo-clipboard ~8.0.8
+    - expo-linking ~8.0.11
+    - react 19.1.0
+    - react-native 0.81.5
     - axios ^1.6.0
     - react-native-copilot ^3.0.0
-    - react-native-svg 15.8.0
+    - react-native-svg 15.12.1
+    - babel-plugin-module-resolver (for @ path alias)
   patterns:
     - Expo Router with typed routes
     - Secure token storage (iOS Keychain, Android Keystore)
@@ -69,7 +74,9 @@ completed: 2026-01-23
 
 # Phase 1 Plan 02: Expo Mobile Project Setup Summary
 
-**Expo SDK 53 mobile app with JWT token storage in expo-secure-store, axios API client with automatic token refresh, and Korean sign-up/sign-in screens**
+**Expo SDK 54 mobile app with JWT token storage in expo-secure-store, axios API client with automatic token refresh, and Korean sign-up/sign-in screens**
+
+> **Note:** Originally built with SDK 53, upgraded to SDK 54 for Expo Go compatibility (2026-01-23)
 
 ## Performance
 
@@ -117,15 +124,17 @@ Each task was committed atomically:
 - `mobile/src/app/onboarding/tutorial.tsx` - Tutorial screen (placeholder)
 
 ## Decisions Made
-1. **Expo SDK 53:** Latest stable SDK with React Native 0.76.7 and new architecture support.
+1. **Expo SDK 54:** Upgraded from SDK 53 for Expo Go iOS compatibility. Uses React 19.1 and React Native 0.81.5.
 
-2. **expo-router over React Navigation:** Built-in file-based routing, typed routes, better integration with Expo ecosystem.
+2. **expo-router 6 over React Navigation:** Built-in file-based routing, typed routes, better integration with Expo ecosystem.
 
 3. **Context API over Redux:** Auth state is single-concern, Context API is simpler and sufficient.
 
-4. **TypeScript 5.7:** Updated from 5.3 for compatibility with expo/tsconfig.base module settings.
+4. **TypeScript 5.9:** Updated for compatibility with expo/tsconfig.base and React 19.
 
 5. **Korean UI text:** All user-facing strings in Korean per CONTEXT.md ("전문적이고 신뢰감 있는 톤").
+
+6. **babel-plugin-module-resolver:** Added for `@/` path alias support in Metro bundler.
 
 ## Deviations from Plan
 
@@ -155,10 +164,26 @@ Each task was committed atomically:
 - **Verification:** TypeScript compiles without errors
 - **Committed in:** 5fecf2d (Task 3 commit)
 
+**4. [Rule 3 - Blocking] Expo Go SDK version mismatch**
+- **Found during:** Phase 1 verification (user testing)
+- **Issue:** Expo Go app requires SDK 54, project was on SDK 53
+- **Fix:** Upgraded all Expo packages to SDK 54 compatible versions
+- **Files modified:** mobile/package.json, mobile/package-lock.json
+- **Verification:** App loads in Expo Go on iOS
+- **Committed in:** ea126d1, 562f5ff
+
+**5. [Rule 3 - Blocking] Path alias not working at runtime**
+- **Found during:** Phase 1 verification (user testing)
+- **Issue:** `@/` path aliases in imports not resolved by Metro bundler
+- **Fix:** Added babel-plugin-module-resolver with `@` -> `./src` mapping
+- **Files modified:** mobile/babel.config.js, mobile/package.json
+- **Verification:** App compiles and runs without import errors
+- **Committed in:** c6c68e1
+
 ---
 
-**Total deviations:** 3 auto-fixed (all Rule 3 - blocking issues)
-**Impact on plan:** All fixes were necessary to unblock development. No scope creep.
+**Total deviations:** 5 auto-fixed (all Rule 3 - blocking issues)
+**Impact on plan:** SDK upgrade required for Expo Go compatibility. No scope creep.
 
 ## Issues Encountered
 - npm commands not capturing output in Claude bash environment - resolved by using Node.js child_process
