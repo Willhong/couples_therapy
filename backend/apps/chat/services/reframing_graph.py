@@ -56,17 +56,35 @@ class ReframingState(TypedDict):
 
 def _parse_json_response(response: str) -> dict:
     """Parse JSON from LLM response, handling markdown code blocks."""
-    # Remove markdown code blocks if present
-    if response.startswith("```"):
-        lines = response.split("\n")
-        # Remove first and last lines (```json and ```)
-        lines = [l for l in lines[1:] if not l.startswith("```")]
-        response = "\n".join(lines)
+    import re
 
+    # Strip whitespace
+    response = response.strip()
+
+    # Remove markdown code blocks (```json ... ``` or ``` ... ```)
+    # Handle various formats: ```json, ```JSON, just ```
+    code_block_pattern = r'```(?:json|JSON)?\s*\n?(.*?)\n?```'
+    match = re.search(code_block_pattern, response, re.DOTALL)
+    if match:
+        response = match.group(1).strip()
+
+    # Try to find JSON object in the response
+    # Look for first { and last }
+    start = response.find('{')
+    end = response.rfind('}')
+
+    if start != -1 and end != -1 and end > start:
+        json_str = response[start:end + 1]
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            pass
+
+    # Try parsing the whole response as JSON
     try:
         return json.loads(response)
     except json.JSONDecodeError:
-        logger.warning(f"Failed to parse JSON response: {response[:100]}...")
+        logger.warning(f"Failed to parse JSON response: {response[:200]}...")
         return {}
 
 
