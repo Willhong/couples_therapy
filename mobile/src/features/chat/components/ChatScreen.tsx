@@ -3,7 +3,7 @@
  * Main chat interface using react-native-gifted-chat
  * Includes "관점 분석 보기" button on AI messages with reframing data
  */
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -27,6 +27,27 @@ import { useChat } from '../hooks/useChat';
 import { SuggestionChips } from './SuggestionChips';
 import { AIThinkingIndicator } from './AIThinkingIndicator';
 import { ReframingData, GiftedMessage } from '../types';
+
+// Static user object to prevent re-renders
+const CURRENT_USER = { _id: 'user' };
+
+// Static list view props
+const LIST_VIEW_PROPS = {
+  initialNumToRender: 20,
+  maxToRenderPerBatch: 10,
+  windowSize: 10,
+};
+
+// Static bubble styles
+const BUBBLE_WRAPPER_STYLE = {
+  left: { backgroundColor: '#F3F4F6' },
+  right: { backgroundColor: '#6B7FD7' },
+};
+
+const BUBBLE_TEXT_STYLE = {
+  left: { color: '#1F2937' },
+  right: { color: '#FFFFFF' },
+};
 
 interface Props {
   conversationId?: string;
@@ -64,14 +85,8 @@ export function ChatScreen({
         <View>
           <Bubble
             {...props}
-            wrapperStyle={{
-              left: { backgroundColor: '#F3F4F6' },
-              right: { backgroundColor: '#6B7FD7' },
-            }}
-            textStyle={{
-              left: { color: '#1F2937' },
-              right: { color: '#FFFFFF' },
-            }}
+            wrapperStyle={BUBBLE_WRAPPER_STYLE}
+            textStyle={BUBBLE_TEXT_STYLE}
           />
           {isAI && hasReframing && onOpenReframing && (
             <TouchableOpacity
@@ -143,14 +158,19 @@ export function ChatScreen({
     );
   }
 
+  // Memoize the text change handler
+  const handleInputTextChanged = useCallback((text: string) => {
+    setInputText(text);
+  }, []);
+
   return (
     <View style={styles.container}>
       <GiftedChat
         messages={messages as IMessage[]}
         onSend={onSend}
-        user={{ _id: 'user' }}
+        user={CURRENT_USER}
         text={inputText}
-        onInputTextChanged={setInputText}
+        onInputTextChanged={handleInputTextChanged}
         placeholder="갈등 상황을 설명해주세요..."
         renderBubble={renderBubble}
         renderFooter={renderFooter}
@@ -159,13 +179,7 @@ export function ChatScreen({
         locale="ko"
         inverted={true}
         alwaysShowSend
-        listViewProps={
-          {
-            initialNumToRender: 20,
-            maxToRenderPerBatch: 10,
-            windowSize: 10,
-          } as Record<string, unknown>
-        }
+        listViewProps={LIST_VIEW_PROPS}
       />
     </View>
   );
