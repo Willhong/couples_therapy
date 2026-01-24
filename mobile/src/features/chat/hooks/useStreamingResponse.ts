@@ -11,6 +11,7 @@ interface StreamResult {
   finalResponse: string;
   analysis?: ReframingData['analysis'];
   suggestions?: string[];
+  messageId?: string; // Database UUID for the AI message
 }
 
 interface UseStreamingResponseReturn {
@@ -80,6 +81,7 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
           finalResponse: data.final_response || '',
           analysis: data.analysis,
           suggestions: data.suggestions || [],
+          messageId: data.message_id, // Database UUID for sharing
         };
 
         setIsStreaming(false);

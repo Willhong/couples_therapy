@@ -128,8 +128,9 @@ export function useChat(conversationId: string | null): UseChatReturn {
 
             // Build AI message from result
             // Backend already saved it, we just need to display it
+            // Use actual database UUID from backend for sharing
             const aiMessage: ChatMessage = {
-              _id: `ai-${Date.now()}`,
+              _id: streamResult.messageId || `ai-${Date.now()}`,
               text: streamResult.finalResponse,
               createdAt: new Date(),
               user: { _id: 'ai', name: 'AI 코치' },
@@ -137,6 +138,7 @@ export function useChat(conversationId: string | null): UseChatReturn {
                 ? {
                     analysis: streamResult.analysis,
                     suggestions: streamResult.suggestions || [],
+                    is_abuse_detected: false,
                   }
                 : undefined,
             };
