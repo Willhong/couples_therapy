@@ -54,7 +54,7 @@ export function ChatScreen({
   onOpenReframing,
 }: Props): React.ReactElement {
   const [inputText, setInputText] = useState('');
-  const { messages, loading, isStreaming, sendMessage, stopStreaming } =
+  const { messages, loading, isTyping, sendMessage, stopStreaming } =
     useChat(conversationId || null);
 
   const onSend = useCallback(
@@ -104,7 +104,7 @@ export function ChatScreen({
   );
 
   const renderFooter = useCallback(() => {
-    if (isStreaming) {
+    if (isTyping) {
       return (
         <View style={styles.streamingFooter}>
           <AIThinkingIndicator />
@@ -116,33 +116,33 @@ export function ChatScreen({
       );
     }
     return null;
-  }, [isStreaming, stopStreaming]);
+  }, [isTyping, stopStreaming]);
 
   const renderInputToolbar = useCallback(
     (props: InputToolbarProps<IMessage>) => (
       <View>
-        {!isStreaming && (
+        {!isTyping && (
           <SuggestionChips onSelect={handleSuggestionSelect} />
         )}
         <InputToolbar {...props} containerStyle={styles.inputToolbar} />
       </View>
     ),
-    [isStreaming, handleSuggestionSelect]
+    [isTyping, handleSuggestionSelect]
   );
 
   const renderSend = useCallback(
     (props: SendProps<IMessage>) => (
-      <Send {...props} disabled={isStreaming}>
+      <Send {...props} disabled={isTyping}>
         <View style={styles.sendButton}>
           <Ionicons
             name="send"
             size={24}
-            color={isStreaming ? '#D1D5DB' : '#6B7FD7'}
+            color={isTyping ? '#D1D5DB' : '#6B7FD7'}
           />
         </View>
       </Send>
     ),
-    [isStreaming]
+    [isTyping]
   );
 
   if (loading) {

@@ -1,8 +1,7 @@
 /**
  * Chat hook for managing conversation state and messages
  */
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { chatApi } from '../services/chatApi';
 import { useStreamingResponse } from './useStreamingResponse';
 import { Message, ReframingData, GiftedMessage } from '../types';
@@ -42,24 +41,27 @@ function toGiftedMessage(msg: Message): GiftedMessage {
 interface UseChatReturn {
   messages: GiftedMessage[];
   loading: boolean;
-  isStreaming: boolean;
-  streamedText: string;
+  isTyping: boolean;
   sendMessage: (text: string) => Promise<void>;
   stopStreaming: () => void;
   conversationId: string | null;
 }
 
+// Stable empty array reference to prevent re-renders
+const EMPTY_MESSAGES: GiftedMessage[] = [];
+
 export function useChat(conversationId: string | null): UseChatReturn {
-  const [messages, setMessages] = useState<GiftedMessage[]>([]);
+  const [messages, setMessages] = useState<GiftedMessage[]>(EMPTY_MESSAGES);
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
   >(conversationId);
   const [loading, setLoading] = useState(true);
-  const [streamingMessage, setStreamingMessage] =
-    useState<GiftedMessage | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
 
-  const { isStreaming, startStreaming, stopStreaming, streamedText } =
-    useStreamingResponse();
+  // Use ref to track message updates without triggering re-renders
+  const messagesRef = useRef<GiftedMessage[]>(EMPTY_MESSAGES);
+
+  const { startStreaming, stopStreaming: stopStream } = useStreamingResponse();
 
   // Load conversation history
   useEffect(() => {
@@ -72,6 +74,7 @@ export function useChat(conversationId: string | null): UseChatReturn {
       try {
         const data = await chatApi.getConversation(currentConversationId);
         const giftedMessages = data.messages.map(toGiftedMessage).reverse();
+        messagesRef.current = giftedMessages;
         setMessages(giftedMessages);
       } catch (error) {
         console.error('Failed to load conversation:', error);
@@ -83,6 +86,12 @@ export function useChat(conversationId: string | null): UseChatReturn {
     loadConversation();
   }, [currentConversationId]);
 
+  // Stop streaming handler
+  const stopStreaming = useCallback(() => {
+    stopStream();
+    setIsTyping(false);
+  }, [stopStream]);
+
   // Create or get conversation
   const ensureConversation = useCallback(async (): Promise<string> => {
     if (currentConversationId) return currentConversationId;
@@ -91,6 +100,14 @@ export function useChat(conversationId: string | null): UseChatReturn {
     setCurrentConversationId(newConversation.id);
     return newConversation.id;
   }, [currentConversationId]);
+
+  // Helper to update messages without triggering infinite loops
+  const addMessage = useCallback((message: GiftedMessage) => {
+    // Prepend message (GiftedChat expects newest first)
+    const newMessages = [message, ...messagesRef.current];
+    messagesRef.current = newMessages;
+    setMessages(newMessages);
+  }, []);
 
   // Send message
   const sendMessage = useCallback(
@@ -104,7 +121,7 @@ export function useChat(conversationId: string | null): UseChatReturn {
         createdAt: new Date(),
         user: { _id: 'user' },
       };
-      setMessages((prev) => GiftedChat.append(prev, [userMessage]));
+      addMessage(userMessage);
 
       // Save user message to backend
       try {
@@ -113,27 +130,17 @@ export function useChat(conversationId: string | null): UseChatReturn {
         console.error('Failed to save user message:', error);
       }
 
-      // Create placeholder AI message
-      const aiMessageId = `ai-${Date.now()}`;
-      setStreamingMessage({
-        _id: aiMessageId,
-        text: '',
-        createdAt: new Date(),
-        user: { _id: 'ai', name: 'AI 코치' },
-      });
+      // Show typing indicator
+      setIsTyping(true);
 
       try {
-        // Start streaming
+        // Start streaming (we don't show intermediate text, just the final result)
         await startStreaming(
           convId,
           text,
-          (chunk) => {
-            setStreamingMessage((prev) =>
-              prev ? { ...prev, text: prev.text + chunk } : null
-            );
-          },
+          undefined, // No chunk callback - prevents re-renders during streaming
           async (finalText) => {
-            setStreamingMessage(null);
+            setIsTyping(false);
 
             // Parse reframing data
             const reframingData = parseReframingResponse(finalText);
@@ -147,11 +154,11 @@ export function useChat(conversationId: string | null): UseChatReturn {
 
             // Add final AI message
             const aiMessage = toGiftedMessage(savedMessage);
-            setMessages((prev) => GiftedChat.append(prev, [aiMessage]));
+            addMessage(aiMessage);
           }
         );
       } catch (error) {
-        setStreamingMessage(null);
+        setIsTyping(false);
         // Show error in chat
         const errorMessage: GiftedMessage = {
           _id: `error-${Date.now()}`,
@@ -159,29 +166,16 @@ export function useChat(conversationId: string | null): UseChatReturn {
           createdAt: new Date(),
           user: { _id: 'system', name: '시스템' },
         };
-        setMessages((prev) => GiftedChat.append(prev, [errorMessage]));
+        addMessage(errorMessage);
       }
     },
-    [ensureConversation, startStreaming]
+    [ensureConversation, startStreaming, addMessage]
   );
 
-  // Combine messages with streaming message for display
-  // Memoize to prevent infinite re-renders
-  // IMPORTANT: Avoid GiftedChat.append() as it can cause infinite loops
-  // when combined with GiftedChat's componentDidUpdate internal state sync
-  const displayMessages = useMemo(() => {
-    if (streamingMessage) {
-      // Manually prepend streaming message (GiftedChat expects newest first)
-      return [streamingMessage, ...messages];
-    }
-    return messages;
-  }, [messages, streamingMessage]);
-
   return {
-    messages: displayMessages,
+    messages,
     loading,
-    isStreaming,
-    streamedText,
+    isTyping,
     sendMessage,
     stopStreaming,
     conversationId: currentConversationId,
