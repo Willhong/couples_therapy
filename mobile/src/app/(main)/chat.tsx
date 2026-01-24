@@ -2,48 +2,38 @@
  * Chat route - conflict logging with AI reframing
  * Wires ReframingModal and ShareModal with ChatScreen
  */
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { ChatScreen } from '@/features/chat/components/ChatScreen';
 import { ReframingModal } from '@/features/reframing/components/ReframingModal';
 import { ShareModal } from '@/features/sharing/components/ShareModal';
 import { useReframing } from '@/features/reframing/hooks/useReframing';
+import { usePartnerSharing } from '@/features/sharing/hooks/usePartnerSharing';
 import { ReframingData } from '@/features/chat/types';
 
 export default function ChatRoute(): React.ReactElement {
   const { currentReframing, openReframing, closeReframing, isVisible } =
     useReframing();
+  const { shareReframing, sharing } = usePartnerSharing();
   const [showShareModal, setShowShareModal] = useState(false);
 
-  const handleOpenReframing = useCallback(
-    (data: ReframingData, messageId: string) => {
-      openReframing(data, messageId);
-    },
-    [openReframing]
-  );
+  const handleOpenReframing = (data: ReframingData, messageId: string) => {
+    openReframing(data, messageId);
+  };
 
-  const handleShare = useCallback(() => {
+  const handleShare = () => {
     setShowShareModal(true);
-  }, []);
+  };
 
-  const handleShareSubmit = useCallback(
-    async (level: 'full' | 'summary' | 'none') => {
-      // TODO: Implement sharing when WebSocket is ready
-      console.log('Share:', currentReframing?.messageId, level);
-    },
-    [currentReframing?.messageId]
-  );
+  const handleShareSubmit = async (level: 'full' | 'summary' | 'none') => {
+    if (currentReframing && level !== 'none') {
+      await shareReframing(currentReframing.messageId, level);
+    }
+  };
 
-  const handleFollowUp = useCallback(
-    (prompt: string) => {
-      closeReframing();
-      // TODO: Send follow-up message to chat
-    },
-    [closeReframing]
-  );
-
-  const handleCloseShareModal = useCallback(() => {
-    setShowShareModal(false);
-  }, []);
+  const handleFollowUp = (prompt: string) => {
+    closeReframing();
+    // TODO: Send follow-up message to chat
+  };
 
   return (
     <>
@@ -62,9 +52,9 @@ export default function ChatRoute(): React.ReactElement {
 
       <ShareModal
         visible={showShareModal}
-        onClose={handleCloseShareModal}
+        onClose={() => setShowShareModal(false)}
         onShare={handleShareSubmit}
-        loading={false}
+        loading={sharing}
       />
     </>
   );
