@@ -150,6 +150,11 @@ export function ChatScreen({
     [isStreaming]
   );
 
+  // Memoize the text change handler - must be before early returns
+  const handleInputTextChanged = useCallback((text: string) => {
+    setInputText(text);
+  }, []);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -157,11 +162,6 @@ export function ChatScreen({
       </View>
     );
   }
-
-  // Memoize the text change handler
-  const handleInputTextChanged = useCallback((text: string) => {
-    setInputText(text);
-  }, []);
 
   return (
     <View style={styles.container}>
