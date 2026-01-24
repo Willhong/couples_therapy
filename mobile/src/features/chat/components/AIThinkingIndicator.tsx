@@ -1,16 +1,78 @@
 /**
  * AI Thinking Indicator component
  * Shows typing animation while AI is processing
+ * Custom implementation without external dependencies
  */
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { TypingAnimation } from 'react-native-typing-animation';
+import React, { useMemo, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 
 const THINKING_MESSAGES = [
   '상대방 관점을 분석하고 있어요...',
   '양측의 감정을 이해하고 있어요...',
   '소통 패턴을 살펴보고 있어요...',
 ];
+
+/**
+ * Custom typing dots animation
+ */
+function TypingDots(): React.ReactElement {
+  const dot1 = useRef(new Animated.Value(0)).current;
+  const dot2 = useRef(new Animated.Value(0)).current;
+  const dot3 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const createDotAnimation = (dotValue: Animated.Value, delay: number) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(dotValue, {
+            toValue: -6,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dotValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+    };
+
+    const animation = Animated.parallel([
+      createDotAnimation(dot1, 0),
+      createDotAnimation(dot2, 150),
+      createDotAnimation(dot3, 300),
+    ]);
+
+    animation.start();
+
+    return () => animation.stop();
+  }, [dot1, dot2, dot3]);
+
+  return (
+    <View style={dotStyles.container}>
+      <Animated.View style={[dotStyles.dot, { transform: [{ translateY: dot1 }] }]} />
+      <Animated.View style={[dotStyles.dot, { transform: [{ translateY: dot2 }] }]} />
+      <Animated.View style={[dotStyles.dot, { transform: [{ translateY: dot3 }] }]} />
+    </View>
+  );
+}
+
+const dotStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#6B7FD7',
+  },
+});
 
 export function AIThinkingIndicator(): React.ReactElement {
   const randomMessage = useMemo(
@@ -21,13 +83,7 @@ export function AIThinkingIndicator(): React.ReactElement {
   return (
     <View style={styles.container}>
       <View style={styles.bubble}>
-        <TypingAnimation
-          dotColor="#6B7FD7"
-          dotMargin={8}
-          dotAmplitude={3}
-          dotSpeed={0.15}
-          dotRadius={4}
-        />
+        <TypingDots />
       </View>
       <Text style={styles.statusText}>{randomMessage}</Text>
     </View>

@@ -6,6 +6,9 @@
 export { ChatScreen } from './components/ChatScreen';
 export { AIThinkingIndicator } from './components/AIThinkingIndicator';
 export { SuggestionChips } from './components/SuggestionChips';
+export { MessageBubble } from './components/MessageBubble';
+export { MessageList } from './components/MessageList';
+export { ChatInput } from './components/ChatInput';
 
 // Hooks
 export { useChat } from './hooks/useChat';
@@ -20,4 +23,5 @@ export type {
   Message,
   ReframingData,
   GiftedMessage,
+  ChatMessage,
 } from './types';

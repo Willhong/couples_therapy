@@ -41,3 +41,18 @@ export interface GiftedMessage {
   };
   reframingData?: ReframingData;
 }
+
+/**
+ * ChatMessage type for custom chat UI
+ * Simplified and cleaner than GiftedMessage
+ */
+export interface ChatMessage {
+  _id: string;
+  text: string;
+  createdAt: Date;
+  user: {
+    _id: 'user' | 'ai' | 'system';
+    name?: string;
+  };
+  reframingData?: ReframingData;
+}
