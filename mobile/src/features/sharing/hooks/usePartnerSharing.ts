@@ -1,10 +1,11 @@
 /**
  * usePartnerSharing hook
  * WebSocket connection for real-time sharing notifications
+ * Falls back to HTTP API when WebSocket is not available
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TokenStorage } from '@/lib/auth';
-import { WS_BASE_URL } from '@/lib/api';
+import { api, WS_BASE_URL } from '@/lib/api';
 
 interface SharedNotification {
   share_id: string;
@@ -98,18 +99,28 @@ export function usePartnerSharing(): UsePartnerSharingReturn {
       messageId: string,
       privacyLevel: 'full' | 'summary' | 'none'
     ): Promise<void> => {
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        throw new Error('연결되지 않았습니다');
-      }
-
       setSharing(true);
-      wsRef.current.send(
-        JSON.stringify({
-          action: 'share_reframing',
-          message_id: messageId,
-          privacy_level: privacyLevel,
-        })
-      );
+
+      try {
+        // Try WebSocket first if connected
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+          wsRef.current.send(
+            JSON.stringify({
+              action: 'share_reframing',
+              message_id: messageId,
+              privacy_level: privacyLevel,
+            })
+          );
+        } else {
+          // Fallback to HTTP API
+          await api.post('/chat/share/', {
+            message_id: messageId,
+            privacy_level: privacyLevel,
+          });
+        }
+      } finally {
+        setSharing(false);
+      }
     },
     []
   );

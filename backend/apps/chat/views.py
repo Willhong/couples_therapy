@@ -345,6 +345,84 @@ def save_reframing(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def share_reframing(request):
+    """Share a reframing with partner via HTTP API.
+
+    This endpoint is a fallback when WebSocket is not available.
+
+    Request body:
+        message_id: UUID of the message with reframing to share
+        privacy_level: 'full' or 'summary'
+
+    Returns:
+        The created SharedReframing object
+    """
+    from apps.couples.models import Couple
+
+    message_id = request.data.get('message_id')
+    privacy_level = request.data.get('privacy_level', 'full')
+
+    if not message_id:
+        return Response(
+            {'detail': 'message_id가 필요합니다.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if privacy_level not in ['full', 'summary']:
+        return Response(
+            {'detail': 'privacy_level은 full 또는 summary여야 합니다.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Find the message and verify user owns the conversation
+    try:
+        message = Message.objects.select_related('conversation').get(id=message_id)
+        if message.conversation.user != request.user:
+            return Response(
+                {'detail': '메시지를 찾을 수 없습니다.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+    except Message.DoesNotExist:
+        return Response(
+            {'detail': '메시지를 찾을 수 없습니다.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Verify message has reframing data
+    if not message.has_reframing:
+        return Response(
+            {'detail': '이 메시지에는 리프레이밍 데이터가 없습니다.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Find partner
+    user = request.user
+    couple = Couple.objects.filter(
+        (models.Q(user1=user) | models.Q(user2=user)),
+        status=Couple.Status.ACTIVE
+    ).first()
+
+    if not couple:
+        return Response(
+            {'detail': '연결된 파트너가 없습니다.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    partner = couple.user2 if couple.user1 == user else couple.user1
+
+    # Create shared reframing
+    shared = SharedReframing.objects.create(
+        message=message,
+        shared_by=user,
+        shared_with=partner,
+        privacy_level=privacy_level,
+    )
+
+    return Response(SharedReframingSerializer(shared).data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def stream_reframe(request):
     """Stream reframing response via Server-Sent Events (SSE).
 

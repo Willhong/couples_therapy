@@ -11,6 +11,7 @@ from .views import (
     llm_info,
     reframe_message,
     save_reframing,
+    share_reframing,
     stream_reframe,
 )
 
@@ -28,6 +29,7 @@ urlpatterns = [
     path('llm-info/', llm_info, name='llm-info'),
     path('reframe/', reframe_message, name='reframe-message'),
     path('save-reframing/', save_reframing, name='save-reframing'),
+    path('share/', share_reframing, name='share-reframing'),
     path('stream-reframe/', stream_reframe, name='stream-reframe'),
 
     # Router URLs
