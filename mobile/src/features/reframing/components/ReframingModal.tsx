@@ -18,6 +18,7 @@ import * as Clipboard from 'expo-clipboard';
 
 import { PerspectiveView } from './PerspectiveView';
 import { SuggestionList } from './SuggestionList';
+import { ShareModal, PrivacyLevel } from '@/features/sharing/components/ShareModal';
 import { ReframingData } from '@/features/chat/types';
 
 interface Props {
@@ -25,8 +26,9 @@ interface Props {
   data: ReframingData;
   messageId: string;
   onClose: () => void;
-  onShare: () => void;
+  onShareSubmit: (level: PrivacyLevel) => Promise<void>;
   onFollowUp: (prompt: string) => void;
+  sharing?: boolean;
 }
 
 export function ReframingModal({
@@ -34,11 +36,22 @@ export function ReframingModal({
   data,
   messageId,
   onClose,
-  onShare,
+  onShareSubmit,
   onFollowUp,
+  sharing,
 }: Props): React.ReactElement {
   const [acknowledged, setAcknowledged] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+
+  const handleShare = () => {
+    setShowShareModal(true);
+  };
+
+  const handleShareSubmit = async (level: PrivacyLevel) => {
+    await onShareSubmit(level);
+    setShowShareModal(false);
+  };
 
   const handleAcknowledge = () => {
     setAcknowledged(true);
@@ -236,12 +249,20 @@ export function ReframingModal({
               <Text style={styles.acknowledgeText}>읽었습니다</Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.shareButton} onPress={onShare}>
+            <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
               <Ionicons name="share-outline" size={20} color="#fff" />
               <Text style={styles.shareText}>파트너와 공유하기</Text>
             </TouchableOpacity>
           )}
         </View>
+
+        {/* ShareModal rendered inside ReframingModal to appear on top */}
+        <ShareModal
+          visible={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          onShare={handleShareSubmit}
+          loading={sharing}
+        />
       </View>
     </Modal>
   );
