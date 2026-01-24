@@ -4,6 +4,7 @@
  * Falls back to HTTP API when WebSocket is not available
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
+import axios from 'axios';
 import { TokenStorage } from '@/lib/auth';
 import { api, WS_BASE_URL } from '@/lib/api';
 
@@ -118,6 +119,12 @@ export function usePartnerSharing(): UsePartnerSharingReturn {
             privacy_level: privacyLevel,
           });
         }
+      } catch (error) {
+        // Extract error message from API response
+        if (axios.isAxiosError(error) && error.response?.data?.detail) {
+          throw new Error(error.response.data.detail);
+        }
+        throw error;
       } finally {
         setSharing(false);
       }

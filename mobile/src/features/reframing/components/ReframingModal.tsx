@@ -49,8 +49,15 @@ export function ReframingModal({
   };
 
   const handleShareSubmit = async (level: PrivacyLevel) => {
-    await onShareSubmit(level);
-    setShowShareModal(false);
+    try {
+      await onShareSubmit(level);
+      setShowShareModal(false);
+      Alert.alert('공유 완료', '파트너에게 공유되었습니다.');
+    } catch (error: unknown) {
+      setShowShareModal(false);
+      const err = error as Error;
+      Alert.alert('공유 실패', err.message || '공유 중 오류가 발생했습니다.');
+    }
   };
 
   const handleAcknowledge = () => {
