@@ -132,8 +132,8 @@ export function ChatScreen({
 
   const renderSend = useCallback(
     (props: SendProps<IMessage>) => (
-      <Send {...props} disabled={isTyping}>
-        <View style={styles.sendButton}>
+      <Send {...props}>
+        <View style={[styles.sendButton, isTyping && styles.sendButtonDisabled]}>
           <Ionicons
             name="send"
             size={24}
@@ -143,6 +143,17 @@ export function ChatScreen({
       </Send>
     ),
     [isTyping]
+  );
+
+  // Memoize textInputProps to prevent re-renders
+  const textInputProps = React.useMemo(
+    () => ({
+      value: inputText,
+      onChangeText: setInputText,
+      editable: !isTyping,
+      placeholder: '갈등 상황을 설명해주세요...',
+    }),
+    [inputText, isTyping]
   );
 
   if (loading) {
@@ -159,17 +170,14 @@ export function ChatScreen({
         messages={messages as IMessage[]}
         onSend={onSend}
         user={CURRENT_USER}
-        text={inputText}
-        onInputTextChanged={setInputText}
-        placeholder="갈등 상황을 설명해주세요..."
+        textInputProps={textInputProps}
         renderBubble={renderBubble}
         renderFooter={renderFooter}
         renderInputToolbar={renderInputToolbar}
         renderSend={renderSend}
         locale="ko"
-        inverted={true}
-        alwaysShowSend
-        listViewProps={LIST_VIEW_PROPS}
+        isInverted={true}
+        listProps={LIST_VIEW_PROPS}
       />
     </View>
   );
@@ -193,6 +201,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
     marginBottom: 5,
+  },
+  sendButtonDisabled: {
+    opacity: 0.5,
   },
   streamingFooter: {
     flexDirection: 'row',
