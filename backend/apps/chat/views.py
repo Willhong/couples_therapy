@@ -292,6 +292,59 @@ def _sync_sse_generator(user_message: str, conversation_context: str):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def save_reframing(request):
+    """Save AI reframing response after streaming completes.
+
+    This endpoint is called by the mobile app after stream_reframe completes
+    to persist the AI response.
+
+    Request body:
+        conversation_id: UUID of the conversation
+        content: The AI response text
+        reframing_data: Structured reframing data (analysis, suggestions)
+
+    Returns:
+        The saved message object
+    """
+    conversation_id = request.data.get('conversation_id')
+    content = request.data.get('content')
+    reframing_data = request.data.get('reframing_data')
+
+    if not conversation_id or not content:
+        return Response(
+            {'detail': 'conversation_id와 content가 필요합니다.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Verify user owns the conversation
+    try:
+        conversation = Conversation.objects.get(
+            id=conversation_id,
+            user=request.user
+        )
+    except Conversation.DoesNotExist:
+        return Response(
+            {'detail': '대화를 찾을 수 없습니다.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Save AI response
+    ai_msg = Message.objects.create(
+        conversation=conversation,
+        role=Message.Role.ASSISTANT,
+        content=content,
+        has_reframing=bool(reframing_data),
+        reframing_data=reframing_data,
+    )
+
+    # Update conversation timestamp
+    conversation.save()
+
+    return Response(MessageSerializer(ai_msg).data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def stream_reframe(request):
     """Stream reframing response via Server-Sent Events (SSE).
 

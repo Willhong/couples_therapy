@@ -30,7 +30,7 @@ export function ChatScreen({
   onOpenReframing,
 }: Props): React.ReactElement {
   const [inputText, setInputText] = useState('');
-  const { messages, loading, isTyping, sendMessage, stopStreaming } =
+  const { messages, loading, isTyping, statusMessage, sendMessage, stopStreaming } =
     useChat(conversationId || null);
 
   const handleSend = useCallback(
@@ -55,14 +55,14 @@ export function ChatScreen({
 
     return (
       <View style={styles.streamingFooter}>
-        <AIThinkingIndicator />
+        <AIThinkingIndicator statusMessage={statusMessage} />
         <TouchableOpacity style={styles.stopButton} onPress={stopStreaming}>
           <Ionicons name="stop-circle" size={24} color="#EF4444" />
           <Text style={styles.stopText}>중지</Text>
         </TouchableOpacity>
       </View>
     );
-  }, [isTyping, stopStreaming]);
+  }, [isTyping, statusMessage, stopStreaming]);
 
   if (loading) {
     return (

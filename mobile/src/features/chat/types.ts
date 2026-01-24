@@ -20,15 +20,24 @@ export interface Message {
   created_at: string;
 }
 
-export interface ReframingData {
-  acknowledgment: string;
-  what_you_said: string;
-  how_they_heard: string;
+/**
+ * Analysis data from AI reframing pipeline
+ */
+export interface ReframingAnalysis {
+  what_you_said?: string;
+  how_they_heard?: string;
   how_you_heard_them?: string;
-  why_the_gap: string;
-  suggestions: string[];
-  original_quotes: string[];
-  abuse_flag?: boolean;
+  why_the_gap?: string;
+  original_quotes?: string[];
+}
+
+/**
+ * Complete reframing data structure
+ */
+export interface ReframingData {
+  analysis?: ReframingAnalysis;
+  suggestions?: string[];
+  is_abuse_detected?: boolean;
 }
 
 export interface GiftedMessage {

@@ -2,14 +2,18 @@
  * Message Bubble component
  * Individual message bubble with user vs AI styling
  * User messages on right (blue), AI messages on left (gray)
+ * Long press to copy message text
  */
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
+  Pressable,
   StyleSheet,
+  Alert,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import type { ChatMessage, ReframingData } from '../types';
 
@@ -30,6 +34,15 @@ function MessageBubbleComponent({ message, onOpenReframing }: Props): React.Reac
   const isSystem = message.user._id === 'system';
   const hasReframing = message.reframingData && !isUser;
 
+  const handleLongPress = useCallback(async () => {
+    try {
+      await Clipboard.setStringAsync(message.text);
+      Alert.alert('복사 완료', '메시지가 클립보드에 복사되었습니다.');
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  }, [message.text]);
+
   return (
     <View style={[styles.container, isUser ? styles.containerRight : styles.containerLeft]}>
       {/* Sender name for AI messages */}
@@ -37,11 +50,14 @@ function MessageBubbleComponent({ message, onOpenReframing }: Props): React.Reac
         <Text style={styles.senderName}>{message.user.name || 'AI 코치'}</Text>
       )}
 
-      {/* Message bubble */}
-      <View
-        style={[
+      {/* Message bubble with long press */}
+      <Pressable
+        onLongPress={handleLongPress}
+        delayLongPress={500}
+        style={({ pressed }) => [
           styles.bubble,
           isUser ? styles.bubbleUser : isSystem ? styles.bubbleSystem : styles.bubbleAI,
+          pressed && styles.bubblePressed,
         ]}
       >
         <Text
@@ -52,7 +68,7 @@ function MessageBubbleComponent({ message, onOpenReframing }: Props): React.Reac
         >
           {message.text}
         </Text>
-      </View>
+      </Pressable>
 
       {/* Timestamp */}
       <Text style={[styles.timestamp, isUser ? styles.timestampRight : styles.timestampLeft]}>
@@ -107,6 +123,9 @@ const styles = StyleSheet.create({
   bubbleSystem: {
     backgroundColor: '#FEF3C7',
     borderRadius: 12,
+  },
+  bubblePressed: {
+    opacity: 0.7,
   },
   messageText: {
     fontSize: 16,

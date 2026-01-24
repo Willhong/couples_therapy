@@ -57,18 +57,30 @@ export function ReframingModal({
     onClose();
   };
 
+  // Extract analysis data with safe defaults
+  const analysis = data.analysis || {};
+  const suggestions = data.suggestions || [];
+
   const handleCopy = async () => {
-    const text = `
-당신이 말한 것: ${data.what_you_said}
+    const parts: string[] = [];
 
-상대방이 들었을 수 있는 것: ${data.how_they_heard}
+    if (analysis.what_you_said) {
+      parts.push(`당신이 말한 것: ${analysis.what_you_said}`);
+    }
+    if (analysis.how_they_heard) {
+      parts.push(`상대방이 들었을 수 있는 것: ${analysis.how_they_heard}`);
+    }
+    if (analysis.how_you_heard_them) {
+      parts.push(`당신이 상대방의 말을 들은 방식: ${analysis.how_you_heard_them}`);
+    }
+    if (analysis.why_the_gap) {
+      parts.push(`왜 이런 차이가 생겼을까요: ${analysis.why_the_gap}`);
+    }
+    if (suggestions.length > 0) {
+      parts.push(`제안:\n${suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}`);
+    }
 
-${data.how_you_heard_them ? `당신이 상대방의 말을 들은 방식: ${data.how_you_heard_them}\n\n` : ''}왜 이런 차이가 생겼을까요: ${data.why_the_gap}
-
-제안:
-${data.suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}
-    `.trim();
-
+    const text = parts.join('\n\n');
     await Clipboard.setStringAsync(text);
     Alert.alert('복사됨', '분석 내용이 클립보드에 복사되었습니다.');
   };
@@ -79,7 +91,7 @@ ${data.suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}
   };
 
   // Check for abuse flag
-  if (data.abuse_flag) {
+  if (data.is_abuse_detected) {
     return (
       <Modal
         visible={visible}
@@ -148,48 +160,47 @@ ${data.suggestions.map((s, i) => `${i + 1}. ${s}`).join('\n')}
 
         {/* Content */}
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Acknowledgment from AI */}
-          {data.acknowledgment && (
-            <View style={styles.acknowledgmentCard}>
-              <Text style={styles.acknowledgmentText}>{data.acknowledgment}</Text>
-            </View>
+          {/* What you said */}
+          {analysis.what_you_said && (
+            <PerspectiveView
+              icon="chatbubble-outline"
+              title="당신이 말한 것"
+              content={analysis.what_you_said}
+              quotes={analysis.original_quotes}
+            />
           )}
 
-          {/* What you said */}
-          <PerspectiveView
-            icon="chatbubble-outline"
-            title="당신이 말한 것"
-            content={data.what_you_said}
-            quotes={data.original_quotes}
-          />
-
           {/* How they heard */}
-          <PerspectiveView
-            icon="ear-outline"
-            title="상대방이 들었을 수 있는 것"
-            content={data.how_they_heard}
-            highlight
-          />
+          {analysis.how_they_heard && (
+            <PerspectiveView
+              icon="ear-outline"
+              title="상대방이 들었을 수 있는 것"
+              content={analysis.how_they_heard}
+              highlight
+            />
+          )}
 
           {/* How you heard them (bidirectional) */}
-          {data.how_you_heard_them && (
+          {analysis.how_you_heard_them && (
             <PerspectiveView
               icon="swap-horizontal-outline"
               title="당신이 상대방의 말을 들은 방식"
-              content={data.how_you_heard_them}
+              content={analysis.how_you_heard_them}
             />
           )}
 
           {/* Why the gap */}
-          <PerspectiveView
-            icon="help-circle-outline"
-            title="왜 이런 차이가 생겼을까요"
-            content={data.why_the_gap}
-          />
+          {analysis.why_the_gap && (
+            <PerspectiveView
+              icon="help-circle-outline"
+              title="왜 이런 차이가 생겼을까요"
+              content={analysis.why_the_gap}
+            />
+          )}
 
           {/* Suggestions */}
-          {data.suggestions.length > 0 && (
-            <SuggestionList suggestions={data.suggestions} />
+          {suggestions.length > 0 && (
+            <SuggestionList suggestions={suggestions} />
           )}
         </ScrollView>
 

@@ -4,28 +4,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { chatApi } from '../services/chatApi';
 import { useStreamingResponse } from './useStreamingResponse';
-import { Message, ReframingData, GiftedMessage } from '../types';
+import { Message, ReframingData, ChatMessage } from '../types';
 
 /**
- * Parse JSON reframing data from AI response text
+ * Convert backend message to ChatMessage format
  */
-function parseReframingResponse(text: string): ReframingData | null {
-  try {
-    const jsonStart = text.indexOf('{');
-    const jsonEnd = text.lastIndexOf('}') + 1;
-    if (jsonStart >= 0 && jsonEnd > jsonStart) {
-      return JSON.parse(text.substring(jsonStart, jsonEnd));
-    }
-  } catch {
-    // Not valid JSON - return null
-  }
-  return null;
-}
-
-/**
- * Convert backend message to GiftedChat message format
- */
-function toGiftedMessage(msg: Message): GiftedMessage {
+function toChatMessage(msg: Message): ChatMessage {
   return {
     _id: msg.id,
     text: msg.content,
@@ -39,27 +23,29 @@ function toGiftedMessage(msg: Message): GiftedMessage {
 }
 
 interface UseChatReturn {
-  messages: GiftedMessage[];
+  messages: ChatMessage[];
   loading: boolean;
   isTyping: boolean;
+  statusMessage: string;
   sendMessage: (text: string) => Promise<void>;
   stopStreaming: () => void;
   conversationId: string | null;
 }
 
 // Stable empty array reference to prevent re-renders
-const EMPTY_MESSAGES: GiftedMessage[] = [];
+const EMPTY_MESSAGES: ChatMessage[] = [];
 
 export function useChat(conversationId: string | null): UseChatReturn {
-  const [messages, setMessages] = useState<GiftedMessage[]>(EMPTY_MESSAGES);
+  const [messages, setMessages] = useState<ChatMessage[]>(EMPTY_MESSAGES);
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
   >(conversationId);
   const [loading, setLoading] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   // Use ref to track message updates without triggering re-renders
-  const messagesRef = useRef<GiftedMessage[]>(EMPTY_MESSAGES);
+  const messagesRef = useRef<ChatMessage[]>(EMPTY_MESSAGES);
 
   const { startStreaming, stopStreaming: stopStream } = useStreamingResponse();
 
@@ -73,9 +59,9 @@ export function useChat(conversationId: string | null): UseChatReturn {
 
       try {
         const data = await chatApi.getConversation(currentConversationId);
-        const giftedMessages = data.messages.map(toGiftedMessage).reverse();
-        messagesRef.current = giftedMessages;
-        setMessages(giftedMessages);
+        const chatMessages = data.messages.map(toChatMessage).reverse();
+        messagesRef.current = chatMessages;
+        setMessages(chatMessages);
       } catch (error) {
         console.error('Failed to load conversation:', error);
       } finally {
@@ -90,6 +76,7 @@ export function useChat(conversationId: string | null): UseChatReturn {
   const stopStreaming = useCallback(() => {
     stopStream();
     setIsTyping(false);
+    setStatusMessage('');
   }, [stopStream]);
 
   // Create or get conversation
@@ -102,8 +89,8 @@ export function useChat(conversationId: string | null): UseChatReturn {
   }, [currentConversationId]);
 
   // Helper to update messages without triggering infinite loops
-  const addMessage = useCallback((message: GiftedMessage) => {
-    // Prepend message (GiftedChat expects newest first)
+  const addMessage = useCallback((message: ChatMessage) => {
+    // Prepend message (newest first for inverted list)
     const newMessages = [message, ...messagesRef.current];
     messagesRef.current = newMessages;
     setMessages(newMessages);
@@ -115,7 +102,7 @@ export function useChat(conversationId: string | null): UseChatReturn {
       const convId = await ensureConversation();
 
       // Add user message immediately (optimistic)
-      const userMessage: GiftedMessage = {
+      const userMessage: ChatMessage = {
         _id: `user-${Date.now()}`,
         text,
         createdAt: new Date(),
@@ -123,44 +110,55 @@ export function useChat(conversationId: string | null): UseChatReturn {
       };
       addMessage(userMessage);
 
-      // Save user message to backend
-      try {
-        await chatApi.saveUserMessage(convId, text);
-      } catch (error) {
-        console.error('Failed to save user message:', error);
-      }
-
       // Show typing indicator
       setIsTyping(true);
+      setStatusMessage('처리 중...');
 
       try {
-        // Start streaming (we don't show intermediate text, just the final result)
-        await startStreaming(
+        // Start streaming with status updates
+        const result = await startStreaming(
           convId,
           text,
-          undefined, // No chunk callback - prevents re-renders during streaming
-          async (finalText) => {
+          (status) => {
+            // Update status message during streaming
+            setStatusMessage(status);
+          },
+          async (streamResult) => {
             setIsTyping(false);
+            setStatusMessage('');
 
-            // Parse reframing data
-            const reframingData = parseReframingResponse(finalText);
+            // Build reframing data from stream result
+            const reframingData: ReframingData | undefined = streamResult.analysis
+              ? {
+                  analysis: streamResult.analysis,
+                  suggestions: streamResult.suggestions || [],
+                }
+              : undefined;
 
             // Save to backend
             const savedMessage = await chatApi.saveReframing(
               convId,
-              finalText,
-              reframingData
+              streamResult.finalResponse,
+              reframingData || null
             );
 
             // Add final AI message
-            const aiMessage = toGiftedMessage(savedMessage);
+            const aiMessage = toChatMessage(savedMessage);
             addMessage(aiMessage);
           }
         );
+
+        // If streaming completed without calling onComplete (edge case)
+        if (result.finalResponse && isTyping) {
+          setIsTyping(false);
+          setStatusMessage('');
+        }
       } catch (error) {
         setIsTyping(false);
+        setStatusMessage('');
+        console.error('Streaming error:', error);
         // Show error in chat
-        const errorMessage: GiftedMessage = {
+        const errorMessage: ChatMessage = {
           _id: `error-${Date.now()}`,
           text: '응답을 받는 중 오류가 발생했습니다. 다시 시도해주세요.',
           createdAt: new Date(),
@@ -169,13 +167,14 @@ export function useChat(conversationId: string | null): UseChatReturn {
         addMessage(errorMessage);
       }
     },
-    [ensureConversation, startStreaming, addMessage]
+    [ensureConversation, startStreaming, addMessage, isTyping]
   );
 
   return {
     messages,
     loading,
     isTyping,
+    statusMessage,
     sendMessage,
     stopStreaming,
     conversationId: currentConversationId,

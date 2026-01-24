@@ -74,8 +74,12 @@ const dotStyles = StyleSheet.create({
   },
 });
 
-export function AIThinkingIndicator(): React.ReactElement {
-  const randomMessage = useMemo(
+interface Props {
+  statusMessage?: string;
+}
+
+export function AIThinkingIndicator({ statusMessage }: Props): React.ReactElement {
+  const fallbackMessage = useMemo(
     () => THINKING_MESSAGES[Math.floor(Math.random() * THINKING_MESSAGES.length)],
     []
   );
@@ -85,7 +89,7 @@ export function AIThinkingIndicator(): React.ReactElement {
       <View style={styles.bubble}>
         <TypingDots />
       </View>
-      <Text style={styles.statusText}>{randomMessage}</Text>
+      <Text style={styles.statusText}>{statusMessage || fallbackMessage}</Text>
     </View>
   );
 }
