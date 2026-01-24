@@ -167,9 +167,12 @@ export function useChat(conversationId: string | null): UseChatReturn {
 
   // Combine messages with streaming message for display
   // Memoize to prevent infinite re-renders
+  // IMPORTANT: Avoid GiftedChat.append() as it can cause infinite loops
+  // when combined with GiftedChat's componentDidUpdate internal state sync
   const displayMessages = useMemo(() => {
     if (streamingMessage) {
-      return GiftedChat.append(messages, [streamingMessage]);
+      // Manually prepend streaming message (GiftedChat expects newest first)
+      return [streamingMessage, ...messages];
     }
     return messages;
   }, [messages, streamingMessage]);
