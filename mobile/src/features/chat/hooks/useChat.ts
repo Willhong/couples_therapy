@@ -101,7 +101,7 @@ export function useChat(conversationId: string | null): UseChatReturn {
     async (text: string) => {
       const convId = await ensureConversation();
 
-      // Add user message immediately (optimistic)
+      // Add user message immediately (optimistic UI)
       const userMessage: ChatMessage = {
         _id: `user-${Date.now()}`,
         text,
@@ -115,40 +115,36 @@ export function useChat(conversationId: string | null): UseChatReturn {
       setStatusMessage('처리 중...');
 
       try {
-        // Start streaming with status updates
+        // Call reframe endpoint - it saves both user and AI messages
         const result = await startStreaming(
           convId,
           text,
           (status) => {
-            // Update status message during streaming
             setStatusMessage(status);
           },
-          async (streamResult) => {
+          (streamResult) => {
             setIsTyping(false);
             setStatusMessage('');
 
-            // Build reframing data from stream result
-            const reframingData: ReframingData | undefined = streamResult.analysis
-              ? {
-                  analysis: streamResult.analysis,
-                  suggestions: streamResult.suggestions || [],
-                }
-              : undefined;
-
-            // Save to backend
-            const savedMessage = await chatApi.saveReframing(
-              convId,
-              streamResult.finalResponse,
-              reframingData || null
-            );
-
-            // Add final AI message
-            const aiMessage = toChatMessage(savedMessage);
+            // Build AI message from result
+            // Backend already saved it, we just need to display it
+            const aiMessage: ChatMessage = {
+              _id: `ai-${Date.now()}`,
+              text: streamResult.finalResponse,
+              createdAt: new Date(),
+              user: { _id: 'ai', name: 'AI 코치' },
+              reframingData: streamResult.analysis
+                ? {
+                    analysis: streamResult.analysis,
+                    suggestions: streamResult.suggestions || [],
+                  }
+                : undefined,
+            };
             addMessage(aiMessage);
           }
         );
 
-        // If streaming completed without calling onComplete (edge case)
+        // Edge case: if result returned but onComplete wasn't called
         if (result.finalResponse && isTyping) {
           setIsTyping(false);
           setStatusMessage('');
@@ -156,8 +152,15 @@ export function useChat(conversationId: string | null): UseChatReturn {
       } catch (error) {
         setIsTyping(false);
         setStatusMessage('');
-        console.error('Streaming error:', error);
-        // Show error in chat
+        console.error('Reframe error:', error);
+
+        // Remove optimistic user message on error
+        messagesRef.current = messagesRef.current.filter(
+          (m) => m._id !== userMessage._id
+        );
+        setMessages([...messagesRef.current]);
+
+        // Show error message
         const errorMessage: ChatMessage = {
           _id: `error-${Date.now()}`,
           text: '응답을 받는 중 오류가 발생했습니다. 다시 시도해주세요.',
