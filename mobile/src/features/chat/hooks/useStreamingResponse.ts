@@ -6,13 +6,10 @@ import { useState, useCallback, useRef } from 'react';
 import { TokenStorage } from '@/lib/auth';
 import { API_URL } from '@/lib/api';
 
-interface StreamingState {
+interface UseStreamingResponseReturn {
   isStreaming: boolean;
   streamedText: string;
   error: string | null;
-}
-
-interface UseStreamingResponseReturn extends StreamingState {
   startStreaming: (
     conversationId: string,
     message: string,
@@ -23,11 +20,9 @@ interface UseStreamingResponseReturn extends StreamingState {
 }
 
 export function useStreamingResponse(): UseStreamingResponseReturn {
-  const [state, setState] = useState<StreamingState>({
-    isStreaming: false,
-    streamedText: '',
-    error: null,
-  });
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamedText, setStreamedText] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -42,7 +37,9 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
       abortControllerRef.current?.abort();
       abortControllerRef.current = new AbortController();
 
-      setState({ isStreaming: true, streamedText: '', error: null });
+      setIsStreaming(true);
+      setStreamedText('');
+      setError(null);
 
       try {
         const token = await TokenStorage.getAccessToken();
@@ -84,7 +81,7 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
 
               if (data === '[DONE]') {
                 onComplete?.(fullText);
-                setState((prev) => ({ ...prev, isStreaming: false }));
+                setIsStreaming(false);
                 return fullText;
               }
 
@@ -93,36 +90,40 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
               }
 
               fullText += data;
-              setState((prev) => ({ ...prev, streamedText: fullText }));
+              setStreamedText(fullText);
               onChunk?.(data);
             }
           }
         }
 
         onComplete?.(fullText);
-        setState((prev) => ({ ...prev, isStreaming: false }));
+        setIsStreaming(false);
         return fullText;
       } catch (error: unknown) {
         const err = error as Error;
         if (err.name === 'AbortError') {
-          setState((prev) => ({ ...prev, isStreaming: false }));
+          setIsStreaming(false);
           return '';
         }
-        setState({
-          isStreaming: false,
-          streamedText: '',
-          error: err.message || '알 수 없는 오류가 발생했습니다',
-        });
+        setIsStreaming(false);
+        setStreamedText('');
+        setError(err.message || '알 수 없는 오류가 발생했습니다');
         throw error;
       }
     },
-    [] // No dependencies - function is stable
+    []
   );
 
   const stopStreaming = useCallback(() => {
     abortControllerRef.current?.abort();
-    setState((prev) => ({ ...prev, isStreaming: false }));
+    setIsStreaming(false);
   }, []);
 
-  return { ...state, startStreaming, stopStreaming };
+  return {
+    isStreaming,
+    streamedText,
+    error,
+    startStreaming,
+    stopStreaming,
+  };
 }

@@ -28,6 +28,22 @@ import { SuggestionChips } from './SuggestionChips';
 import { AIThinkingIndicator } from './AIThinkingIndicator';
 import { ReframingData, GiftedMessage } from '../types';
 
+// Stable references for GiftedChat props - prevents re-renders
+const CURRENT_USER = { _id: 'user' } as const;
+const LIST_VIEW_PROPS = {
+  initialNumToRender: 20,
+  maxToRenderPerBatch: 10,
+  windowSize: 10,
+} as const;
+const BUBBLE_WRAPPER_STYLE = {
+  left: { backgroundColor: '#F3F4F6' },
+  right: { backgroundColor: '#6B7FD7' },
+};
+const BUBBLE_TEXT_STYLE = {
+  left: { color: '#1F2937' },
+  right: { color: '#FFFFFF' },
+};
+
 interface Props {
   conversationId?: string;
   onOpenReframing?: (reframingData: ReframingData, messageId: string) => void;
@@ -64,14 +80,8 @@ export function ChatScreen({
         <View>
           <Bubble
             {...props}
-            wrapperStyle={{
-              left: { backgroundColor: '#F3F4F6' },
-              right: { backgroundColor: '#6B7FD7' },
-            }}
-            textStyle={{
-              left: { color: '#1F2937' },
-              right: { color: '#FFFFFF' },
-            }}
+            wrapperStyle={BUBBLE_WRAPPER_STYLE}
+            textStyle={BUBBLE_TEXT_STYLE}
           />
           {isAI && hasReframing && onOpenReframing && (
             <TouchableOpacity
@@ -148,7 +158,7 @@ export function ChatScreen({
       <GiftedChat
         messages={messages as IMessage[]}
         onSend={onSend}
-        user={{ _id: 'user' }}
+        user={CURRENT_USER}
         text={inputText}
         onInputTextChanged={setInputText}
         placeholder="갈등 상황을 설명해주세요..."
@@ -159,13 +169,7 @@ export function ChatScreen({
         locale="ko"
         inverted={true}
         alwaysShowSend
-        listViewProps={
-          {
-            initialNumToRender: 20,
-            maxToRenderPerBatch: 10,
-            windowSize: 10,
-          } as Record<string, unknown>
-        }
+        listViewProps={LIST_VIEW_PROPS}
       />
     </View>
   );
