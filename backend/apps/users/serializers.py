@@ -1,9 +1,25 @@
 """User serializers for authentication and user management."""
 
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.utils import timezone
 
 from .models import User
+
+
+class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Custom JWT serializer that uses email instead of username."""
+
+    username_field = User.USERNAME_FIELD  # 'email'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # The parent class creates a field named 'username' by default.
+        # We need to remove it and ensure 'email' field exists.
+        if 'username' in self.fields:
+            del self.fields['username']
+        if 'email' not in self.fields:
+            self.fields['email'] = serializers.EmailField(required=True)
 
 
 class CustomRegisterSerializer(serializers.Serializer):

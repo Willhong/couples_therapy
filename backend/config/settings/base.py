@@ -196,7 +196,7 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
 
-    'TOKEN_OBTAIN_SERIALIZER': 'rest_framework_simplejwt.serializers.TokenObtainPairSerializer',
+    'TOKEN_OBTAIN_SERIALIZER': 'apps.users.serializers.EmailTokenObtainPairSerializer',
 }
 
 
