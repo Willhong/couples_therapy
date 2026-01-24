@@ -106,7 +106,7 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
         const err = error as Error;
         if (err.name === 'AbortError') {
           setState((prev) => ({ ...prev, isStreaming: false }));
-          return state.streamedText;
+          return '';
         }
         setState({
           isStreaming: false,
@@ -116,7 +116,7 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
         throw error;
       }
     },
-    [state.streamedText]
+    [] // No dependencies - function is stable
   );
 
   const stopStreaming = useCallback(() => {

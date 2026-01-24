@@ -1,7 +1,7 @@
 /**
  * Chat hook for managing conversation state and messages
  */
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { chatApi } from '../services/chatApi';
 import { useStreamingResponse } from './useStreamingResponse';
@@ -166,9 +166,13 @@ export function useChat(conversationId: string | null): UseChatReturn {
   );
 
   // Combine messages with streaming message for display
-  const displayMessages = streamingMessage
-    ? GiftedChat.append(messages, [streamingMessage])
-    : messages;
+  // Memoize to prevent infinite re-renders
+  const displayMessages = useMemo(() => {
+    if (streamingMessage) {
+      return GiftedChat.append(messages, [streamingMessage]);
+    }
+    return messages;
+  }, [messages, streamingMessage]);
 
   return {
     messages: displayMessages,

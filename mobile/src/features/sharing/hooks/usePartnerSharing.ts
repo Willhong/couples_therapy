@@ -32,42 +32,63 @@ export function usePartnerSharing(): UsePartnerSharingReturn {
 
   useEffect(() => {
     let mounted = true;
+    let retryTimeout: ReturnType<typeof setTimeout> | null = null;
 
     async function connect() {
-      const token = await TokenStorage.getAccessToken();
-      if (!token) return;
+      try {
+        const token = await TokenStorage.getAccessToken();
+        if (!token || !mounted) return;
 
-      const ws = new WebSocket(`${WS_BASE_URL}/ws/chat/?token=${token}`);
-
-      ws.onopen = () => {
-        if (mounted) setConnected(true);
-      };
-
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-
-        if (data.type === 'reframing_shared') {
-          setPendingShares((prev) => [...prev, data]);
-        } else if (data.type === 'share_confirmed') {
-          setSharing(false);
+        // Don't attempt connection if WS_BASE_URL is not properly configured
+        if (!WS_BASE_URL || WS_BASE_URL === 'ws://localhost:8000') {
+          console.log('WebSocket: Skipping connection (dev mode or not configured)');
+          return;
         }
-      };
 
-      ws.onclose = () => {
-        if (mounted) setConnected(false);
-      };
+        const ws = new WebSocket(`${WS_BASE_URL}/ws/chat/?token=${token}`);
 
-      ws.onerror = () => {
-        if (mounted) setConnected(false);
-      };
+        ws.onopen = () => {
+          if (mounted) setConnected(true);
+        };
 
-      wsRef.current = ws;
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+
+            if (data.type === 'reframing_shared') {
+              setPendingShares((prev) => [...prev, data]);
+            } else if (data.type === 'share_confirmed') {
+              setSharing(false);
+            }
+          } catch (e) {
+            console.error('WebSocket message parse error:', e);
+          }
+        };
+
+        ws.onclose = () => {
+          if (mounted) {
+            setConnected(false);
+            wsRef.current = null;
+          }
+        };
+
+        ws.onerror = (error) => {
+          console.log('WebSocket error (non-critical):', error);
+          // Don't update state on error - onclose will handle it
+        };
+
+        wsRef.current = ws;
+      } catch (error) {
+        console.log('WebSocket connection failed:', error);
+      }
     }
 
-    connect();
+    // Delay initial connection to avoid race conditions
+    retryTimeout = setTimeout(connect, 1000);
 
     return () => {
       mounted = false;
+      if (retryTimeout) clearTimeout(retryTimeout);
       wsRef.current?.close();
     };
   }, []);
