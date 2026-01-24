@@ -76,10 +76,26 @@ Recent decisions affecting current work:
 | react-native-gifted-chat for chat UI | Mature library with good React Native support | 02-04 |
 | Tab navigation for home/chat | Better UX for main app navigation | 02-04 |
 | Feature-based chat folder structure | Consistent with onboarding pattern | 02-04 |
+| Custom chat UI (removed GiftedChat) | GiftedChat caused infinite re-render loops in RN 0.81 | 02-05 |
+| Regular HTTP instead of SSE | React Native fetch doesn't support ReadableStream | 02-05 |
+| OpenRouter LLM provider | Multi-model access via unified API (Claude, GPT, Llama, etc.) | 02-02 |
 
 ### Pending Todos
 
 None yet.
+
+### Bug Fixes (2026-01-24)
+
+| Issue | Root Cause | Fix |
+|-------|-----------|-----|
+| GiftedChat infinite re-render | Unstable object refs + React 19 strictness | Replaced with custom FlatList-based chat UI |
+| "스트리밍을 시작할 수 없습니다" | RN fetch doesn't support ReadableStream/getReader() | Changed to regular HTTP `/reframe/` endpoint |
+| SSE JSON parsing error | Frontend expected plain text, backend sent JSON events | Updated to parse `{type: "status/complete"}` events |
+| Duplicate messages saved | Frontend called saveUserMessage + backend reframe saved again | Backend `/reframe/` handles both; removed frontend duplicate |
+| LLM 503 error | `.env` file not loaded (missing `env.read_env()`) | Added `env.read_env(BASE_DIR / '.env')` in settings |
+| KeyError in SAFETY_CHECK_PROMPT | JSON `{}` interpreted as Python format placeholders | Escaped as `{{}}` in prompt strings |
+| JSON parse failure | LLM returns ` ```json ``` ` code blocks | Improved regex extraction + find `{...}` fallback |
+| Long press not working | No handler on MessageBubble | Added Pressable with `onLongPress` → clipboard copy |
 
 ### Blockers/Concerns
 
@@ -96,6 +112,18 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23
-Stopped at: Completed 02-04-PLAN.md
+Last session: 2026-01-24
+Stopped at: 02-05-PLAN.md in progress (checkpoint pending - awaiting human verification)
 Resume file: None
+
+### 02-05 Progress
+- [x] Task 1: Create reframing modal components
+- [x] Task 2: Create sharing functionality with WebSocket
+- [x] Task 3: Wire ChatScreen and chat route with ReframingModal
+- [ ] Task 4: Checkpoint - Human Verification (pending)
+
+### Bug Fix Session Notes
+- Replaced react-native-gifted-chat with custom implementation
+- Changed SSE streaming to regular HTTP (RN compatibility)
+- Added OpenRouter provider for LLM flexibility
+- Fixed multiple JSON parsing and environment loading issues
