@@ -77,11 +77,43 @@ def _get_google_model(model_name: str, **kwargs: Any) -> BaseChatModel:
     )
 
 
+def _get_openrouter_model(model_name: str, **kwargs: Any) -> BaseChatModel:
+    """Get OpenRouter chat model instance.
+
+    OpenRouter uses OpenAI-compatible API with custom base URL.
+    Provides access to multiple LLM providers through a single endpoint.
+    """
+    from langchain_openai import ChatOpenAI
+
+    api_key = os.environ.get('OPENROUTER_API_KEY')
+    if not api_key:
+        raise LLMConfigurationError(
+            "OPENROUTER_API_KEY environment variable is required for OpenRouter provider"
+        )
+
+    # Optional headers for OpenRouter (helps with rate limits and credits)
+    default_headers = {
+        'HTTP-Referer': 'https://github.com/couples-therapy',
+        'X-Title': 'Couples Therapy App',
+    }
+
+    return ChatOpenAI(
+        model=model_name,
+        api_key=api_key,
+        base_url='https://openrouter.ai/api/v1',
+        temperature=kwargs.get('temperature', settings.LLM_TEMPERATURE),
+        max_tokens=kwargs.get('max_tokens', settings.LLM_MAX_TOKENS),
+        streaming=kwargs.get('streaming', True),
+        default_headers=default_headers,
+    )
+
+
 # Provider registry
 _PROVIDER_FACTORIES = {
     'openai': _get_openai_model,
     'anthropic': _get_anthropic_model,
     'google': _get_google_model,
+    'openrouter': _get_openrouter_model,
 }
 
 
@@ -173,6 +205,7 @@ def get_provider_info() -> dict:
         'openai': 'OPENAI_API_KEY',
         'anthropic': 'ANTHROPIC_API_KEY',
         'google': 'GOOGLE_API_KEY',
+        'openrouter': 'OPENROUTER_API_KEY',
     }
 
     env_var = api_key_env_vars.get(provider, '')

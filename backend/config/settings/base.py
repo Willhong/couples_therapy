@@ -235,7 +235,7 @@ CHANNEL_LAYERS = {
 
 
 # LLM Configuration (LangChain + LangGraph)
-# Supported providers: "openai", "anthropic", "google"
+# Supported providers: "openai", "anthropic", "google", "openrouter"
 LLM_PROVIDER = env('LLM_PROVIDER', default='openai')
 
 # Model names per provider
@@ -251,6 +251,10 @@ LLM_MODELS = {
     'google': {
         'chat': env('GOOGLE_CHAT_MODEL', default='gemini-2.0-flash'),
         'summarization': env('GOOGLE_SUMMARY_MODEL', default='gemini-2.0-flash'),
+    },
+    'openrouter': {
+        'chat': env('OPENROUTER_CHAT_MODEL', default='anthropic/claude-sonnet-4'),
+        'summarization': env('OPENROUTER_SUMMARY_MODEL', default='anthropic/claude-haiku'),
     },
 }
 
