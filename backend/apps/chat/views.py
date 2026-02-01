@@ -1,11 +1,9 @@
 """Views for chat API."""
 
 import asyncio
-import json
 import logging
 
 from django.db import models
-from django.http import StreamingHttpResponse
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
@@ -21,7 +19,7 @@ from .serializers import (
     SharedReframingSerializer,
 )
 from .services.llm_service import get_provider_info, LLMConfigurationError
-from .services.reframing_graph import run_reframing_pipeline, stream_reframing_pipeline
+from .services.reframing_graph import run_reframing_pipeline
 from .services.context_manager import ConversationContextManager
 
 logger = logging.getLogger(__name__)
@@ -158,21 +156,30 @@ def llm_info(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def reframe_message(request):
-    """Process a message through the reframing pipeline.
+    """Process a message through the two-mode reframing pipeline.
 
-    This endpoint runs the full LangGraph reframing pipeline and returns
-    the structured result. For real-time streaming, use stream_reframe instead.
+    The LLM decides whether to respond conversationally (chat mode)
+    or produce structured reframing analysis (reframing mode).
 
     Request body:
         conversation_id: UUID of the conversation
         message: User's message describing the conflict
 
     Returns:
-        final_response: The complete reframing response
-        analysis: Structured analysis data (bidirectional perspectives)
-        suggestions: List of actionable suggestions
-        is_abuse_detected: Whether abuse patterns were detected
-        message_id: UUID of the saved AI response message
+        For chat mode:
+            mode: 'chat'
+            message: The conversational response text
+            message_id: UUID of the saved AI message
+            user_message_id: UUID of the saved user message
+
+        For reframing mode:
+            mode: 'reframing'
+            final_response: The complete reframing response
+            analysis: Structured analysis data (bidirectional perspectives)
+            suggestions: List of actionable suggestions
+            is_abuse_detected: Whether abuse patterns were detected
+            message_id: UUID of the saved AI message
+            user_message_id: UUID of the saved user message
     """
     conversation_id = request.data.get('conversation_id')
     user_message = request.data.get('message')
@@ -206,7 +213,7 @@ def reframe_message(request):
     context_manager = ConversationContextManager(str(conversation_id))
     conversation_context = context_manager.get_context_for_ai()
 
-    # Run reframing pipeline
+    # Run two-mode reframing pipeline
     try:
         result = asyncio.run(run_reframing_pipeline(
             user_message=user_message,
@@ -225,78 +232,52 @@ def reframe_message(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-    # Save AI response
+    # Determine mode and save accordingly
+    mode = result.get('mode', 'reframing')
+    is_reframing = (mode == 'reframing')
+
+    # Save AI response -- mode determines has_reframing and reframing_data
     ai_msg = Message.objects.create(
         conversation=conversation,
         role=Message.Role.ASSISTANT,
         content=result['final_response'],
-        has_reframing=True,
+        has_reframing=is_reframing,
         reframing_data={
             'analysis': result.get('analysis'),
             'suggestions': result.get('suggestions', []),
             'is_abuse_detected': result.get('is_abuse_detected', False),
-        },
+        } if is_reframing else None,
     )
 
     # Update conversation timestamp
     conversation.save()
 
-    return Response({
-        'final_response': result['final_response'],
-        'analysis': result.get('analysis'),
-        'suggestions': result.get('suggestions', []),
-        'is_abuse_detected': result.get('is_abuse_detected', False),
-        'message_id': str(ai_msg.id),
-        'user_message_id': str(user_msg.id),
-    })
-
-
-async def _generate_sse_stream(user_message: str, conversation_context: str):
-    """Async generator for SSE streaming.
-
-    Yields Server-Sent Events formatted data.
-    """
-    try:
-        async for event in stream_reframing_pipeline(
-            user_message=user_message,
-            conversation_context=conversation_context,
-        ):
-            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
-
-        yield "data: [DONE]\n\n"
-    except LLMConfigurationError as e:
-        error_data = json.dumps({'type': 'error', 'message': f'LLM 설정 오류: {str(e)}'})
-        yield f"data: {error_data}\n\n"
-    except Exception as e:
-        logger.exception(f"Streaming error: {e}")
-        error_data = json.dumps({'type': 'error', 'message': '스트리밍 중 오류가 발생했습니다.'})
-        yield f"data: {error_data}\n\n"
-
-
-def _sync_sse_generator(user_message: str, conversation_context: str):
-    """Synchronous wrapper for async SSE generator."""
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-    try:
-        async_gen = _generate_sse_stream(user_message, conversation_context)
-        while True:
-            try:
-                chunk = loop.run_until_complete(async_gen.__anext__())
-                yield chunk
-            except StopAsyncIteration:
-                break
-    finally:
-        loop.close()
+    # Build response based on mode
+    if is_reframing:
+        return Response({
+            'mode': 'reframing',
+            'final_response': result['final_response'],
+            'analysis': result.get('analysis'),
+            'suggestions': result.get('suggestions', []),
+            'is_abuse_detected': result.get('is_abuse_detected', False),
+            'message_id': str(ai_msg.id),
+            'user_message_id': str(user_msg.id),
+        })
+    else:
+        return Response({
+            'mode': 'chat',
+            'message': result['final_response'],
+            'message_id': str(ai_msg.id),
+            'user_message_id': str(user_msg.id),
+        })
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def save_reframing(request):
-    """Save AI reframing response after streaming completes.
+    """Save AI reframing response.
 
-    This endpoint is called by the mobile app after stream_reframe completes
-    to persist the AI response.
+    This endpoint persists an AI response message in the conversation.
 
     Request body:
         conversation_id: UUID of the conversation
@@ -419,64 +400,3 @@ def share_reframing(request):
     )
 
     return Response(SharedReframingSerializer(shared).data, status=status.HTTP_201_CREATED)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def stream_reframe(request):
-    """Stream reframing response via Server-Sent Events (SSE).
-
-    This endpoint streams the reframing pipeline progress and final response
-    as SSE events. Use this for real-time UI updates showing AI thinking status.
-
-    Request body:
-        conversation_id: UUID of the conversation
-        message: User's message describing the conflict
-
-    Response: text/event-stream with events:
-        - type: "status" - Pipeline node progress (node name, status message)
-        - type: "complete" - Final response with analysis and suggestions
-        - type: "error" - Error occurred during processing
-        - [DONE] - Stream complete signal
-    """
-    conversation_id = request.data.get('conversation_id')
-    user_message = request.data.get('message')
-
-    if not conversation_id or not user_message:
-        return Response(
-            {'detail': 'conversation_id와 message가 필요합니다.'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    # Verify user owns the conversation
-    try:
-        conversation = Conversation.objects.get(
-            id=conversation_id,
-            user=request.user
-        )
-    except Conversation.DoesNotExist:
-        return Response(
-            {'detail': '대화를 찾을 수 없습니다.'},
-            status=status.HTTP_404_NOT_FOUND
-        )
-
-    # Save user message
-    Message.objects.create(
-        conversation=conversation,
-        role=Message.Role.USER,
-        content=user_message,
-    )
-
-    # Get conversation context
-    context_manager = ConversationContextManager(str(conversation_id))
-    conversation_context = context_manager.get_context_for_ai()
-
-    # Create streaming response
-    response = StreamingHttpResponse(
-        _sync_sse_generator(user_message, conversation_context),
-        content_type='text/event-stream'
-    )
-    response['Cache-Control'] = 'no-cache'
-    response['X-Accel-Buffering'] = 'no'  # Disable nginx buffering
-
-    return response

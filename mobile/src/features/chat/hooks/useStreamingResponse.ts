@@ -77,12 +77,23 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
 
         const data = await response.json();
 
-        result = {
-          finalResponse: data.final_response || '',
-          analysis: data.analysis,
-          suggestions: data.suggestions || [],
-          messageId: data.message_id, // Database UUID for sharing
-        };
+        // Handle two-mode response
+        if (data.mode === 'chat') {
+          result = {
+            finalResponse: data.message || '',
+            analysis: undefined,
+            suggestions: [],
+            messageId: data.message_id,
+          };
+        } else {
+          // reframing mode (backward-compatible with old format without mode field)
+          result = {
+            finalResponse: data.final_response || '',
+            analysis: data.analysis,
+            suggestions: data.suggestions || [],
+            messageId: data.message_id,
+          };
+        }
 
         setIsStreaming(false);
         setStatusMessage('');

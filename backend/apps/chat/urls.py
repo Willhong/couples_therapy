@@ -12,7 +12,6 @@ from .views import (
     reframe_message,
     save_reframing,
     share_reframing,
-    stream_reframe,
 )
 
 # Main router for top-level resources
@@ -30,7 +29,6 @@ urlpatterns = [
     path('reframe/', reframe_message, name='reframe-message'),
     path('save-reframing/', save_reframing, name='save-reframing'),
     path('share/', share_reframing, name='share-reframing'),
-    path('stream-reframe/', stream_reframe, name='stream-reframe'),
 
     # Router URLs
     path('', include(router.urls)),
