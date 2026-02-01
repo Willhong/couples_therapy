@@ -5,35 +5,35 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** 갈등 상황에서 상대방의 관점을 이해하도록 돕는 리프레이밍
-**Current focus:** Phase 2 - Core Reframing (in progress)
+**Current focus:** Phase 2 complete. Next: Phase 3 - Audio Pipeline
 
 ## Current Position
 
-Phase: 2 of 4 (Core Reframing)
-Plan: 4 of 5 in current phase
-Status: In progress
-Last activity: 2026-02-02 - Re-executed 02-02-PLAN.md (two-mode architecture)
+Phase: 2 of 4 (Core Reframing) — COMPLETE
+Plan: 5 of 5 in current phase
+Status: Phase complete, verified
+Last activity: 2026-02-02 - Phase 2 verified and approved
 
-Progress: [████████░░] 73%
+Progress: [██████████] 100% (Phase 2)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 8 min
-- Total execution time: 63 min
+- Total execution time: 71 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Foundation & Safety | 4/4 | 32m | 8m |
-| 2. Core Reframing | 4/5 | 31m | 8m |
+| 2. Core Reframing | 5/5 | 39m | 8m |
 | 3. Audio Pipeline | 0/2 | - | - |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 5m, 7m, 8m, 8m, 8m
+- Last 5 plans: 7m, 8m, 8m, 8m, 8m
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -70,21 +70,21 @@ Recent decisions affecting current work:
 | Keyword safety pre-filter (replaced LLM safety check) | 0 LLM calls for severe abuse; instant static response | 02-02 |
 | 10 recent messages verbatim in context | Balance between context preservation and token cost | 02-02 |
 | Removed SSE entirely | React Native doesn't support ReadableStream; regular HTTP used | 02-02 |
+| OpenRouter LLM provider | Multi-model access via unified API (Claude, GPT, Llama, etc.) | 02-02 |
 | @react-native-community/slider | Native slider component for attachment scale | 02-03 |
 | features/onboarding/ structure | Scalable feature-based organization | 02-03 |
 | Zod + @hookform/resolvers | Type-safe validation with TypeScript | 02-03 |
-| react-native-gifted-chat for chat UI | Mature library with good React Native support | 02-04 |
+| Custom chat UI (removed GiftedChat) | GiftedChat caused infinite re-render loops in RN 0.81 | 02-04/05 |
 | Tab navigation for home/chat | Better UX for main app navigation | 02-04 |
 | Feature-based chat folder structure | Consistent with onboarding pattern | 02-04 |
-| Custom chat UI (removed GiftedChat) | GiftedChat caused infinite re-render loops in RN 0.81 | 02-05 |
 | Regular HTTP instead of SSE | React Native fetch doesn't support ReadableStream | 02-05 |
-| OpenRouter LLM provider | Multi-model access via unified API (Claude, GPT, Llama, etc.) | 02-02 |
+| POST as upsert for singleton ViewSets | Profile/Goals are one-per-user; POST acts as update | 02-05 |
 
 ### Pending Todos
 
 None yet.
 
-### Bug Fixes (2026-01-24)
+### Bug Fixes (2026-01-24 ~ 2026-02-02)
 
 | Issue | Root Cause | Fix |
 |-------|-----------|-----|
@@ -96,16 +96,18 @@ None yet.
 | KeyError in SAFETY_CHECK_PROMPT | JSON `{}` interpreted as Python format placeholders | Escaped as `{{}}` in prompt strings |
 | JSON parse failure | LLM returns ` ```json ``` ` code blocks | Improved regex extraction + find `{...}` fallback |
 | Long press not working | No handler on MessageBubble | Added Pressable with `onLongPress` → clipboard copy |
+| Onboarding POST 405 | ViewSets had http_method_names=['get','put','patch'] | Added 'post' + create() as upsert |
 
 ### Blockers/Concerns
 
-**From Research (address in Phase 1):**
+**From Research (address in Phase 3+):**
 - Korean legal requirements (PIPA compliance, recording consent laws) need validation
 - Abuse screening protocols for digital context need expert consultation
 
-**From Research (address in Phase 2):**
+**From Phase 2:**
 - Prompt engineering for non-judgmental reframing needs iteration
 - Cultural adaptation for Korean communication styles (nunchi) needs deeper research
+- Partner-side receiving UI deferred to Phase 4
 
 **From 01-01 Execution:**
 - dj-rest-auth has deprecation warnings about allauth settings (library issue, not blocking)
@@ -113,24 +115,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 02-02-PLAN.md re-execution (two-mode architecture)
+Stopped at: Phase 2 complete and verified
 Resume file: None
-
-### 02-02 Re-execution Notes
-- Replaced 5-node LangGraph StateGraph with two-mode single-call pipeline
-- LLM decides chat vs reframing mode per message (1 call instead of 5)
-- Keyword safety pre-filter replaces LLM safety check (0 calls for severe abuse)
-- Removed all dead SSE code from views and URLs
-- Frontend updated to handle mode field in API response
-
-### 02-05 Progress (prior session)
-- [x] Task 1: Create reframing modal components
-- [x] Task 2: Create sharing functionality with WebSocket
-- [x] Task 3: Wire ChatScreen and chat route with ReframingModal
-- [ ] Task 4: Checkpoint - Human Verification (pending)
-
-### Bug Fix Session Notes (2026-01-24)
-- Replaced react-native-gifted-chat with custom implementation
-- Changed SSE streaming to regular HTTP (RN compatibility)
-- Added OpenRouter provider for LLM flexibility
-- Fixed multiple JSON parsing and environment loading issues

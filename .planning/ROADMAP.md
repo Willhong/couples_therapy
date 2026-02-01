@@ -11,7 +11,7 @@ CouplesAI delivers AI-powered couples therapy through four phases: establishing 
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Foundation & Safety** - Secure auth, partner linking, abuse screening, data encryption
-- [ ] **Phase 2: Core Reframing** - Text-based conflict logging with AI perspective reframing
+- [x] **Phase 2: Core Reframing** - Text-based conflict logging with AI perspective reframing
 - [ ] **Phase 3: Audio Pipeline** - Recording, transcription, speaker separation, audio analysis
 - [ ] **Phase 4: Partner & Engagement** - Sharing features, cool-down tools, communication exercises
 
@@ -50,11 +50,11 @@ Plans:
 **Plans**: 5 plans in 4 waves
 
 Plans:
-- [ ] 02-01-PLAN.md — Backend models & core API for onboarding and chat (Wave 1)
-- [ ] 02-02-PLAN.md — Two-mode AI pipeline: conversational chat + structured reframing (Wave 2, re-architected)
-- [ ] 02-03-PLAN.md — Onboarding questionnaire UI for attachment style and goals (Wave 2)
-- [ ] 02-04-PLAN.md — Chat interface with streaming responses and suggestions (Wave 3)
-- [ ] 02-05-PLAN.md — Reframing modal and partner sharing with WebSocket (Wave 4)
+- [x] 02-01-PLAN.md — Backend models & core API for onboarding and chat (Wave 1)
+- [x] 02-02-PLAN.md — Two-mode AI pipeline: conversational chat + structured reframing (Wave 2, re-architected)
+- [x] 02-03-PLAN.md — Onboarding questionnaire UI for attachment style and goals (Wave 2)
+- [x] 02-04-PLAN.md — Chat interface with streaming responses and suggestions (Wave 3)
+- [x] 02-05-PLAN.md — Reframing modal and partner sharing with WebSocket (Wave 4)
 
 ### Phase 3: Audio Pipeline
 **Goal**: Users can record conflicts via voice and receive transcription with speaker-separated analysis, enabling capture of actual arguments for deeper insight.
@@ -96,7 +96,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Safety | 4/4 | ✓ Complete | 2026-01-23 |
-| 2. Core Reframing | 0/5 | Planned | - |
+| 2. Core Reframing | 5/5 | ✓ Complete | 2026-02-02 |
 | 3. Audio Pipeline | 0/2 | Not started | - |
 | 4. Partner & Engagement | 0/2 | Not started | - |
 
