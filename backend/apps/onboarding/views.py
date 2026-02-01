@@ -16,17 +16,21 @@ from .serializers import (
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
-    """ViewSet for managing user profile (attachment style, communication preferences)."""
+    """ViewSet for managing user profile (attachment style, communication preferences).
+
+    Singleton resource: one profile per user. GET/PUT/PATCH all work on /profile/
+    without requiring a pk, since get_object resolves by current user.
+    """
 
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'put', 'patch']
+    http_method_names = ['get', 'post', 'put', 'patch']
 
     def get_queryset(self):
         return UserProfile.objects.filter(user=self.request.user)
 
     def get_object(self):
-        """Get the profile for the current user."""
+        """Get or create the profile for the current user."""
         profile, _ = UserProfile.objects.get_or_create(
             user=self.request.user,
             defaults={
@@ -44,19 +48,30 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(profile)
         return Response(serializer.data)
 
+    def create(self, request):
+        """Upsert profile (singleton resource — POST acts as update)."""
+        profile = self.get_object()
+        serializer = self.get_serializer(profile, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
 
 class UserGoalsViewSet(viewsets.ModelViewSet):
-    """ViewSet for managing user goals."""
+    """ViewSet for managing user goals.
+
+    Singleton resource: one goals record per user. POST acts as upsert.
+    """
 
     serializer_class = UserGoalsSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'put', 'patch']
+    http_method_names = ['get', 'post', 'put', 'patch']
 
     def get_queryset(self):
         return UserGoals.objects.filter(user=self.request.user)
 
     def get_object(self):
-        """Get the goals for the current user."""
+        """Get or create the goals for the current user."""
         goals, _ = UserGoals.objects.get_or_create(
             user=self.request.user,
             defaults={
@@ -70,6 +85,14 @@ class UserGoalsViewSet(viewsets.ModelViewSet):
         """Return the user's goals."""
         goals = self.get_object()
         serializer = self.get_serializer(goals)
+        return Response(serializer.data)
+
+    def create(self, request):
+        """Upsert goals (singleton resource — POST acts as update)."""
+        goals = self.get_object()
+        serializer = self.get_serializer(goals, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
 
 
