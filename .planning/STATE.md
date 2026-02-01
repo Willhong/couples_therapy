@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 Phase: 2 of 4 (Core Reframing)
 Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-23 - Completed 02-04-PLAN.md
+Last activity: 2026-02-02 - Re-executed 02-02-PLAN.md (two-mode architecture)
 
 Progress: [████████░░] 73%
 
@@ -66,10 +66,10 @@ Recent decisions affecting current work:
 | UUID primary keys for chat models | Better for distributed systems and security | 02-01 |
 | Latest 50 messages pagination | Performance while maintaining usability | 02-01 |
 | LangChain for unified LLM interface | Provider abstraction enables switching without code changes | 02-02 |
-| LangGraph StateGraph for reframing | Modular pipeline with conditional routing for safety | 02-02 |
-| Safety check routing (severe vs mild) | Severe cases get safety resources, mild get normal reframing | 02-02 |
+| Two-mode single-call pipeline (replaced LangGraph) | 1 LLM call instead of 5; LLM chooses chat or reframing mode | 02-02 |
+| Keyword safety pre-filter (replaced LLM safety check) | 0 LLM calls for severe abuse; instant static response | 02-02 |
 | 10 recent messages verbatim in context | Balance between context preservation and token cost | 02-02 |
-| SSE for streaming reframing | One-way streaming simpler than WebSocket for this use case | 02-02 |
+| Removed SSE entirely | React Native doesn't support ReadableStream; regular HTTP used | 02-02 |
 | @react-native-community/slider | Native slider component for attachment scale | 02-03 |
 | features/onboarding/ structure | Scalable feature-based organization | 02-03 |
 | Zod + @hookform/resolvers | Type-safe validation with TypeScript | 02-03 |
@@ -112,17 +112,24 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-24
-Stopped at: 02-05-PLAN.md in progress (checkpoint pending - awaiting human verification)
+Last session: 2026-02-02
+Stopped at: Completed 02-02-PLAN.md re-execution (two-mode architecture)
 Resume file: None
 
-### 02-05 Progress
+### 02-02 Re-execution Notes
+- Replaced 5-node LangGraph StateGraph with two-mode single-call pipeline
+- LLM decides chat vs reframing mode per message (1 call instead of 5)
+- Keyword safety pre-filter replaces LLM safety check (0 calls for severe abuse)
+- Removed all dead SSE code from views and URLs
+- Frontend updated to handle mode field in API response
+
+### 02-05 Progress (prior session)
 - [x] Task 1: Create reframing modal components
 - [x] Task 2: Create sharing functionality with WebSocket
 - [x] Task 3: Wire ChatScreen and chat route with ReframingModal
 - [ ] Task 4: Checkpoint - Human Verification (pending)
 
-### Bug Fix Session Notes
+### Bug Fix Session Notes (2026-01-24)
 - Replaced react-native-gifted-chat with custom implementation
 - Changed SSE streaming to regular HTTP (RN compatibility)
 - Added OpenRouter provider for LLM flexibility
