@@ -51,7 +51,7 @@ Plans:
 
 Plans:
 - [ ] 02-01-PLAN.md — Backend models & core API for onboarding and chat (Wave 1)
-- [ ] 02-02-PLAN.md — Claude AI integration with streaming and context management (Wave 2)
+- [ ] 02-02-PLAN.md — Single-call AI reframing pipeline with keyword safety filter (Wave 2, re-architected for performance)
 - [ ] 02-03-PLAN.md — Onboarding questionnaire UI for attachment style and goals (Wave 2)
 - [ ] 02-04-PLAN.md — Chat interface with streaming responses and suggestions (Wave 3)
 - [ ] 02-05-PLAN.md — Reframing modal and partner sharing with WebSocket (Wave 4)
@@ -104,5 +104,6 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 *Roadmap created: 2026-01-23*
 *Phase 1 re-planned: 2026-01-23 (Django backend)*
 *Phase 2 planned: 2026-01-23 (5 plans in 4 waves)*
+*Phase 2 Plan 02 re-architected: 2026-02-02 (single-call pipeline for performance)*
 *Depth: quick (4 phases)*
 *Coverage: 32/32 v1 requirements mapped*
