@@ -1,63 +1,35 @@
-"""LangGraph reframing pipeline.
+"""Two-mode reframing pipeline.
 
-Implements a stateful workflow for perspective reframing:
-1. Safety check -> routes to safety response if abuse detected
-2. Acknowledge -> validates user's emotions
-3. Analyze -> identifies perspectives from both sides
-4. Suggest -> provides actionable suggestions
-5. Combine -> assembles final response
+Replaces the multi-node LangGraph StateGraph with a single-call architecture.
+The LLM decides between two modes per message:
 
-Uses LangGraph StateGraph for workflow orchestration.
+1. Chat mode: conversational empathy, clarifying questions (plain text)
+2. Reframing mode: structured bidirectional analysis (JSON with analysis + suggestions)
+
+Safety is handled via keyword pre-filter before the LLM call (0 LLM calls for severe abuse).
+Normal messages use exactly 1 LLM call.
 """
 
+import asyncio
+import copy
 import json
 import logging
-from typing import TypedDict, Literal, Any, AsyncIterator
+import re
 
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.output_parsers import StrOutputParser
-from langgraph.graph import StateGraph, END
 
 from ..prompts.system_prompts import (
-    ACKNOWLEDGE_PROMPT,
-    ANALYZE_PROMPT,
-    SUGGEST_PROMPT,
-    SAFETY_PROMPT,
-    SAFETY_CHECK_PROMPT,
-    COMBINE_PROMPT,
+    TWO_MODE_SYSTEM_PROMPT,
+    SAFETY_RESPONSE_TEMPLATE,
+    SAFETY_KEYWORDS,
 )
 from .llm_service import get_chat_model
 
 logger = logging.getLogger(__name__)
 
 
-class ReframingState(TypedDict):
-    """State schema for the reframing graph."""
-    # Input
-    user_message: str
-    conversation_context: str  # Summary of prior conversation
-
-    # Safety check results
-    safety_check_result: dict | None
-    is_abuse_detected: bool
-
-    # Node outputs
-    acknowledgment: str
-    analysis: dict | None
-    suggestions: list[str]
-    safety_response: dict | None
-
-    # Final output
-    final_response: str
-
-    # Streaming support
-    streaming_chunks: list[str]
-
-
 def _parse_json_response(response: str) -> dict:
     """Parse JSON from LLM response, handling markdown code blocks."""
-    import re
-
     # Strip whitespace
     response = response.strip()
 
@@ -88,316 +60,180 @@ def _parse_json_response(response: str) -> dict:
         return {}
 
 
-async def safety_check_node(state: ReframingState) -> dict:
-    """Check for abuse patterns in user message.
+def check_safety(message: str) -> dict | None:
+    """Check for abuse patterns using keyword pre-filter.
 
-    Routes to safety response if abuse is detected.
+    No LLM call. Uses simple string matching (Korean has no word boundaries).
+
+    Args:
+        message: The user's message text
+
+    Returns:
+        - For severe match: copy of SAFETY_RESPONSE_TEMPLATE with is_abuse_detected=True
+        - For mild match: {"mild_flag": True} (LLM still processes)
+        - No match: None
     """
-    logger.info("Running safety check node")
+    # Check severe keywords first
+    for keyword in SAFETY_KEYWORDS["severe"]:
+        if keyword in message:
+            logger.warning(f"Severe safety keyword detected: {keyword}")
+            result = copy.deepcopy(SAFETY_RESPONSE_TEMPLATE)
+            result["is_abuse_detected"] = True
+            return result
 
-    model = get_chat_model(temperature=0.1, streaming=False)
+    # Check mild keywords
+    for keyword in SAFETY_KEYWORDS["mild"]:
+        if keyword in message:
+            logger.info(f"Mild safety keyword detected: {keyword}")
+            return {"mild_flag": True}
 
-    prompt = SAFETY_CHECK_PROMPT.format(message=state['user_message'])
-    messages = [HumanMessage(content=prompt)]
-
-    response = await model.ainvoke(messages)
-    result = _parse_json_response(response.content)
-
-    is_abuse = result.get('is_abuse_detected', False)
-
-    return {
-        'safety_check_result': result,
-        'is_abuse_detected': is_abuse,
-    }
-
-
-async def acknowledge_node(state: ReframingState) -> dict:
-    """Validate and acknowledge user's emotions."""
-    logger.info("Running acknowledge node")
-
-    model = get_chat_model(temperature=0.7)
-
-    context = ""
-    if state.get('conversation_context'):
-        context = f"[이전 대화 맥락]\n{state['conversation_context']}\n\n"
-
-    messages = [
-        SystemMessage(content=ACKNOWLEDGE_PROMPT),
-        HumanMessage(content=f"{context}사용자 메시지: {state['user_message']}")
-    ]
-
-    response = await model.ainvoke(messages)
-
-    return {
-        'acknowledgment': response.content,
-    }
+    return None
 
 
-async def analyze_node(state: ReframingState) -> dict:
-    """Analyze perspectives from both sides."""
-    logger.info("Running analyze node")
+def _build_readable_response(parsed: dict) -> str:
+    """Build natural Korean text from structured reframing JSON.
 
-    model = get_chat_model(temperature=0.5)
+    Creates a readable response for the chat bubble from the structured
+    reframing analysis. This is stored as the message content.
 
-    context = ""
-    if state.get('conversation_context'):
-        context = f"[이전 대화 맥락]\n{state['conversation_context']}\n\n"
+    Args:
+        parsed: Parsed reframing JSON with acknowledgment, analysis, suggestions
 
-    messages = [
-        SystemMessage(content=ANALYZE_PROMPT),
-        HumanMessage(content=f"{context}사용자 메시지: {state['user_message']}")
-    ]
-
-    response = await model.ainvoke(messages)
-    analysis = _parse_json_response(response.content)
-
-    return {
-        'analysis': analysis,
-    }
-
-
-async def suggest_node(state: ReframingState) -> dict:
-    """Generate actionable suggestions based on analysis."""
-    logger.info("Running suggest node")
-
-    model = get_chat_model(temperature=0.7)
-
-    # Include analysis in context for suggestions
-    analysis_context = ""
-    if state.get('analysis'):
-        analysis_context = f"[분석 결과]\n{json.dumps(state['analysis'], ensure_ascii=False, indent=2)}\n\n"
-
-    messages = [
-        SystemMessage(content=SUGGEST_PROMPT),
-        HumanMessage(
-            content=f"{analysis_context}사용자의 갈등 상황: {state['user_message']}"
-        )
-    ]
-
-    response = await model.ainvoke(messages)
-    suggestions_data = _parse_json_response(response.content)
-
-    return {
-        'suggestions': suggestions_data.get('suggestions', []),
-    }
-
-
-async def safety_response_node(state: ReframingState) -> dict:
-    """Generate supportive response for detected abuse situations."""
-    logger.info("Running safety response node")
-
-    model = get_chat_model(temperature=0.5)
-
-    safety_context = ""
-    if state.get('safety_check_result'):
-        severity = state['safety_check_result'].get('severity', 'unknown')
-        patterns = state['safety_check_result'].get('patterns', [])
-        safety_context = f"[감지된 심각도: {severity}]\n[패턴: {', '.join(patterns)}]\n\n"
-
-    messages = [
-        SystemMessage(content=SAFETY_PROMPT),
-        HumanMessage(content=f"{safety_context}사용자 메시지: {state['user_message']}")
-    ]
-
-    response = await model.ainvoke(messages)
-    safety_response = _parse_json_response(response.content)
-
-    return {
-        'safety_response': safety_response,
-    }
-
-
-async def combine_node(state: ReframingState) -> dict:
-    """Combine all node outputs into final response."""
-    logger.info("Running combine node")
-
-    # Check if this is a safety response
-    if state.get('is_abuse_detected') and state.get('safety_response'):
-        safety = state['safety_response']
-        final = f"{safety.get('concern_expressed', '')}\n\n"
-
-        if safety.get('resources'):
-            final += "도움받을 수 있는 곳:\n"
-            for resource in safety['resources']:
-                final += f"- {resource}\n"
-            final += "\n"
-
-        final += safety.get('support_message', '')
-
-        return {'final_response': final}
-
-    # Normal reframing response
-    model = get_chat_model(temperature=0.7)
-
-    prompt = COMBINE_PROMPT.format(
-        acknowledgment=state.get('acknowledgment', ''),
-        analysis=json.dumps(state.get('analysis', {}), ensure_ascii=False),
-        suggestions=json.dumps(state.get('suggestions', []), ensure_ascii=False),
-    )
-
-    messages = [
-        SystemMessage(content=prompt),
-        HumanMessage(content=f"사용자 원본 메시지: {state['user_message']}")
-    ]
-
-    response = await model.ainvoke(messages)
-
-    return {
-        'final_response': response.content,
-    }
-
-
-def route_after_safety_check(state: ReframingState) -> Literal["safety_response", "acknowledge"]:
-    """Route based on safety check results."""
-    if state.get('is_abuse_detected'):
-        severity = state.get('safety_check_result', {}).get('severity', 'none')
-        # Only route to safety for severe cases
-        # Mild cases get normal reframing + gentle flag
-        if severity == 'severe':
-            return "safety_response"
-    return "acknowledge"
-
-
-def build_reframing_graph() -> StateGraph:
-    """Build the reframing graph workflow.
-
-    Graph structure:
-    START -> safety_check -> [abuse: safety_response | normal: acknowledge]
-    acknowledge -> analyze -> suggest -> combine -> END
-    safety_response -> combine -> END
+    Returns:
+        str: Natural Korean text suitable for chat display
     """
-    graph = StateGraph(ReframingState)
+    parts = []
 
-    # Add nodes
-    graph.add_node("safety_check", safety_check_node)
-    graph.add_node("acknowledge", acknowledge_node)
-    graph.add_node("analyze", analyze_node)
-    graph.add_node("suggest", suggest_node)
-    graph.add_node("safety_response", safety_response_node)
-    graph.add_node("combine", combine_node)
+    # Acknowledgment
+    acknowledgment = parsed.get("acknowledgment", "")
+    if acknowledgment:
+        parts.append(acknowledgment)
 
-    # Set entry point
-    graph.set_entry_point("safety_check")
+    # Analysis sections
+    analysis = parsed.get("analysis", {})
+    if analysis:
+        how_they_heard = analysis.get("how_they_heard", "")
+        if how_they_heard:
+            parts.append(f"상대방은 이렇게 들었을 수 있어요:\n{how_they_heard}")
 
-    # Add conditional edge after safety check
-    graph.add_conditional_edges(
-        "safety_check",
-        route_after_safety_check,
-        {
-            "safety_response": "safety_response",
-            "acknowledge": "acknowledge",
-        }
-    )
+        why_the_gap = analysis.get("why_the_gap", "")
+        if why_the_gap:
+            parts.append(f"왜 이런 차이가 생겼을까요:\n{why_the_gap}")
 
-    # Normal flow edges
-    graph.add_edge("acknowledge", "analyze")
-    graph.add_edge("analyze", "suggest")
-    graph.add_edge("suggest", "combine")
+    # Suggestions
+    suggestions = parsed.get("suggestions", [])
+    if suggestions:
+        suggestion_lines = "\n".join(f"- {s}" for s in suggestions)
+        parts.append(f"다음에 시도해볼 것:\n{suggestion_lines}")
 
-    # Safety flow edges
-    graph.add_edge("safety_response", "combine")
-
-    # End
-    graph.add_edge("combine", END)
-
-    return graph
-
-
-# Compiled graph instance
-reframing_graph = build_reframing_graph().compile()
+    return "\n\n".join(parts)
 
 
 async def run_reframing_pipeline(
     user_message: str,
     conversation_context: str = "",
 ) -> dict:
-    """Run the reframing pipeline on a user message.
+    """Run the two-mode reframing pipeline on a user message.
+
+    Single LLM call. The LLM decides whether to respond conversationally
+    (chat mode) or produce structured reframing analysis (reframing mode).
 
     Args:
         user_message: The user's message describing a conflict
-        conversation_context: Summary of prior conversation for context
+        conversation_context: Summary/history of prior conversation
 
     Returns:
         dict with:
-            - final_response: The complete reframing response
-            - analysis: Structured analysis data (if available)
-            - suggestions: List of suggestions (if available)
+            - mode: 'chat' or 'reframing'
+            - final_response: The text response for chat display
+            - analysis: Structured analysis data (reframing mode only)
+            - suggestions: List of suggestions (reframing mode only)
             - is_abuse_detected: Whether abuse was detected
+            - safety_response: Safety template (abuse cases only)
     """
-    initial_state: ReframingState = {
-        'user_message': user_message,
-        'conversation_context': conversation_context,
-        'safety_check_result': None,
-        'is_abuse_detected': False,
-        'acknowledgment': '',
-        'analysis': None,
-        'suggestions': [],
-        'safety_response': None,
-        'final_response': '',
-        'streaming_chunks': [],
-    }
+    # Step 1: Safety pre-filter (no LLM call)
+    safety_result = check_safety(user_message)
 
-    result = await reframing_graph.ainvoke(initial_state)
+    if safety_result and safety_result.get("is_abuse_detected"):
+        logger.info("Severe abuse detected - returning safety response immediately")
+        return {
+            "mode": "reframing",
+            "final_response": safety_result["acknowledgment"],
+            "analysis": safety_result["analysis"],
+            "suggestions": safety_result["suggestions"],
+            "is_abuse_detected": True,
+            "safety_response": safety_result,
+        }
 
+    # Step 2: Build messages for LLM
+    messages = [
+        SystemMessage(content=TWO_MODE_SYSTEM_PROMPT),
+    ]
+
+    # Build human message with context
+    human_parts = []
+    if conversation_context:
+        human_parts.append(conversation_context)
+    human_parts.append(f"\n\n사용자 메시지: {user_message}")
+
+    messages.append(HumanMessage(content="".join(human_parts)))
+
+    # Step 3: Single LLM call
+    model = get_chat_model(temperature=0.6, streaming=False)
+    response = await model.ainvoke(messages)
+
+    # Step 4: Parse JSON response
+    parsed = _parse_json_response(response.content)
+
+    # Step 5: Route based on mode
+    mode = parsed.get("mode", "")
+
+    if mode == "chat":
+        return {
+            "mode": "chat",
+            "final_response": parsed.get("message", ""),
+            "analysis": None,
+            "suggestions": [],
+            "is_abuse_detected": False,
+            "safety_response": None,
+        }
+
+    if mode == "reframing":
+        return {
+            "mode": "reframing",
+            "final_response": _build_readable_response(parsed),
+            "analysis": parsed.get("analysis"),
+            "suggestions": parsed.get("suggestions", []),
+            "is_abuse_detected": False,
+            "safety_response": None,
+        }
+
+    # Fallback: unrecognized mode - treat as chat
+    logger.warning(f"Unrecognized mode '{mode}' in LLM response, falling back to chat")
     return {
-        'final_response': result.get('final_response', ''),
-        'analysis': result.get('analysis'),
-        'suggestions': result.get('suggestions', []),
-        'is_abuse_detected': result.get('is_abuse_detected', False),
-        'safety_response': result.get('safety_response'),
+        "mode": "chat",
+        "final_response": parsed.get("message", str(parsed)),
+        "analysis": None,
+        "suggestions": [],
+        "is_abuse_detected": False,
+        "safety_response": None,
     }
 
 
-async def stream_reframing_pipeline(
+def run_reframing_pipeline_sync(
     user_message: str,
     conversation_context: str = "",
-) -> AsyncIterator[dict]:
-    """Stream the reframing pipeline, yielding progress updates.
-
-    Yields status updates as each node completes, then final response.
+) -> dict:
+    """Synchronous wrapper for run_reframing_pipeline.
 
     Args:
-        user_message: The user's message
-        conversation_context: Prior conversation summary
+        user_message: The user's message describing a conflict
+        conversation_context: Summary/history of prior conversation
 
-    Yields:
-        dicts with status updates and final response
+    Returns:
+        dict: Same as run_reframing_pipeline
     """
-    initial_state: ReframingState = {
-        'user_message': user_message,
-        'conversation_context': conversation_context,
-        'safety_check_result': None,
-        'is_abuse_detected': False,
-        'acknowledgment': '',
-        'analysis': None,
-        'suggestions': [],
-        'safety_response': None,
-        'final_response': '',
-        'streaming_chunks': [],
-    }
-
-    node_status_messages = {
-        'safety_check': '안전성을 확인하고 있어요...',
-        'acknowledge': '감정을 이해하고 있어요...',
-        'analyze': '양측의 관점을 분석하고 있어요...',
-        'suggest': '구체적인 제안을 준비하고 있어요...',
-        'combine': '응답을 정리하고 있어요...',
-        'safety_response': '지원 정보를 준비하고 있어요...',
-    }
-
-    async for event in reframing_graph.astream(initial_state):
-        for node_name, node_output in event.items():
-            if node_name in node_status_messages:
-                yield {
-                    'type': 'status',
-                    'node': node_name,
-                    'message': node_status_messages[node_name],
-                }
-
-            if node_name == 'combine' and 'final_response' in node_output:
-                yield {
-                    'type': 'complete',
-                    'final_response': node_output['final_response'],
-                    'analysis': node_output.get('analysis'),
-                    'suggestions': node_output.get('suggestions', []),
-                }
+    return asyncio.run(run_reframing_pipeline(
+        user_message=user_message,
+        conversation_context=conversation_context,
+    ))

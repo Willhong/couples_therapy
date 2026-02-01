@@ -8,10 +8,9 @@ from .llm_service import (
 )
 from .context_manager import ConversationContextManager
 from .reframing_graph import (
-    reframing_graph,
-    ReframingState,
     run_reframing_pipeline,
-    stream_reframing_pipeline,
+    run_reframing_pipeline_sync,
+    check_safety,
 )
 
 __all__ = [
@@ -23,8 +22,7 @@ __all__ = [
     # Context manager
     'ConversationContextManager',
     # Reframing pipeline
-    'reframing_graph',
-    'ReframingState',
     'run_reframing_pipeline',
-    'stream_reframing_pipeline',
+    'run_reframing_pipeline_sync',
+    'check_safety',
 ]
