@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** 갈등 상황에서 상대방의 관점을 이해하도록 돕는 리프레이밍
-**Current focus:** Phase 3 - Audio Pipeline (in progress)
+**Current focus:** Phase 3 - Audio Pipeline (COMPLETE)
 
 ## Current Position
 
 Phase: 3 of 4 (Audio Pipeline)
-Plan: 6 of 7 in current phase
-Status: In progress
-Last activity: 2026-02-03 - Completed 03-05-PLAN.md (Live Conflict Recording)
+Plan: 7 of 7 in current phase
+Status: Phase complete
+Last activity: 2026-02-03 - Completed 03-07-PLAN.md (Insights Dashboard)
 
-Progress: [██████████████░░] 88% (14/16 plans)
+Progress: [███████████████░] 94% (15/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: 7 min
-- Total execution time: 98 min
+- Total execution time: 106 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [██████████████░░] 88% (14/16 plans)
 |-------|-------|-------|----------|
 | 1. Foundation & Safety | 4/4 | 32m | 8m |
 | 2. Core Reframing | 5/5 | 39m | 8m |
-| 3. Audio Pipeline | 6/7 | 27m+ | 7m |
+| 3. Audio Pipeline | 7/7 | 35m | 5m |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 6m, 6m, 7m, 6m, 8m
+- Last 5 plans: 6m, 7m, 6m, 8m, 8m
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -101,6 +101,9 @@ Recent decisions affecting current work:
 | Updated beat_schedule to patterns.tasks | Replaced 03-01 placeholder with real implementation | 03-06 |
 | Synchronous LLM calls in detector | Runs inside Celery task; simpler than async | 03-06 |
 | update_or_create for InsightSummary | Re-analysis updates existing summary idempotently | 03-06 |
+| StyleProp<TextStyle> for TriggerHighlight | Supports style arrays from callers | 03-07 |
+| Trigger highlighting only on partner bubbles | User speech on blue bg makes orange highlight invisible | 03-07 |
+| Optional conversationId prop on TranscriptView | Session insights fetched by conversation_id; not always available | 03-07 |
 
 ### Pending Todos
 
@@ -136,6 +139,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-03T02:04+09:00
-Stopped at: Completed 03-05-PLAN.md (Live Conflict Recording)
+Last session: 2026-02-03T02:15+09:00
+Stopped at: Completed 03-07-PLAN.md (Insights Dashboard) - Phase 3 complete
 Resume file: None
