@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/v1/chat/', include('apps.chat.urls')),
     path('api/v1/audio/', include('apps.audio.urls')),
     path('api/v1/conversations/', include('apps.conversations.urls')),
+    path('api/v1/patterns/', include('apps.patterns.urls')),
 ]

@@ -84,7 +84,14 @@ def transcribe_audio(self, recording_id: str):
         recording.save(update_fields=['status', 'duration', 'full_text'])
 
         # Create a linked Conversation entry for the unified list
-        _create_conversation_for_recording(recording)
+        conversation = _create_conversation_for_recording(recording)
+
+        # Chain pattern analysis after transcription
+        try:
+            from apps.patterns.tasks import analyze_patterns
+            analyze_patterns.delay(str(conversation.id))
+        except Exception as e:
+            logger.warning(f"Failed to queue pattern analysis for {recording_id}: {e}")
 
         logger.info(f"Transcription completed for recording {recording_id}")
 

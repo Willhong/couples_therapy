@@ -252,6 +252,13 @@ def reframe_message(request):
     # Update conversation timestamp
     conversation.save()
 
+    # Trigger async pattern analysis
+    try:
+        from apps.patterns.tasks import analyze_patterns
+        analyze_patterns.delay(str(conversation.id))
+    except Exception as e:
+        logger.warning(f"Failed to queue pattern analysis: {e}")
+
     # Build response based on mode
     if is_reframing:
         return Response({

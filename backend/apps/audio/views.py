@@ -4,6 +4,7 @@ import asyncio
 import logging
 
 from django.db import models
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -45,21 +46,46 @@ def upload_audio(request):
     user = request.user
     recording_type = data['type']
 
-    # For live recordings, validate consent
+    # For live recordings, perform thorough consent validation
     couple = None
     if recording_type == 'live':
-        consent_session_id = data['consent_session_id']
-        try:
-            consent = RecordingConsent.objects.get(
-                session_id=consent_session_id,
-                status=RecordingConsent.Status.BOTH_CONSENTED,
+        consent_session_id = data.get('consent_session_id')
+        if not consent_session_id:
+            return Response(
+                {'detail': '실시간 녹음에는 동의 세션 ID가 필요합니다.'},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-            couple = consent.couple
+
+        try:
+            consent = RecordingConsent.objects.get(session_id=consent_session_id)
         except RecordingConsent.DoesNotExist:
             return Response(
                 {'detail': '유효한 녹음 동의를 찾을 수 없습니다.'},
                 status=status.HTTP_403_FORBIDDEN,
             )
+
+        # Validate consent status is BOTH_CONSENTED
+        if consent.status != RecordingConsent.Status.BOTH_CONSENTED:
+            return Response(
+                {'detail': f'동의 상태가 올바르지 않습니다: {consent.get_status_display()}'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # Validate consent is not expired
+        if timezone.now() > consent.expires_at:
+            return Response(
+                {'detail': '동의가 만료되었습니다. 새로운 동의를 요청해주세요.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # Validate the uploader is part of the consent (requester or responder)
+        if user != consent.requester and user != consent.responder:
+            return Response(
+                {'detail': '이 동의 세션에 대한 권한이 없습니다.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        couple = consent.couple
     else:
         # For narration, try to find user's couple
         couple = Couple.objects.filter(

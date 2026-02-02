@@ -1,4 +1,4 @@
-"""WebSocket consumer for real-time consent synchronization (SAFE-01)."""
+"""WebSocket consumer for real-time consent and recording synchronization (SAFE-01)."""
 
 import uuid
 from datetime import timedelta
@@ -13,12 +13,13 @@ from .models import RecordingConsent
 
 class ConsentConsumer(AsyncJsonWebsocketConsumer):
     """
-    WebSocket consumer for real-time consent synchronization.
+    WebSocket consumer for real-time consent and recording synchronization.
 
     Handles:
     - User presence (join/leave notifications)
     - Consent request initiation
     - Consent response (approve/decline)
+    - Recording lifecycle (started/stop/stopped)
     - Real-time broadcast to both partners
     """
 
@@ -94,6 +95,12 @@ class ConsentConsumer(AsyncJsonWebsocketConsumer):
             await self.handle_consent_response(content)
         elif action == 'withdraw_consent':
             await self.handle_consent_withdrawal(content)
+        elif action == 'recording_started':
+            await self.handle_recording_started(content)
+        elif action == 'stop_recording':
+            await self.handle_stop_recording(content)
+        elif action == 'recording_stopped':
+            await self.handle_recording_stopped(content)
         else:
             await self.send_json({
                 'type': 'error',
@@ -192,6 +199,48 @@ class ConsentConsumer(AsyncJsonWebsocketConsumer):
                 'message': str(e),
             })
 
+    async def handle_recording_started(self, content):
+        """Handle recording started notification from initiator."""
+        session_id = content.get('session_id')
+
+        # Broadcast to partner that recording has started
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'recording_started',
+                'session_id': session_id,
+                'started_by': self.user.id,
+            }
+        )
+
+    async def handle_stop_recording(self, content):
+        """Handle stop recording request from either partner."""
+        session_id = content.get('session_id')
+
+        # Broadcast stop to both partners
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'stop_recording',
+                'session_id': session_id,
+                'stopped_by': self.user.id,
+            }
+        )
+
+    async def handle_recording_stopped(self, content):
+        """Handle recording stopped confirmation."""
+        session_id = content.get('session_id')
+
+        # Broadcast that recording has been stopped
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'recording_stopped',
+                'session_id': session_id,
+                'stopped_by': self.user.id,
+            }
+        )
+
     # Event handlers (called by group_send)
     async def consent_requested(self, event):
         """Send consent_requested event to client."""
@@ -234,6 +283,30 @@ class ConsentConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({
             'type': 'user_left',
             'user_id': event['user_id'],
+        })
+
+    async def recording_started(self, event):
+        """Send recording_started event to client."""
+        await self.send_json({
+            'type': 'recording_started',
+            'session_id': event.get('session_id'),
+            'started_by': event['started_by'],
+        })
+
+    async def stop_recording(self, event):
+        """Send stop_recording event to client."""
+        await self.send_json({
+            'type': 'stop_recording',
+            'session_id': event.get('session_id'),
+            'stopped_by': event['stopped_by'],
+        })
+
+    async def recording_stopped(self, event):
+        """Send recording_stopped event to client."""
+        await self.send_json({
+            'type': 'recording_stopped',
+            'session_id': event.get('session_id'),
+            'stopped_by': event['stopped_by'],
         })
 
     async def presence_request(self, event):

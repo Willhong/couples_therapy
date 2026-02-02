@@ -1,6 +1,7 @@
 /**
  * RecordingScreen - Main recording feature screen
  * Manages full flow: mode selection -> recording -> preview -> upload -> processing
+ * Live mode: consent flow -> live recording (via LiveConsentFlow)
  */
 import React, { useState, useCallback, useEffect } from 'react';
 import {
@@ -21,10 +22,12 @@ import { WaveformVisualizer } from './WaveformVisualizer';
 import { RecordingControls } from './RecordingControls';
 import { RecordingPreview } from './RecordingPreview';
 import { GuidedPrompts } from './GuidedPrompts';
+import { LiveConsentFlow } from './LiveConsentFlow';
 import { RecordingMode, GuidedPrompt, TranscriptResult } from '../types';
 
 type ScreenPhase =
   | 'mode_select'
+  | 'live_consent'
   | 'recording'
   | 'preview'
   | 'uploading'
@@ -59,6 +62,33 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
   const handleSelectNarration = useCallback(() => {
     setMode('narration');
     setPhase('recording');
+    setErrorMessage(null);
+  }, []);
+
+  /**
+   * Select live mode -> enter live consent flow
+   */
+  const handleSelectLive = useCallback(() => {
+    setMode('live');
+    setPhase('live_consent');
+    setErrorMessage(null);
+  }, []);
+
+  /**
+   * Fallback from live mode to narration after consent decline
+   */
+  const handleFallbackToNarration = useCallback(() => {
+    setMode('narration');
+    setPhase('recording');
+    setErrorMessage(null);
+  }, []);
+
+  /**
+   * Cancel from live consent flow
+   */
+  const handleCancelLiveConsent = useCallback(() => {
+    setMode('narration');
+    setPhase('mode_select');
     setErrorMessage(null);
   }, []);
 
@@ -210,25 +240,33 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
               </Text>
             </Pressable>
 
-            {/* Live mode (disabled for now) */}
+            {/* Live mode */}
             <Pressable
-              style={[styles.modeCard, styles.modeCardDisabled]}
-              disabled
+              style={styles.modeCard}
+              onPress={handleSelectLive}
             >
-              <Ionicons name="people-outline" size={32} color="#D1D5DB" />
-              <Text style={[styles.modeCardTitle, styles.modeCardTitleDisabled]}>
+              <Ionicons name="people-outline" size={32} color="#6B7FD7" />
+              <Text style={styles.modeCardTitle}>
                 함께 녹음하기
               </Text>
-              <Text style={[styles.modeCardDesc, styles.modeCardDescDisabled]}>
+              <Text style={styles.modeCardDesc}>
                 파트너와 함께 대화를{'\n'}녹음합니다
               </Text>
-              <View style={styles.comingSoonBadge}>
-                <Text style={styles.comingSoonText}>준비 중</Text>
-              </View>
             </Pressable>
           </View>
         </View>
       </SafeAreaView>
+    );
+  }
+
+  // Live consent flow
+  if (phase === 'live_consent') {
+    return (
+      <LiveConsentFlow
+        onTranscriptionComplete={onTranscriptionComplete}
+        onFallbackToNarration={handleFallbackToNarration}
+        onCancel={handleCancelLiveConsent}
+      />
     );
   }
 
