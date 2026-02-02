@@ -23,9 +23,9 @@ app.autodiscover_tasks()
 # Beat schedule for periodic tasks
 app.conf.beat_schedule = {
     'weekly-pattern-summary': {
-        'task': 'apps.audio.tasks.generate_weekly_pattern_summary',
+        'task': 'apps.patterns.tasks.generate_weekly_summary_task',
         'schedule': crontab(
-            hour=9,
+            hour=0,  # 0 UTC = 9 KST
             minute=0,
             day_of_week=1,  # Monday
         ),

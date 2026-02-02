@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'apps.chat',
     'apps.audio',
     'apps.conversations',
+    'apps.patterns',
 ]
 
 SITE_ID = 1  # Required for django-allauth
