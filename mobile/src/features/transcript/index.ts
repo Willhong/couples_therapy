@@ -5,7 +5,9 @@
 // Components
 export { TranscriptLine } from './components/TranscriptLine';
 export { AudioPlayer } from './components/AudioPlayer';
-// TranscriptView, SpeakerAssignment, PostTranscriptActions exported after Task 2
+export { TranscriptView } from './components/TranscriptView';
+export { SpeakerAssignment } from './components/SpeakerAssignment';
+export { PostTranscriptActions } from './components/PostTranscriptActions';
 
 // Hooks
 export { useTranscript } from './hooks/useTranscript';

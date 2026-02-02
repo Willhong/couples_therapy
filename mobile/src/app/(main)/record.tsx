@@ -1,26 +1,37 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-
 /**
- * Record screen placeholder (Phase 3)
+ * Record screen - renders RecordingScreen from recording feature
+ * After transcription completes, routes based on recording mode:
+ *   narration -> post-recording-choice (choose before viewing transcript)
+ *   live -> transcript/[id] (view diarized content first)
  */
-export default function RecordScreen(): React.ReactElement {
+import React, { useCallback } from 'react';
+import { useRouter } from 'expo-router';
+import { RecordingScreen } from '@/features/recording/components/RecordingScreen';
+import type { RecordingMode, TranscriptResult } from '@/features/recording/types';
+
+export default function RecordScreenPage(): React.ReactElement {
+  const router = useRouter();
+
+  const handleTranscriptionComplete = useCallback(
+    (recordingId: string, mode: RecordingMode, _result: TranscriptResult) => {
+      if (mode === 'narration') {
+        // Self-narration: show choice screen BEFORE transcript
+        router.push({
+          pathname: '/(main)/post-recording-choice',
+          params: { recordingId },
+        });
+      } else {
+        // Live recording: go directly to transcript view
+        router.push({
+          pathname: '/(main)/transcript/[id]',
+          params: { id: recordingId },
+        });
+      }
+    },
+    [router]
+  );
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>녹음 기능은 준비 중입니다</Text>
-    </View>
+    <RecordingScreen onTranscriptionComplete={handleTranscriptionComplete} />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  text: {
-    fontSize: 16,
-    color: '#6B7280',
-  },
-});

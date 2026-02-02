@@ -21,7 +21,7 @@ import { WaveformVisualizer } from './WaveformVisualizer';
 import { RecordingControls } from './RecordingControls';
 import { RecordingPreview } from './RecordingPreview';
 import { GuidedPrompts } from './GuidedPrompts';
-import { RecordingMode, GuidedPrompt } from '../types';
+import { RecordingMode, GuidedPrompt, TranscriptResult } from '../types';
 
 type ScreenPhase =
   | 'mode_select'
@@ -30,7 +30,11 @@ type ScreenPhase =
   | 'uploading'
   | 'processing';
 
-export function RecordingScreen(): React.ReactElement {
+interface RecordingScreenProps {
+  onTranscriptionComplete?: (recordingId: string, mode: RecordingMode, result: TranscriptResult) => void;
+}
+
+export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProps = {}): React.ReactElement {
   const [phase, setPhase] = useState<ScreenPhase>('mode_select');
   const [mode, setMode] = useState<RecordingMode>('narration');
   const [showGuided, setShowGuided] = useState(true);
@@ -117,24 +121,32 @@ export function RecordingScreen(): React.ReactElement {
 
       const result = await pollTranscriptionStatus(recording_id);
 
-      // Transcript view will be in Plan 03, show alert for now
-      Alert.alert(
-        '처리 완료',
-        result.full_text
-          ? result.full_text.substring(0, 300) +
-              (result.full_text.length > 300 ? '...' : '')
-          : '텍스트 변환이 완료되었습니다.',
-        [
-          {
-            text: '확인',
-            onPress: () => {
-              resetWaveform();
-              setPhase('mode_select');
-              setSelectedPromptId(null);
+      // Mode-aware routing via callback
+      if (onTranscriptionComplete) {
+        resetWaveform();
+        setPhase('mode_select');
+        setSelectedPromptId(null);
+        onTranscriptionComplete(recording_id, mode, result);
+      } else {
+        // Fallback: show alert
+        Alert.alert(
+          '처리 완료',
+          result.full_text
+            ? result.full_text.substring(0, 300) +
+                (result.full_text.length > 300 ? '...' : '')
+            : '텍스트 변환이 완료되었습니다.',
+          [
+            {
+              text: '확인',
+              onPress: () => {
+                resetWaveform();
+                setPhase('mode_select');
+                setSelectedPromptId(null);
+              },
             },
-          },
-        ]
-      );
+          ]
+        );
+      }
     } catch (error) {
       const msg =
         error instanceof Error
@@ -143,7 +155,7 @@ export function RecordingScreen(): React.ReactElement {
       setErrorMessage(msg);
       setPhase('preview');
     }
-  }, [recordingState.uri, mode, resetWaveform]);
+  }, [recordingState.uri, mode, resetWaveform, onTranscriptionComplete]);
 
   /**
    * Handle guided prompt selection

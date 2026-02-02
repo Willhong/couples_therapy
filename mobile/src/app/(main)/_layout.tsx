@@ -61,6 +61,18 @@ export default function MainLayout(): React.ReactElement {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="transcript/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="post-recording-choice"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
