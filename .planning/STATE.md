@@ -87,6 +87,10 @@ Recent decisions affecting current work:
 | View-based waveform (not SVG/Reanimated) | Simpler, follows project pattern of state-driven UI | 03-02 |
 | 100ms metering polling | Smooth waveform visualization without excessive CPU | 03-02 |
 | Live recording mode disabled | Consent flow deferred to Plan 03-05 | 03-02 |
+| onTranscriptionComplete callback pattern | Decouples RecordingScreen from routing logic | 03-03 |
+| Hidden tab screens for transcript routes | Accessible via navigation, not shown in tab bar | 03-03 |
+| Speaker assignment auto-shown for live only | Narration single speaker needs no assignment | 03-03 |
+| Emotion intensity as left border color | Subtle visual cue on transcript bubbles | 03-03 |
 | Page-number pagination for unified list | Simpler than cursor; list ordered by updated_at | 03-04 |
 | Auto-create Conversation in transcribe_audio task | Every completed recording auto-appears in unified list | 03-04 |
 | 4-tab layout (Home/Chat/Record/Insights) | Phase 3 enables recording tab; insights placeholder ready | 03-04 |
@@ -125,6 +129,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-03T01:52+09:00
-Stopped at: Completed 03-04-PLAN.md (Unified Conversation List)
+Last session: 2026-02-03T01:53+09:00
+Stopped at: Completed 03-03-PLAN.md (Transcript Display & Interaction) and 03-04-PLAN.md (Unified Conversation List)
 Resume file: None
