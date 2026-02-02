@@ -1,6 +1,6 @@
 /**
- * Main app layout with tab navigation
- * Home and Chat tabs enabled
+ * Main app layout with tab navigation.
+ * 4 tabs: Home, Chat, Record, Insights
  */
 import React from 'react';
 import { Tabs } from 'expo-router';
@@ -35,6 +35,30 @@ export default function MainLayout(): React.ReactElement {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbubbles" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="record"
+        options={{
+          title: '녹음',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="mic" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="insights"
+        options={{
+          title: '인사이트',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="analytics" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
