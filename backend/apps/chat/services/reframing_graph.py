@@ -20,6 +20,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from ..prompts.system_prompts import (
     TWO_MODE_SYSTEM_PROMPT,
+    COMFORT_MODE_PROMPT,
     SAFETY_RESPONSE_TEMPLATE,
     SAFETY_KEYWORDS,
 )
@@ -217,6 +218,59 @@ async def run_reframing_pipeline(
         "suggestions": [],
         "is_abuse_detected": False,
         "safety_response": None,
+    }
+
+
+async def run_comfort_pipeline(
+    user_message: str,
+    conversation_context: str = "",
+) -> dict:
+    """Run the comfort mode pipeline - empathetic response without reframing.
+
+    Uses COMFORT_MODE_PROMPT to generate a warm, supportive response
+    that validates the user's emotions without analysis or suggestions.
+
+    Args:
+        user_message: The user's message expressing difficult emotions
+        conversation_context: Summary/history of prior conversation
+
+    Returns:
+        dict with:
+            - mode: 'comfort'
+            - final_response: The empathetic response text
+            - is_abuse_detected: False (comfort mode doesn't detect abuse)
+    """
+    # Safety pre-filter still applies
+    safety_result = check_safety(user_message)
+
+    if safety_result and safety_result.get("is_abuse_detected"):
+        logger.info("Severe abuse detected in comfort mode - returning safety response")
+        return {
+            "mode": "comfort",
+            "final_response": safety_result["acknowledgment"],
+            "is_abuse_detected": True,
+        }
+
+    # Build messages for LLM
+    messages = [
+        SystemMessage(content=COMFORT_MODE_PROMPT),
+    ]
+
+    human_parts = []
+    if conversation_context:
+        human_parts.append(conversation_context)
+    human_parts.append(f"\n\n사용자 메시지: {user_message}")
+
+    messages.append(HumanMessage(content="".join(human_parts)))
+
+    # Single LLM call
+    model = get_chat_model(temperature=0.7, streaming=False)
+    response = await model.ainvoke(messages)
+
+    return {
+        "mode": "comfort",
+        "final_response": response.content,
+        "is_abuse_detected": False,
     }
 
 

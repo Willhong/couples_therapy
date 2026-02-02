@@ -19,7 +19,7 @@ from .serializers import (
     SharedReframingSerializer,
 )
 from .services.llm_service import get_provider_info, LLMConfigurationError
-from .services.reframing_graph import run_reframing_pipeline
+from .services.reframing_graph import run_reframing_pipeline, run_comfort_pipeline
 from .services.context_manager import ConversationContextManager
 
 logger = logging.getLogger(__name__)
@@ -400,3 +400,91 @@ def share_reframing(request):
     )
 
     return Response(SharedReframingSerializer(shared).data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def comfort_message(request):
+    """Process a message through the comfort mode pipeline.
+
+    Returns an empathetic response that validates the user's emotions
+    without reframing or analysis.
+
+    Request body:
+        conversation_id: UUID of the conversation
+        message: User's message expressing difficult emotions
+
+    Returns:
+        mode: 'comfort'
+        final_response: The empathetic response text
+        message_id: UUID of the saved AI message
+        user_message_id: UUID of the saved user message
+    """
+    conversation_id = request.data.get('conversation_id')
+    user_message = request.data.get('message')
+
+    if not conversation_id or not user_message:
+        return Response(
+            {'detail': 'conversation_id와 message가 필요합니다.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Verify user owns the conversation
+    try:
+        conversation = Conversation.objects.get(
+            id=conversation_id,
+            user=request.user
+        )
+    except Conversation.DoesNotExist:
+        return Response(
+            {'detail': '대화를 찾을 수 없습니다.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Save user message
+    user_msg = Message.objects.create(
+        conversation=conversation,
+        role=Message.Role.USER,
+        content=user_message,
+    )
+
+    # Get conversation context
+    context_manager = ConversationContextManager(str(conversation_id))
+    conversation_context = context_manager.get_context_for_ai()
+
+    # Run comfort pipeline
+    try:
+        result = asyncio.run(run_comfort_pipeline(
+            user_message=user_message,
+            conversation_context=conversation_context,
+        ))
+    except LLMConfigurationError as e:
+        logger.error(f"LLM configuration error: {e}")
+        return Response(
+            {'detail': f'LLM 설정 오류: {str(e)}'},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE
+        )
+    except Exception as e:
+        logger.exception(f"Comfort pipeline error: {e}")
+        return Response(
+            {'detail': '위로 모드 처리 중 오류가 발생했습니다.'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+    # Save AI response
+    ai_msg = Message.objects.create(
+        conversation=conversation,
+        role=Message.Role.ASSISTANT,
+        content=result['final_response'],
+    )
+
+    # Update conversation timestamp
+    conversation.save()
+
+    return Response({
+        'mode': 'comfort',
+        'final_response': result['final_response'],
+        'is_abuse_detected': result.get('is_abuse_detected', False),
+        'message_id': str(ai_msg.id),
+        'user_message_id': str(user_msg.id),
+    })

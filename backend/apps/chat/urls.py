@@ -12,6 +12,7 @@ from .views import (
     reframe_message,
     save_reframing,
     share_reframing,
+    comfort_message,
 )
 
 # Main router for top-level resources
@@ -29,6 +30,7 @@ urlpatterns = [
     path('reframe/', reframe_message, name='reframe-message'),
     path('save-reframing/', save_reframing, name='save-reframing'),
     path('share/', share_reframing, name='share-reframing'),
+    path('comfort/', comfort_message, name='comfort-message'),
 
     # Router URLs
     path('', include(router.urls)),

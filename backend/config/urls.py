@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/v1/consents/', include('apps.consents.urls')),
     path('api/v1/onboarding/', include('apps.onboarding.urls')),
     path('api/v1/chat/', include('apps.chat.urls')),
+    path('api/v1/audio/', include('apps.audio.urls')),
 ]
