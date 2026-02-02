@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** 갈등 상황에서 상대방의 관점을 이해하도록 돕는 리프레이밍
-**Current focus:** Phase 2 complete. Next: Phase 3 - Audio Pipeline
+**Current focus:** Phase 3 - Audio Pipeline (in progress)
 
 ## Current Position
 
-Phase: 2 of 4 (Core Reframing) — COMPLETE
-Plan: 5 of 5 in current phase
-Status: Phase complete, verified
-Last activity: 2026-02-02 - Phase 2 verified and approved
+Phase: 3 of 4 (Audio Pipeline)
+Plan: 2 of 7 in current phase
+Status: In progress
+Last activity: 2026-02-03 - Completed 03-02-PLAN.md (Frontend Recording Feature)
 
-Progress: [██████████] 100% (Phase 2)
+Progress: [██████████░░░░░░] 63% (10/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 8 min
-- Total execution time: 71 min
+- Total execution time: 77 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [██████████] 100% (Phase 2)
 |-------|-------|-------|----------|
 | 1. Foundation & Safety | 4/4 | 32m | 8m |
 | 2. Core Reframing | 5/5 | 39m | 8m |
-| 3. Audio Pipeline | 0/2 | - | - |
+| 3. Audio Pipeline | 2/7 | 6m+ | 6m |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 7m, 8m, 8m, 8m, 8m
+- Last 5 plans: 8m, 8m, 8m, 8m, 6m
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -79,6 +79,14 @@ Recent decisions affecting current work:
 | Feature-based chat folder structure | Consistent with onboarding pattern | 02-04 |
 | Regular HTTP instead of SSE | React Native fetch doesn't support ReadableStream | 02-05 |
 | POST as upsert for singleton ViewSets | Profile/Goals are one-per-user; POST acts as update | 02-05 |
+| Redis db 1 for Celery broker | Separate from channels layer (db 0) | 03-01 |
+| OpenAI direct API for transcription | Transcription not available via OpenRouter | 03-01 |
+| gpt-4o-transcribe model | Latest OpenAI model with Korean language support | 03-01 |
+| Always delete audio after transcription | Privacy - raw audio never persisted | 03-01 |
+| Comfort mode as explicit user choice | Not LLM mode selection, user picks comfort vs reframe | 03-01 |
+| View-based waveform (not SVG/Reanimated) | Simpler, follows project pattern of state-driven UI | 03-02 |
+| 100ms metering polling | Smooth waveform visualization without excessive CPU | 03-02 |
+| Live recording mode disabled | Consent flow deferred to Plan 03-05 | 03-02 |
 
 ### Pending Todos
 
@@ -114,6 +122,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-02
-Stopped at: Phase 2 complete and verified
+Last session: 2026-02-03
+Stopped at: Completed 03-02-PLAN.md (Frontend Recording Feature)
 Resume file: None
