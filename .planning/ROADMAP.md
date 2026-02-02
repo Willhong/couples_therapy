@@ -66,11 +66,16 @@ Plans:
   3. App correctly identifies which partner said which lines (speaker diarization)
   4. User sees recurring conflict themes highlighted across multiple entries
   5. User sees trigger words/phrases flagged (e.g., "you always", "you never")
-**Plans**: TBD
+**Plans**: 7 plans in 4 waves
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md — Backend: Celery setup, audio models, transcription service, comfort mode (Wave 1)
+- [ ] 03-02-PLAN.md — Frontend: expo-av recording, waveform, preview, upload (Wave 1)
+- [ ] 03-03-PLAN.md — Transcript display: chat-bubble view, speaker assignment, audio player, post-actions (Wave 2)
+- [ ] 03-04-PLAN.md — Unified conversation list: backend endpoint + frontend list with tab update (Wave 2)
+- [ ] 03-05-PLAN.md — Live conflict recording: partner consent flow, diarized recording (Wave 3)
+- [ ] 03-06-PLAN.md — Pattern detection backend: models, LLM analysis, Celery tasks, API (Wave 3)
+- [ ] 03-07-PLAN.md — Insights dashboard: charts, trigger highlights, weekly summary (Wave 4)
 
 ### Phase 4: Partner & Engagement
 **Goal**: Partners can collaborate on relationship improvement through shared tools, guided exercises, and structured communication prompts.
@@ -97,7 +102,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation & Safety | 4/4 | ✓ Complete | 2026-01-23 |
 | 2. Core Reframing | 5/5 | ✓ Complete | 2026-02-02 |
-| 3. Audio Pipeline | 0/2 | Not started | - |
+| 3. Audio Pipeline | 0/7 | Planned | - |
 | 4. Partner & Engagement | 0/2 | Not started | - |
 
 ---
@@ -105,5 +110,6 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 *Phase 1 re-planned: 2026-01-23 (Django backend)*
 *Phase 2 planned: 2026-01-23 (5 plans in 4 waves)*
 *Phase 2 Plan 02 re-architected: 2026-02-02 (two-mode chat+reframing pipeline)*
+*Phase 3 planned: 2026-02-03 (7 plans in 4 waves)*
 *Depth: quick (4 phases)*
 *Coverage: 32/32 v1 requirements mapped*
