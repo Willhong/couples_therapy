@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'channels',
+    'django_celery_beat',
 
     # Local apps
     'apps.users',
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.onboarding',
     'apps.chat',
+    'apps.audio',
 ]
 
 SITE_ID = 1  # Required for django-allauth
@@ -264,3 +266,25 @@ LLM_MODELS = {
 # LLM parameters
 LLM_MAX_TOKENS = env.int('LLM_MAX_TOKENS', default=2048)
 LLM_TEMPERATURE = env.float('LLM_TEMPERATURE', default=0.7)
+
+
+# Celery Configuration (Redis broker on db 1, channels uses db 0)
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://localhost:6379/1')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://localhost:6379/1')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+# OpenAI API Key (direct API for transcription, separate from LangChain)
+OPENAI_API_KEY = env('OPENAI_API_KEY', default='')
+
+
+# Media files (temporary audio storage)
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
+
+# Audio recording limits
+MAX_RECORDING_DURATION = 1800  # 30 minutes in seconds
+MAX_AUDIO_FILE_SIZE = 25 * 1024 * 1024  # 25MB
