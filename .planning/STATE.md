@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 3 of 4 (Audio Pipeline)
-Plan: 4 of 7 in current phase
+Plan: 6 of 7 in current phase
 Status: In progress
-Last activity: 2026-02-03 - Completed 03-04-PLAN.md (Unified Conversation List)
+Last activity: 2026-02-03 - Completed 03-06-PLAN.md (Pattern Detection Backend)
 
-Progress: [████████████░░░░] 75% (12/16 plans)
+Progress: [█████████████░░░] 81% (13/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: 7 min
-- Total execution time: 84 min
+- Total execution time: 90 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [████████████░░░░] 75% (12/16 plans)
 |-------|-------|-------|----------|
 | 1. Foundation & Safety | 4/4 | 32m | 8m |
 | 2. Core Reframing | 5/5 | 39m | 8m |
-| 3. Audio Pipeline | 4/7 | 13m+ | 7m |
+| 3. Audio Pipeline | 5/7 | 19m+ | 6m |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 8m, 8m, 6m, 6m, 7m
+- Last 5 plans: 8m, 6m, 6m, 7m, 6m
 - Trend: Stable / slightly improving
 
 *Updated after each plan completion*
@@ -94,6 +94,9 @@ Recent decisions affecting current work:
 | Page-number pagination for unified list | Simpler than cursor; list ordered by updated_at | 03-04 |
 | Auto-create Conversation in transcribe_audio task | Every completed recording auto-appears in unified list | 03-04 |
 | 4-tab layout (Home/Chat/Record/Insights) | Phase 3 enables recording tab; insights placeholder ready | 03-04 |
+| Updated beat_schedule to patterns.tasks | Replaced 03-01 placeholder with real implementation | 03-06 |
+| Synchronous LLM calls in detector | Runs inside Celery task; simpler than async | 03-06 |
+| update_or_create for InsightSummary | Re-analysis updates existing summary idempotently | 03-06 |
 
 ### Pending Todos
 
@@ -129,6 +132,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-03T01:53+09:00
-Stopped at: Completed 03-03-PLAN.md (Transcript Display & Interaction) and 03-04-PLAN.md (Unified Conversation List)
+Last session: 2026-02-03T02:03+09:00
+Stopped at: Completed 03-06-PLAN.md (Pattern Detection Backend)
 Resume file: None
