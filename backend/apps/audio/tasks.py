@@ -83,6 +83,9 @@ def transcribe_audio(self, recording_id: str):
         recording.full_text = result['text']
         recording.save(update_fields=['status', 'duration', 'full_text'])
 
+        # Create a linked Conversation entry for the unified list
+        _create_conversation_for_recording(recording)
+
         logger.info(f"Transcription completed for recording {recording_id}")
 
     except TranscriptionError as e:
@@ -110,6 +113,47 @@ def transcribe_audio(self, recording_id: str):
             recording.delete_audio_file()
         except Exception as e:
             logger.error(f"Failed to delete audio file for {recording_id}: {e}")
+
+
+def _create_conversation_for_recording(recording):
+    """Create a Conversation entry linked to a completed audio recording.
+
+    Maps recording_type to ConversationType and populates summary from
+    the first 200 characters of the transcript.
+    """
+    from apps.chat.models import Conversation
+
+    type_map = {
+        'narration': Conversation.ConversationType.NARRATION,
+        'live': Conversation.ConversationType.LIVE,
+    }
+    conv_type = type_map.get(recording.recording_type, Conversation.ConversationType.NARRATION)
+
+    # Generate a short title from the transcript
+    full_text = str(recording.full_text or '')
+    title = full_text[:50].strip()
+    if len(full_text) > 50:
+        title += '...'
+    if not title:
+        title = '녹음 대화'
+
+    summary = full_text[:200].strip()
+
+    conversation = Conversation.objects.create(
+        user=recording.user,
+        couple=recording.couple,
+        title=title,
+        conversation_type=conv_type,
+        summary=summary,
+        emotion_indicator=recording.emotion_intensity,
+    )
+
+    # Link the recording to this conversation
+    recording.conversation = conversation
+    recording.save(update_fields=['conversation'])
+
+    logger.info(f"Created conversation {conversation.id} for recording {recording.id}")
+    return conversation
 
 
 @shared_task

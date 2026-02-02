@@ -9,6 +9,11 @@ from fernet_fields.fields import EncryptedTextField
 class Conversation(models.Model):
     """A conversation thread for a user."""
 
+    class ConversationType(models.TextChoices):
+        TEXT = 'text', 'Text Chat'
+        NARRATION = 'narration', 'Narration Recording'
+        LIVE = 'live', 'Live Recording'
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -22,6 +27,13 @@ class Conversation(models.Model):
         null=True, blank=True  # Solo users before partner connection
     )
     title = models.CharField(max_length=200, blank=True)  # Auto-generated from first message
+    conversation_type = models.CharField(
+        max_length=20,
+        choices=ConversationType.choices,
+        default=ConversationType.TEXT,
+    )
+    summary = models.TextField(blank=True, default='')
+    emotion_indicator = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

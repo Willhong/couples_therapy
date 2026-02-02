@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'apps.onboarding',
     'apps.chat',
     'apps.audio',
+    'apps.conversations',
 ]
 
 SITE_ID = 1  # Required for django-allauth
