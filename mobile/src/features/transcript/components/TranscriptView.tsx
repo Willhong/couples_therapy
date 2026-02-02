@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { useTranscript } from '../hooks/useTranscript';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { useSessionInsight } from '@/features/insights/hooks/useInsights';
 import { TranscriptLine } from './TranscriptLine';
 import { AudioPlayer } from './AudioPlayer';
 import { SpeakerAssignment } from './SpeakerAssignment';
@@ -28,11 +29,13 @@ import type { SpeakerMap } from '../types';
 
 interface Props {
   recordingId: string;
+  conversationId?: string | null;
   onActionComplete?: (action: PostTranscriptAction) => void;
 }
 
 export function TranscriptView({
   recordingId,
+  conversationId,
   onActionComplete,
 }: Props): React.ReactElement {
   const {
@@ -57,6 +60,13 @@ export function TranscriptView({
     seekTo,
     jumpToTime,
   } = useAudioPlayer(audioUri);
+
+  // Session insight (trigger phrases for highlighting)
+  const { data: sessionInsight } = useSessionInsight(conversationId ?? null);
+  const triggerPhrases = useMemo(
+    () => (sessionInsight?.trigger_phrases || []),
+    [sessionInsight],
+  );
 
   // Speaker assignment modal (for live recordings on first load)
   const [showSpeakerAssignment, setShowSpeakerAssignment] = useState(false);
@@ -165,11 +175,12 @@ export function TranscriptView({
         speakerMap={speakerMap}
         isCurrentlyPlaying={currentPlayingSegmentId === item.id}
         isNarration={isNarration}
+        triggerPhrases={triggerPhrases}
         onPress={handleSegmentPress}
         onLongPress={handleSegmentLongPress}
       />
     ),
-    [speakerMap, currentPlayingSegmentId, isNarration, handleSegmentPress, handleSegmentLongPress]
+    [speakerMap, currentPlayingSegmentId, isNarration, triggerPhrases, handleSegmentPress, handleSegmentLongPress]
   );
 
   const keyExtractor = useCallback(
@@ -217,6 +228,19 @@ export function TranscriptView({
         onPause={pause}
         onSeek={seekTo}
       />
+
+      {/* Session insight callout */}
+      {sessionInsight && (
+        <View style={styles.insightCallout}>
+          <Text style={styles.insightCalloutTitle}>이 세션의 패턴</Text>
+          <Text style={styles.insightCalloutText}>
+            감정 강도 {sessionInsight.escalation_score}/10
+            {triggerPhrases.length > 0
+              ? ` \u00b7 트리거 표현 ${triggerPhrases.length}개`
+              : ''}
+          </Text>
+        </View>
+      )}
 
       {/* Transcript List */}
       <FlatList
@@ -310,6 +334,23 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: '#9CA3AF',
+  },
+  insightCallout: {
+    backgroundColor: '#F0F4FF',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E7FF',
+  },
+  insightCalloutTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#6B7FD7',
+    marginBottom: 2,
+  },
+  insightCalloutText: {
+    fontSize: 13,
+    color: '#4B5563',
   },
   list: {
     flex: 1,

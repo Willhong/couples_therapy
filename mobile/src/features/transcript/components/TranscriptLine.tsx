@@ -7,6 +7,7 @@
  */
 import React, { memo, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { TriggerHighlight } from '@/features/insights/components/TriggerHighlight';
 import type { TranscriptSegment } from '@/features/recording/types';
 import type { SpeakerMap } from '../types';
 
@@ -15,6 +16,7 @@ interface Props {
   speakerMap: SpeakerMap;
   isCurrentlyPlaying: boolean;
   isNarration: boolean;
+  triggerPhrases?: string[];
   onPress: (segment: TranscriptSegment) => void;
   onLongPress: (segment: TranscriptSegment) => void;
 }
@@ -37,6 +39,7 @@ function TranscriptLineComponent({
   speakerMap,
   isCurrentlyPlaying,
   isNarration,
+  triggerPhrases = [],
   onPress,
   onLongPress,
 }: Props): React.ReactElement {
@@ -85,14 +88,22 @@ function TranscriptLineComponent({
           },
         ]}
       >
-        <Text
-          style={[
-            styles.text,
-            isUserSpeaker ? styles.textUser : styles.textOther,
-          ]}
-        >
-          {segment.text}
-        </Text>
+        {triggerPhrases.length > 0 && !isUserSpeaker ? (
+          <TriggerHighlight
+            text={segment.text}
+            triggerPhrases={triggerPhrases}
+            textStyle={[styles.text, styles.textOther]}
+          />
+        ) : (
+          <Text
+            style={[
+              styles.text,
+              isUserSpeaker ? styles.textUser : styles.textOther,
+            ]}
+          >
+            {segment.text}
+          </Text>
+        )}
       </Pressable>
 
       {/* Timestamp */}

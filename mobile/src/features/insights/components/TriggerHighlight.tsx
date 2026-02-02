@@ -4,12 +4,12 @@
  * Used in both transcript view and insights dashboard.
  */
 import React, { useMemo } from 'react';
-import { Text, StyleSheet, TextStyle } from 'react-native';
+import { Text, StyleSheet, TextStyle, StyleProp } from 'react-native';
 
 interface Props {
   text: string;
   triggerPhrases: string[];
-  textStyle?: TextStyle;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 interface TextPart {
