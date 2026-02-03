@@ -22,6 +22,7 @@ const CONSENT_TIMEOUT_MS = 5 * 60 * 1000;
 
 interface UseLiveRecordingReturn {
   phase: LivePhase;
+  isRequester: boolean;  // true if this user initiated the consent request
   requestConsent: () => void;
   giveConsent: () => void;
   denyConsent: () => void;
@@ -40,6 +41,7 @@ interface UseLiveRecordingReturn {
 export function useLiveRecording(): UseLiveRecordingReturn {
   const [phase, setPhase] = useState<LivePhase>('requesting_consent');
   const [error, setError] = useState<string | null>(null);
+  const [isRequester, setIsRequester] = useState(false);
   const consentTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
@@ -125,6 +127,7 @@ export function useLiveRecording(): UseLiveRecordingReturn {
     }
 
     setError(null);
+    setIsRequester(true);  // Mark as requester - only requester will record
     setPhase('waiting_consent');
     initiateConsent();
 
@@ -178,6 +181,7 @@ export function useLiveRecording(): UseLiveRecordingReturn {
 
   return {
     phase,
+    isRequester,
     requestConsent,
     giveConsent,
     denyConsent,

@@ -103,14 +103,17 @@ def transcribe_with_diarization(audio_file_path: str) -> dict:
         segments = []
         full_text = response.text
 
+        # Get duration safely (may not be present in json format)
+        duration = getattr(response, 'duration', 0.0) or 0.0
+
         # If the API provides segments with speaker info, use them
         if hasattr(response, 'segments') and response.segments:
             for i, seg in enumerate(response.segments):
                 segments.append({
                     'speaker': getattr(seg, 'speaker', f'speaker_{i % 2}'),
                     'text': seg.text.strip(),
-                    'start': seg.start,
-                    'end': seg.end,
+                    'start': getattr(seg, 'start', 0.0),
+                    'end': getattr(seg, 'end', 0.0),
                 })
         else:
             # Fallback: treat entire transcription as a single segment
@@ -118,12 +121,12 @@ def transcribe_with_diarization(audio_file_path: str) -> dict:
                 'speaker': 'A',
                 'text': full_text,
                 'start': 0.0,
-                'end': response.duration or 0.0,
+                'end': duration,
             })
 
         return {
             'text': full_text,
-            'duration': response.duration or 0.0,
+            'duration': duration,
             'segments': segments,
         }
 

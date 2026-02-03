@@ -36,6 +36,7 @@ export function LiveConsentFlow({
 }: LiveConsentFlowProps): React.ReactElement {
   const {
     phase,
+    isRequester,
     requestConsent,
     giveConsent,
     denyConsent,
@@ -62,15 +63,15 @@ export function LiveConsentFlow({
     }
   }, [metering.length]);
 
-  // Auto-start recording when consent is granted
+  // Auto-start recording when consent is granted (only for requester)
   useEffect(() => {
-    if (phase === 'consent_granted') {
+    if (phase === 'consent_granted' && isRequester) {
       const timer = setTimeout(() => {
         startRecording();
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [phase, startRecording]);
+  }, [phase, isRequester, startRecording]);
 
   /**
    * Handle stop: stop recording and upload
@@ -223,19 +224,38 @@ export function LiveConsentFlow({
     );
   }
 
-  // ---- CONSENT GRANTED (brief before auto-start) ----
+  // ---- CONSENT GRANTED ----
   if (phase === 'consent_granted') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.centerContainer}>
-          <Ionicons name="checkmark-circle" size={48} color="#10B981" />
-          <Text style={styles.statusTitle}>동의 완료</Text>
-          <Text style={styles.statusDesc}>
-            녹음을 시작합니다...
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
+    if (isRequester) {
+      // Requester: brief screen before auto-start
+      return (
+        <SafeAreaView style={styles.container}>
+          <View style={styles.centerContainer}>
+            <Ionicons name="checkmark-circle" size={48} color="#10B981" />
+            <Text style={styles.statusTitle}>동의 완료</Text>
+            <Text style={styles.statusDesc}>
+              녹음을 시작합니다...
+            </Text>
+          </View>
+        </SafeAreaView>
+      );
+    } else {
+      // Responder: show waiting for partner to start recording
+      return (
+        <SafeAreaView style={styles.container}>
+          <View style={styles.centerContainer}>
+            <Ionicons name="checkmark-circle" size={48} color="#10B981" />
+            <Text style={styles.statusTitle}>동의 완료</Text>
+            <Text style={styles.statusDesc}>
+              파트너가 녹음을 시작하면{'\n'}알림이 표시됩니다.
+            </Text>
+            <Pressable style={styles.secondaryButton} onPress={onCancel}>
+              <Text style={styles.secondaryButtonText}>닫기</Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
+      );
+    }
   }
 
   // ---- CONSENT DECLINED ----
