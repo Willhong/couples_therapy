@@ -3,7 +3,7 @@
  * Manages full flow: mode selection -> recording -> preview -> upload -> processing
  * Live mode: consent flow -> live recording (via LiveConsentFlow)
  */
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,6 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
 import { useAudioRecording } from '../hooks/useAudioRecording';
 import { useWaveform } from '../hooks/useWaveform';
 import { uploadAudio, pollTranscriptionStatus } from '../services/audioApi';
@@ -57,29 +56,28 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
     }
   }, [recordingState.metering.length]);
 
-  // Track if user has navigated away from this tab
-  const hasNavigatedAway = useRef(false);
+  /**
+   * Reset all state to initial values
+   */
+  const resetToModeSelect = useCallback(() => {
+    setPhase('mode_select');
+    setMode('narration');
+    setSelectedPromptId(null);
+    setErrorMessage(null);
+    resetWaveform();
+  }, [resetWaveform]);
 
-  // Reset state when tab regains focus AFTER user navigated away
-  useFocusEffect(
-    useCallback(() => {
-      // On focus: reset if user had navigated away and we're in a stale state
-      if (hasNavigatedAway.current) {
-        if (phase === 'live_consent' || phase === 'uploading' || phase === 'processing') {
-          setPhase('mode_select');
-          setMode('narration');
-          setSelectedPromptId(null);
-          setErrorMessage(null);
-          resetWaveform();
-        }
-        hasNavigatedAway.current = false;
+  /**
+   * Wrapper for onTranscriptionComplete that resets state before calling parent
+   */
+  const handleLiveTranscriptionComplete = useCallback(
+    (recordingId: string, recordingMode: RecordingMode, result: TranscriptResult) => {
+      resetToModeSelect();
+      if (onTranscriptionComplete) {
+        onTranscriptionComplete(recordingId, recordingMode, result);
       }
-
-      // On blur: mark that user navigated away
-      return () => {
-        hasNavigatedAway.current = true;
-      };
-    }, [phase, resetWaveform])
+    },
+    [onTranscriptionComplete, resetToModeSelect]
   );
 
   /**
@@ -289,7 +287,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
   if (phase === 'live_consent') {
     return (
       <LiveConsentFlow
-        onTranscriptionComplete={onTranscriptionComplete}
+        onTranscriptionComplete={handleLiveTranscriptionComplete}
         onFallbackToNarration={handleFallbackToNarration}
         onCancel={handleCancelLiveConsent}
       />
