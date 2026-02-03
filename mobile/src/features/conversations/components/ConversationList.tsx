@@ -40,9 +40,12 @@ export function ConversationList(): React.ReactElement {
         return;
       }
 
-      // Audio types - navigate to transcript if we have a recording
+      // Audio types - navigate to transcript view
       if (item.recording_id) {
-        router.push(`/recording/transcript/${item.recording_id}` as never);
+        router.push({
+          pathname: '/(main)/transcript/[id]',
+          params: { id: item.recording_id, from: 'home' },
+        });
       }
     },
     [router]
