@@ -42,7 +42,7 @@ export default function PostRecordingChoiceScreen(): React.ReactElement {
     if (!recordingId) return;
     router.push({
       pathname: '/(main)/transcript/[id]',
-      params: { id: recordingId },
+      params: { id: recordingId, from: 'post-recording-choice' },
     });
   }, [recordingId, router]);
 

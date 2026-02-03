@@ -11,7 +11,7 @@ import { TranscriptView } from '@/features/transcript/components/TranscriptView'
 import type { PostTranscriptAction } from '@/features/recording/types';
 
 export default function TranscriptDetailScreen(): React.ReactElement {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
   const router = useRouter();
 
   const handleActionComplete = useCallback(
@@ -31,12 +31,18 @@ export default function TranscriptDetailScreen(): React.ReactElement {
   );
 
   const handleGoBack = useCallback(() => {
-    if (router.canGoBack()) {
+    // If came from post-recording-choice, go back there with recordingId preserved
+    if (from === 'post-recording-choice' && id) {
+      router.replace({
+        pathname: '/(main)/post-recording-choice',
+        params: { recordingId: id },
+      });
+    } else if (router.canGoBack()) {
       router.back();
     } else {
       router.replace('/(main)/home');
     }
-  }, [router]);
+  }, [router, from, id]);
 
   if (!id) {
     return (
