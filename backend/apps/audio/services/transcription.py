@@ -53,12 +53,12 @@ def transcribe_narration(audio_file_path: str) -> dict:
                 model='gpt-4o-transcribe',
                 file=audio_file,
                 language='ko',
-                response_format='verbose_json',
+                response_format='json',  # gpt-4o-transcribe requires 'json' not 'verbose_json'
             )
 
         return {
             'text': response.text,
-            'duration': response.duration or 0.0,
+            'duration': getattr(response, 'duration', 0.0) or 0.0,
         }
 
     except TranscriptionError:
@@ -94,8 +94,7 @@ def transcribe_with_diarization(audio_file_path: str) -> dict:
                 model='gpt-4o-transcribe',
                 file=audio_file,
                 language='ko',
-                response_format='verbose_json',
-                include=['logprobs'],
+                response_format='json',  # gpt-4o-transcribe requires 'json' not 'verbose_json'
             )
 
         # Build segments from the response
