@@ -44,6 +44,7 @@ interface UseRecordingConsentReturn {
   myConsent: boolean;
   partnerConsent: boolean | null;
   partnerOnline: boolean;
+  partnerRecordingStarted: boolean;
   status: ConsentStatus;
   error: string | null;
   isConnected: boolean;
@@ -53,6 +54,7 @@ interface UseRecordingConsentReturn {
   giveConsent: () => void;
   denyConsent: () => void;
   withdrawConsent: () => void;
+  sendRecordingStarted: () => void;
   reset: () => void;
 }
 
@@ -82,6 +84,7 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
   const [myConsent, setMyConsent] = useState(false);
   const [partnerConsent, setPartnerConsent] = useState<boolean | null>(null);
   const [partnerOnline, setPartnerOnline] = useState(false);
+  const [partnerRecordingStarted, setPartnerRecordingStarted] = useState(false);
   const [status, setStatus] = useState<ConsentStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -151,6 +154,16 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
           if (Number(data.user_id) !== Number(user?.id)) {
             setPartnerOnline(false);
           }
+          break;
+
+        case 'recording_started':
+          // Partner started recording
+          setPartnerRecordingStarted(true);
+          break;
+
+        case 'recording_stopped':
+          // Partner stopped recording
+          setPartnerRecordingStarted(false);
           break;
 
         case 'error':
@@ -317,12 +330,24 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
   }, [consentRequest, sendMessage]);
 
   /**
+   * Send recording started notification to partner
+   */
+  const sendRecordingStarted = useCallback(() => {
+    if (!consentRequest) return;
+    sendMessage({
+      action: 'recording_started',
+      session_id: consentRequest.session_id,
+    });
+  }, [consentRequest, sendMessage]);
+
+  /**
    * Reset state for new consent request
    */
   const reset = useCallback(() => {
     setConsentRequest(null);
     setMyConsent(false);
     setPartnerConsent(null);
+    setPartnerRecordingStarted(false);
     setStatus('idle');
     setError(null);
   }, []);
@@ -339,6 +364,7 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
     myConsent,
     partnerConsent,
     partnerOnline,
+    partnerRecordingStarted,
     status,
     error,
     isConnected,
@@ -348,6 +374,7 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
     giveConsent,
     denyConsent,
     withdrawConsent,
+    sendRecordingStarted,
     reset,
   };
 }

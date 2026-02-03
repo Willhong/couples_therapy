@@ -23,6 +23,7 @@ const CONSENT_TIMEOUT_MS = 5 * 60 * 1000;
 interface UseLiveRecordingReturn {
   phase: LivePhase;
   isRequester: boolean;  // true if this user initiated the consent request
+  partnerRecordingStarted: boolean;  // true if partner started recording (for responder)
   requestConsent: () => void;
   giveConsent: () => void;
   denyConsent: () => void;
@@ -48,6 +49,7 @@ export function useLiveRecording(): UseLiveRecordingReturn {
     consentRequest,
     status: consentStatus,
     partnerOnline,
+    partnerRecordingStarted,
     isConnected,
     error: consentError,
     connect,
@@ -55,6 +57,7 @@ export function useLiveRecording(): UseLiveRecordingReturn {
     initiateConsent,
     giveConsent,
     denyConsent,
+    sendRecordingStarted,
     reset: resetConsent,
   } = useRecordingConsent();
 
@@ -153,11 +156,13 @@ export function useLiveRecording(): UseLiveRecordingReturn {
       setError(null);
       await startAudioRecording();
       setPhase('recording');
+      // Notify partner that recording has started
+      sendRecordingStarted();
     } catch (err) {
       const msg = err instanceof Error ? err.message : '녹음을 시작할 수 없습니다.';
       setError(msg);
     }
-  }, [phase, startAudioRecording]);
+  }, [phase, startAudioRecording, sendRecordingStarted]);
 
   /**
    * Stop recording and return URI
@@ -182,6 +187,7 @@ export function useLiveRecording(): UseLiveRecordingReturn {
   return {
     phase,
     isRequester,
+    partnerRecordingStarted,
     requestConsent,
     giveConsent,
     denyConsent,

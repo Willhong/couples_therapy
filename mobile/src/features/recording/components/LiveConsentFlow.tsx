@@ -21,6 +21,7 @@ import { useWaveform } from '../hooks/useWaveform';
 import { uploadAudio, pollTranscriptionStatus } from '../services/audioApi';
 import { WaveformVisualizer } from './WaveformVisualizer';
 import { RecordingControls } from './RecordingControls';
+import { PartnerRecordingIndicator } from './PartnerRecordingIndicator';
 import type { TranscriptResult, RecordingMode } from '../types';
 
 interface LiveConsentFlowProps {
@@ -37,6 +38,7 @@ export function LiveConsentFlow({
   const {
     phase,
     isRequester,
+    partnerRecordingStarted,
     requestConsent,
     giveConsent,
     denyConsent,
@@ -239,8 +241,17 @@ export function LiveConsentFlow({
           </View>
         </SafeAreaView>
       );
+    } else if (partnerRecordingStarted) {
+      // Responder: partner started recording - show indicator
+      return (
+        <PartnerRecordingIndicator
+          partnerName="파트너"
+          visible={true}
+          onStop={onCancel || (() => {})}
+        />
+      );
     } else {
-      // Responder: show waiting for partner to start recording
+      // Responder: waiting for partner to start recording
       return (
         <SafeAreaView style={styles.container}>
           <View style={styles.centerContainer}>
