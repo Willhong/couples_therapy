@@ -11,6 +11,7 @@ import type { TranscriptResult } from '../types';
 export type LivePhase =
   | 'requesting_consent'
   | 'waiting_consent'
+  | 'received_request'  // Responder received a consent request
   | 'consent_granted'
   | 'consent_declined'
   | 'recording'
@@ -22,6 +23,8 @@ const CONSENT_TIMEOUT_MS = 5 * 60 * 1000;
 interface UseLiveRecordingReturn {
   phase: LivePhase;
   requestConsent: () => void;
+  giveConsent: () => void;
+  denyConsent: () => void;
   startRecording: () => Promise<void>;
   stopRecording: () => Promise<string | null>;
   sendStopToPartner: () => void;
@@ -48,6 +51,8 @@ export function useLiveRecording(): UseLiveRecordingReturn {
     connect,
     disconnect,
     initiateConsent,
+    giveConsent,
+    denyConsent,
     reset: resetConsent,
   } = useRecordingConsent();
 
@@ -70,10 +75,18 @@ export function useLiveRecording(): UseLiveRecordingReturn {
     };
   }, [connect, disconnect]);
 
+  // Detect when responder receives a consent request
+  useEffect(() => {
+    if (consentRequest && consentStatus === 'pending' && phase === 'requesting_consent') {
+      // We received a consent request from partner - switch to responder mode
+      setPhase('received_request');
+    }
+  }, [consentRequest, consentStatus, phase]);
+
   // Sync consent status to phase
   useEffect(() => {
-    // Allow transition from either 'waiting_consent' (requester) or 'requesting_consent' (responder)
-    if (consentStatus === 'approved' && (phase === 'waiting_consent' || phase === 'requesting_consent')) {
+    // Allow transition from 'waiting_consent' (requester), 'requesting_consent', or 'received_request' (responder)
+    if (consentStatus === 'approved' && (phase === 'waiting_consent' || phase === 'requesting_consent' || phase === 'received_request')) {
       setPhase('consent_granted');
       if (consentTimeoutRef.current) {
         clearTimeout(consentTimeoutRef.current);
@@ -81,7 +94,7 @@ export function useLiveRecording(): UseLiveRecordingReturn {
       }
     } else if (
       (consentStatus === 'declined' || consentStatus === 'withdrawn' || consentStatus === 'expired') &&
-      (phase === 'waiting_consent' || phase === 'requesting_consent')
+      (phase === 'waiting_consent' || phase === 'requesting_consent' || phase === 'received_request')
     ) {
       setPhase('consent_declined');
       if (consentTimeoutRef.current) {
@@ -166,6 +179,8 @@ export function useLiveRecording(): UseLiveRecordingReturn {
   return {
     phase,
     requestConsent,
+    giveConsent,
+    denyConsent,
     startRecording,
     stopRecording,
     sendStopToPartner,

@@ -37,6 +37,8 @@ export function LiveConsentFlow({
   const {
     phase,
     requestConsent,
+    giveConsent,
+    denyConsent,
     startRecording,
     stopRecording,
     consentSessionId,
@@ -181,6 +183,41 @@ export function LiveConsentFlow({
           <Pressable style={styles.secondaryButton} onPress={onCancel}>
             <Text style={styles.secondaryButtonText}>취소</Text>
           </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ---- RECEIVED REQUEST (responder side) ----
+  if (phase === 'received_request') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centerContainer}>
+          <Ionicons name="mic-outline" size={48} color="#6B7FD7" />
+          <Text style={styles.statusTitle}>녹음 동의 요청</Text>
+          <Text style={styles.statusDesc}>
+            파트너가 함께 녹음하기를 요청했습니다.{'\n'}
+            동의하시겠습니까?
+          </Text>
+
+          {error && (
+            <Text style={styles.errorText}>{error}</Text>
+          )}
+
+          <View style={styles.buttonGroup}>
+            <Pressable
+              style={styles.primaryButton}
+              onPress={giveConsent}
+            >
+              <Text style={styles.primaryButtonText}>동의하기</Text>
+            </Pressable>
+            <Pressable
+              style={styles.secondaryButton}
+              onPress={denyConsent}
+            >
+              <Text style={styles.secondaryButtonText}>거절하기</Text>
+            </Pressable>
+          </View>
         </View>
       </SafeAreaView>
     );
