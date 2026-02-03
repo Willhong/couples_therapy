@@ -111,7 +111,8 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
       switch (data.type) {
         case 'consent_requested':
           // Received consent request from partner
-          if (data.requester_id !== user?.id) {
+          // Use Number() to ensure type-safe comparison (backend sends int, auth may have string)
+          if (Number(data.requester_id) !== Number(user?.id)) {
             setConsentRequest({
               session_id: data.session_id!,
               requester_id: data.requester_id!,
@@ -125,7 +126,7 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
 
         case 'consent_updated':
           // Partner responded to consent request
-          if (data.responder_id !== user?.id) {
+          if (Number(data.responder_id) !== Number(user?.id)) {
             setPartnerConsent(data.consented ?? false);
           }
           if (data.status === 'both_consented') {
@@ -141,13 +142,13 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
           break;
 
         case 'user_joined':
-          if (data.user_id !== user?.id) {
+          if (Number(data.user_id) !== Number(user?.id)) {
             setPartnerOnline(true);
           }
           break;
 
         case 'user_left':
-          if (data.user_id !== user?.id) {
+          if (Number(data.user_id) !== Number(user?.id)) {
             setPartnerOnline(false);
           }
           break;

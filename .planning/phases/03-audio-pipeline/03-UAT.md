@@ -118,8 +118,12 @@ skipped: 0
 ### GAP-3: 오디오 업로드 타임아웃 (high, blocking)
 - **Source:** Test 3
 - **Issue:** 녹음 제출 시 타임아웃 발생
-- **Root cause:** TBD - 네트워크, 파일 크기, 백엔드 처리 시간 확인 필요
-- **Fix:** 타임아웃 설정 검토, 업로드 진행 상태 개선, 에러 핸들링
+- **Root cause:**
+  1. 클라이언트 타임아웃 60초 → 큰 파일(25MB)에 부족 (느린 네트워크에서 3분+ 필요)
+  2. Django `DATA_UPLOAD_MAX_MEMORY_SIZE` 미설정 → 기본값 2.5MB로 대용량 업로드 차단
+- **Fix:**
+  - `mobile/src/features/recording/services/audioApi.ts`: timeout 180000ms로 증가
+  - `backend/config/settings/base.py`: `DATA_UPLOAD_MAX_MEMORY_SIZE = 30MB` 추가
 
 ### GAP-4: 녹음 화면 네비게이션 (medium)
 - **Source:** Test 9
@@ -139,17 +143,25 @@ skipped: 0
 ### GAP-7: 동의 상태 버그 - 홈 화면 (high, critical)
 - **Source:** Test 9
 - **Issue:** 홈 화면에서 한쪽만 동의해도 둘 다 동의했다고 표시됨
-- **Root cause:** TBD - WebSocket 메시지 핸들링 또는 상태 체크 로직 오류
-- **Fix:** 동의 상태 검증 로직 수정
+- **Root cause:** `useRecordingConsent.ts:114` - user ID 타입 불일치
+  - `data.requester_id` (integer from backend) !== `user?.id` (string from auth)
+  - `1 !== "1"` = true → 요청자가 자신의 broadcast를 처리하여 `partnerConsent = true` 잘못 설정
+- **Fix:** `mobile/src/hooks/useRecordingConsent.ts:114` - `Number(data.requester_id) !== Number(user?.id)` 타입 변환
 
 ### GAP-8: 동의 상태 버그 - 녹음 탭 (high, critical)
 - **Source:** Test 9
 - **Issue:** 양쪽 다 동의해도 동의 대기중 상태 유지됨
-- **Root cause:** TBD - WebSocket 이벤트 수신 또는 상태 전이 로직 오류
-- **Fix:** useLiveRecording hook 상태 전이 로직 수정
+- **Root cause:** `useLiveRecording.ts:74-76` - phase 상태 머신 오류
+  - 응답자는 `'requesting_consent'` 상태에서 시작 (requester만 `'waiting_consent'`로 전이)
+  - `consentStatus === 'approved' && phase === 'waiting_consent'` 조건이 응답자에서 실패
+- **Fix:** `mobile/src/features/recording/hooks/useLiveRecording.ts:74` - 조건을 `(phase === 'waiting_consent' || phase === 'requesting_consent')`로 확장
 
 ### GAP-9: Celery/Redis 인프라 (high, blocking)
 - **Source:** Test 11
 - **Issue:** Celery Redis 연결 실패로 패턴 분석 및 Insights API 불가
-- **Root cause:** Redis 서버 미실행 또는 연결 설정 오류
-- **Fix:** Redis 서비스 확인, Celery worker 재시작, 연결 설정 검증
+- **Root cause:** Redis 서버가 localhost:6379에서 실행되지 않음
+  - Celery/Django 설정은 정상
+  - Redis 인스턴스가 없음 (Windows에 미설치)
+- **Fix:**
+  - 개발 환경: `backend/config/settings/local.py`에 `CELERY_TASK_ALWAYS_EAGER = True` 추가 (동기 실행)
+  - 또는: Redis 설치/실행, Celery worker 시작

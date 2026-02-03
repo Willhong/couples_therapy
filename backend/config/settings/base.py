@@ -276,6 +276,8 @@ CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://localhost:
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+# Development: run Celery tasks synchronously (no Redis required)
+CELERY_TASK_ALWAYS_EAGER = env.bool('CELERY_TASK_ALWAYS_EAGER', default=True)
 
 
 # OpenAI API Key (direct API for transcription, separate from LangChain)
@@ -290,3 +292,7 @@ MEDIA_URL = '/media/'
 # Audio recording limits
 MAX_RECORDING_DURATION = 1800  # 30 minutes in seconds
 MAX_AUDIO_FILE_SIZE = 25 * 1024 * 1024  # 25MB
+
+# Django upload size limits (must exceed MAX_AUDIO_FILE_SIZE)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 30 * 1024 * 1024  # 30MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 30 * 1024 * 1024  # 30MB

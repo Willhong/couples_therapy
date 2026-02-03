@@ -44,7 +44,7 @@ export async function uploadAudio(
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      timeout: 60000,
+      timeout: 180000, // 3 minutes for large files on slow connections
     }
   );
 

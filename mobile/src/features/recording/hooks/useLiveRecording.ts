@@ -72,7 +72,8 @@ export function useLiveRecording(): UseLiveRecordingReturn {
 
   // Sync consent status to phase
   useEffect(() => {
-    if (consentStatus === 'approved' && phase === 'waiting_consent') {
+    // Allow transition from either 'waiting_consent' (requester) or 'requesting_consent' (responder)
+    if (consentStatus === 'approved' && (phase === 'waiting_consent' || phase === 'requesting_consent')) {
       setPhase('consent_granted');
       if (consentTimeoutRef.current) {
         clearTimeout(consentTimeoutRef.current);
