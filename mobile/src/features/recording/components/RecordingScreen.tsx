@@ -15,6 +15,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
 import { useAudioRecording } from '../hooks/useAudioRecording';
 import { useWaveform } from '../hooks/useWaveform';
 import { uploadAudio, pollTranscriptionStatus } from '../services/audioApi';
@@ -55,6 +56,20 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
       addMeteringValue(latest);
     }
   }, [recordingState.metering.length]);
+
+  // Reset state when tab comes into focus (e.g., after navigating away and back)
+  useFocusEffect(
+    useCallback(() => {
+      // Only reset if we're in a completed/transitional state
+      if (phase === 'live_consent' || phase === 'uploading' || phase === 'processing') {
+        setPhase('mode_select');
+        setMode('narration');
+        setSelectedPromptId(null);
+        setErrorMessage(null);
+        resetWaveform();
+      }
+    }, [phase, resetWaveform])
+  );
 
   /**
    * Select narration mode and enter recording phase
