@@ -218,16 +218,18 @@ export function TranscriptView({
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Audio Player */}
-      <AudioPlayer
-        isPlaying={isPlaying}
-        isAvailable={isAvailable}
-        position={position}
-        duration={duration}
-        onPlay={play}
-        onPause={pause}
-        onSeek={seekTo}
-      />
+      {/* Audio Player - only show if audio is available (audio is deleted after transcription for privacy) */}
+      {isAvailable && (
+        <AudioPlayer
+          isPlaying={isPlaying}
+          isAvailable={isAvailable}
+          position={position}
+          duration={duration}
+          onPlay={play}
+          onPause={pause}
+          onSeek={seekTo}
+        />
+      )}
 
       {/* Session insight callout */}
       {sessionInsight && (
