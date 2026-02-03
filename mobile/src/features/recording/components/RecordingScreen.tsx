@@ -3,7 +3,7 @@
  * Manages full flow: mode selection -> recording -> preview -> upload -> processing
  * Live mode: consent flow -> live recording (via LiveConsentFlow)
  */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -57,17 +57,28 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
     }
   }, [recordingState.metering.length]);
 
-  // Reset state when tab comes into focus (e.g., after navigating away and back)
+  // Track if user has navigated away from this tab
+  const hasNavigatedAway = useRef(false);
+
+  // Reset state when tab regains focus AFTER user navigated away
   useFocusEffect(
     useCallback(() => {
-      // Only reset if we're in a completed/transitional state
-      if (phase === 'live_consent' || phase === 'uploading' || phase === 'processing') {
-        setPhase('mode_select');
-        setMode('narration');
-        setSelectedPromptId(null);
-        setErrorMessage(null);
-        resetWaveform();
+      // On focus: reset if user had navigated away and we're in a stale state
+      if (hasNavigatedAway.current) {
+        if (phase === 'live_consent' || phase === 'uploading' || phase === 'processing') {
+          setPhase('mode_select');
+          setMode('narration');
+          setSelectedPromptId(null);
+          setErrorMessage(null);
+          resetWaveform();
+        }
+        hasNavigatedAway.current = false;
       }
+
+      // On blur: mark that user navigated away
+      return () => {
+        hasNavigatedAway.current = true;
+      };
     }, [phase, resetWaveform])
   );
 
