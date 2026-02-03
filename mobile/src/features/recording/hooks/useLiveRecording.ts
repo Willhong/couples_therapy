@@ -24,12 +24,13 @@ interface UseLiveRecordingReturn {
   phase: LivePhase;
   isRequester: boolean;  // true if this user initiated the consent request
   partnerRecordingStarted: boolean;  // true if partner started recording (for responder)
+  partnerRequestedStop: boolean;  // true if partner requested to stop recording
   requestConsent: () => void;
   giveConsent: () => void;
   denyConsent: () => void;
   startRecording: () => Promise<void>;
   stopRecording: () => Promise<string | null>;
-  sendStopToPartner: () => void;
+  sendStopRecording: () => void;
   consentSessionId: string | null;
   uri: string | null;
   metering: number[];
@@ -50,6 +51,7 @@ export function useLiveRecording(): UseLiveRecordingReturn {
     status: consentStatus,
     partnerOnline,
     partnerRecordingStarted,
+    partnerRequestedStop,
     isConnected,
     error: consentError,
     connect,
@@ -58,6 +60,7 @@ export function useLiveRecording(): UseLiveRecordingReturn {
     giveConsent,
     denyConsent,
     sendRecordingStarted,
+    sendStopRecording,
     reset: resetConsent,
   } = useRecordingConsent();
 
@@ -173,27 +176,17 @@ export function useLiveRecording(): UseLiveRecordingReturn {
     return uri;
   }, [stopAudioRecording]);
 
-  /**
-   * Send stop signal to partner via WebSocket
-   * The existing consent WebSocket channel is reused - we use a custom message type
-   * via the same group_send pattern
-   */
-  const sendStopToPartner = useCallback(() => {
-    // This is handled by the calling component - it will call stopRecording
-    // and the partner indicator will detect recording_stopped event
-    // For now we just stop locally; the UI layer handles WebSocket notification
-  }, []);
-
   return {
     phase,
     isRequester,
     partnerRecordingStarted,
+    partnerRequestedStop,
     requestConsent,
     giveConsent,
     denyConsent,
     startRecording,
     stopRecording,
-    sendStopToPartner,
+    sendStopRecording,
     consentSessionId: consentRequest?.session_id ?? null,
     uri: recordingState.uri,
     metering: recordingState.metering,

@@ -39,11 +39,13 @@ export function LiveConsentFlow({
     phase,
     isRequester,
     partnerRecordingStarted,
+    partnerRequestedStop,
     requestConsent,
     giveConsent,
     denyConsent,
     startRecording,
     stopRecording,
+    sendStopRecording,
     consentSessionId,
     uri,
     metering,
@@ -74,6 +76,13 @@ export function LiveConsentFlow({
       return () => clearTimeout(timer);
     }
   }, [phase, isRequester, startRecording]);
+
+  // Auto-stop recording when partner requests stop (for requester)
+  useEffect(() => {
+    if (partnerRequestedStop && isRecording && isRequester) {
+      handleStop();
+    }
+  }, [partnerRequestedStop, isRecording, isRequester]);
 
   /**
    * Handle stop: stop recording and upload
@@ -247,7 +256,11 @@ export function LiveConsentFlow({
         <PartnerRecordingIndicator
           partnerName="파트너"
           visible={true}
-          onStop={onCancel || (() => {})}
+          onStop={() => {
+            sendStopRecording();
+            // Also close this screen after requesting stop
+            if (onCancel) onCancel();
+          }}
         />
       );
     } else {
