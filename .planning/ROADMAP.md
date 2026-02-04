@@ -12,7 +12,7 @@ CouplesAI delivers AI-powered couples therapy through four phases: establishing 
 
 - [x] **Phase 1: Foundation & Safety** - Secure auth, partner linking, abuse screening, data encryption
 - [x] **Phase 2: Core Reframing** - Text-based conflict logging with AI perspective reframing
-- [x] **Phase 3: Audio Pipeline** - Recording, transcription, speaker separation, audio analysis
+- [ ] **Phase 3: Audio Pipeline** - Recording, transcription, speaker separation, audio analysis (UAT gap fixes in progress)
 - [ ] **Phase 4: Partner & Engagement** - Sharing features, cool-down tools, communication exercises
 
 ## Phase Details
@@ -66,7 +66,7 @@ Plans:
   3. App correctly identifies which partner said which lines (speaker diarization)
   4. User sees recurring conflict themes highlighted across multiple entries
   5. User sees trigger words/phrases flagged (e.g., "you always", "you never")
-**Plans**: 7 plans in 4 waves
+**Plans**: 10 plans (7 core + 3 gap closure)
 
 Plans:
 - [x] 03-01-PLAN.md — Backend: Celery setup, audio models, transcription service, comfort mode (Wave 1)
@@ -76,6 +76,9 @@ Plans:
 - [x] 03-05-PLAN.md — Live conflict recording: partner consent flow, diarized recording (Wave 3)
 - [x] 03-06-PLAN.md — Pattern detection backend: models, LLM analysis, Celery tasks, API (Wave 3)
 - [x] 03-07-PLAN.md — Insights dashboard: charts, trigger highlights, weekly summary (Wave 4)
+- [ ] 03-08-PLAN.md — Gap closure: Home/Record flow unification, back button (Wave 5, gap closure)
+- [ ] 03-09-PLAN.md — Gap closure: UI polish - button styling, prompt hints (Wave 5, gap closure)
+- [ ] 03-10-PLAN.md — Gap closure: Waveform performance optimization (Wave 5, gap closure)
 
 ### Phase 4: Partner & Engagement
 **Goal**: Partners can collaborate on relationship improvement through shared tools, guided exercises, and structured communication prompts.
@@ -102,7 +105,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation & Safety | 4/4 | ✓ Complete | 2026-01-23 |
 | 2. Core Reframing | 5/5 | ✓ Complete | 2026-02-02 |
-| 3. Audio Pipeline | 7/7 | ✓ Complete | 2026-02-03 |
+| 3. Audio Pipeline | 7/10 | Gap closure | - |
 | 4. Partner & Engagement | 0/2 | Not started | - |
 
 ---
@@ -111,5 +114,6 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 *Phase 2 planned: 2026-01-23 (5 plans in 4 waves)*
 *Phase 2 Plan 02 re-architected: 2026-02-02 (two-mode chat+reframing pipeline)*
 *Phase 3 planned: 2026-02-03 (7 plans in 4 waves)*
+*Phase 3 gap closure: 2026-02-04 (3 plans addressing UAT gaps)*
 *Depth: quick (4 phases)*
 *Coverage: 32/32 v1 requirements mapped*
