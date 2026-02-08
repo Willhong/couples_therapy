@@ -104,22 +104,22 @@ class DailyPromptTest(TestCase):
         self.assertIsNotNone(prompt_response)
         self.assertEqual(prompt_response.response_text, '오늘은 정말 좋은 하루였어요!')
 
-    def test_submit_duplicate_response_updates(self):
-        """Test submitting response again updates existing."""
+    def test_submit_duplicate_response_rejected(self):
+        """Test submitting response again is rejected."""
         # Get prompt and submit first response
         self.client.get('/api/v1/prompts/today/')
         self.client.post('/api/v1/prompts/respond/', {
             'response_text': '첫 번째 답변'
         })
 
-        # Submit second response
+        # Submit second response - should be rejected
         response = self.client.post('/api/v1/prompts/respond/', {
             'response_text': '두 번째 답변'
         })
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # Should have only one response (updated)
+        # Should still have only the first response
         today = date.today()
         assignment = DailyPromptAssignment.objects.get(
             couple=self.couple,
@@ -129,9 +129,8 @@ class DailyPromptTest(TestCase):
             assignment=assignment,
             user=self.user1
         )
-
-        # Due to unique_together constraint, should have only one
         self.assertEqual(responses.count(), 1)
+        self.assertEqual(responses.first().response_text, '첫 번째 답변')
 
     def test_reveal_requires_both_responses(self):
         """Test reveal endpoint requires both partners to respond."""

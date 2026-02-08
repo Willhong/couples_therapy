@@ -21,6 +21,8 @@ class UserRegistrationTest(TestCase):
             'email': 'newuser@example.com',
             'password1': 'SecurePass123!',
             'password2': 'SecurePass123!',
+            'disclaimer_accepted': True,
+            'disclaimer_version': '1.0',
         }
         response = self.client.post(self.registration_url, data)
 
