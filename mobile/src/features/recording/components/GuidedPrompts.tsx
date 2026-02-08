@@ -10,6 +10,7 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { GuidedPrompt } from '../types';
 
 const GUIDED_PROMPTS: GuidedPrompt[] = [
@@ -81,7 +82,13 @@ export function GuidedPrompts({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>참고할 질문을 선택하세요</Text>
+      <View style={styles.labelRow}>
+        <Text style={styles.label}>참고할 질문을 선택하세요</Text>
+        <View style={styles.tapHint}>
+          <Ionicons name="hand-left-outline" size={14} color="#9CA3AF" />
+          <Text style={styles.tapHintText}>탭하여 선택</Text>
+        </View>
+      </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -136,11 +143,25 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 12,
   },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
   label: {
     fontSize: 13,
     color: '#6B7280',
-    marginBottom: 8,
-    paddingHorizontal: 16,
+  },
+  tapHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  tapHintText: {
+    fontSize: 12,
+    color: '#9CA3AF',
   },
   scrollContent: {
     paddingHorizontal: 16,
@@ -154,6 +175,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   categoryBadge: {
     fontSize: 11,
