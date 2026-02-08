@@ -63,11 +63,17 @@ export default function PartnerLinkScreen(): React.ReactElement {
     if (connectionStatus === 'active' && couple?.partner) {
       // Small delay to show success state briefly
       const timer = setTimeout(() => {
-        router.replace(getNextScreen() as any);
+        // If user just connected via code, show welcome screen
+        // Otherwise go to next onboarding step
+        if (inputCode.length === 6) {
+          router.replace('/onboarding/partner-welcome' as any);
+        } else {
+          router.replace(getNextScreen() as any);
+        }
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [connectionStatus, couple?.partner, router, user?.tutorial_completed]);
+  }, [connectionStatus, couple?.partner, router, user?.tutorial_completed, inputCode]);
 
   // Poll for connection status when invite code is generated (for the code generator side)
   useEffect(() => {
