@@ -93,6 +93,10 @@ export function RecordingPreview({
       await soundRef.current.pauseAsync();
       setIsPlaying(false);
     } else {
+      const status = await soundRef.current.getStatusAsync();
+      if (status.isLoaded && status.positionMillis === status.durationMillis) {
+        await soundRef.current.setPositionAsync(0);
+      }
       await soundRef.current.playAsync();
       setIsPlaying(true);
     }

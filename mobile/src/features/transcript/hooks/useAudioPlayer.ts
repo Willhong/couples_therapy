@@ -88,6 +88,10 @@ export function useAudioPlayer(audioUri: string | null): UseAudioPlayerReturn {
   const play = useCallback(async () => {
     if (!soundRef.current) return;
     try {
+      const status = await soundRef.current.getStatusAsync();
+      if (status.isLoaded && status.positionMillis === status.durationMillis) {
+        await soundRef.current.setPositionAsync(0);
+      }
       await soundRef.current.playAsync();
     } catch (err) {
       console.error('Play error:', err);
