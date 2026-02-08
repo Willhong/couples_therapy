@@ -15,6 +15,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useAudioRecording } from '../hooks/useAudioRecording';
 import { useWaveform } from '../hooks/useWaveform';
 import { uploadAudio, pollTranscriptionStatus } from '../services/audioApi';
@@ -38,6 +39,7 @@ interface RecordingScreenProps {
 }
 
 export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProps = {}): React.ReactElement {
+  const router = useRouter();
   const [phase, setPhase] = useState<ScreenPhase>('mode_select');
   const [mode, setMode] = useState<RecordingMode>('narration');
   const [showGuided, setShowGuided] = useState(true);
@@ -47,6 +49,13 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
   const { state: recordingState, isRecording, startRecording, stopRecording, cancelRecording } =
     useAudioRecording();
   const { waveformData, addMeteringValue, reset: resetWaveform } = useWaveform(50);
+
+  /**
+   * Navigate back to previous screen
+   */
+  const handleGoBack = useCallback(() => {
+    router.back();
+  }, [router]);
 
   // Feed metering data into waveform hook
   useEffect(() => {
@@ -245,8 +254,14 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
   if (phase === 'mode_select') {
     return (
       <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Pressable onPress={handleGoBack} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="#374151" />
+          </Pressable>
+          <Text style={styles.headerTitle}>음성 기록</Text>
+          <View style={styles.headerSpacer} />
+        </View>
         <View style={styles.modeSelectContainer}>
-          <Text style={styles.screenTitle}>음성 기록</Text>
           <Text style={styles.screenSubtitle}>
             갈등 상황을 음성으로 기록해보세요
           </Text>
@@ -298,7 +313,17 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
   if (phase === 'recording') {
     return (
       <SafeAreaView style={styles.container}>
-        {renderRecordingIndicator()}
+        {isRecording ? (
+          renderRecordingIndicator()
+        ) : (
+          <View style={styles.header}>
+            <Pressable onPress={handleCancelRecording} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color="#374151" />
+            </Pressable>
+            <Text style={styles.headerTitle}>녹음 준비</Text>
+            <View style={styles.headerSpacer} />
+          </View>
+        )}
 
         <View style={styles.recordingContainer}>
           {/* Guided prompts toggle */}
@@ -411,6 +436,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+  },
+  // Header with back button
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  backButton: {
+    padding: 4,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  headerSpacer: {
+    width: 32,
   },
   // Recording indicator
   recordingIndicator: {
