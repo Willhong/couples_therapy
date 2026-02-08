@@ -298,3 +298,78 @@ class SharedReframingTest(TestCase):
             self.assertEqual(len(response.data['results']), 1)
         else:
             self.assertEqual(len(response.data), 1)
+
+    def test_respond_to_shared_reframing(self):
+        """Test partner can respond to shared reframing."""
+        from apps.chat.models import SharedReframing
+
+        # Create a shared reframing
+        shared = SharedReframing.objects.create(
+            message=self.message,
+            shared_by=self.user1,
+            shared_with=self.user2,
+            privacy_level='full'
+        )
+
+        self.client.force_authenticate(user=self.user2)
+        response = self.client.post(
+            f'/api/v1/chat/shared/{shared.id}/respond/',
+            {'partner_response': 'Thank you for sharing this with me.'}
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        shared.refresh_from_db()
+        self.assertEqual(shared.partner_response, 'Thank you for sharing this with me.')
+
+    def test_mark_shared_as_read(self):
+        """Test marking shared reframing as read."""
+        from apps.chat.models import SharedReframing
+
+        # Create a shared reframing
+        shared = SharedReframing.objects.create(
+            message=self.message,
+            shared_by=self.user1,
+            shared_with=self.user2,
+            privacy_level='full',
+            is_read=False
+        )
+
+        self.client.force_authenticate(user=self.user2)
+        response = self.client.post(f'/api/v1/chat/shared/{shared.id}/read/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        shared.refresh_from_db()
+        self.assertTrue(shared.is_read)
+
+    def test_unread_count(self):
+        """Test getting unread shared reframings count."""
+        from apps.chat.models import SharedReframing
+
+        # Create shared reframings - 2 unread, 1 read
+        SharedReframing.objects.create(
+            message=self.message,
+            shared_by=self.user1,
+            shared_with=self.user2,
+            privacy_level='full',
+            is_read=False
+        )
+        SharedReframing.objects.create(
+            message=self.message,
+            shared_by=self.user1,
+            shared_with=self.user2,
+            privacy_level='summary',
+            is_read=False
+        )
+        SharedReframing.objects.create(
+            message=self.message,
+            shared_by=self.user1,
+            shared_with=self.user2,
+            privacy_level='full',
+            is_read=True
+        )
+
+        self.client.force_authenticate(user=self.user2)
+        response = self.client.get('/api/v1/chat/shared/unread-count/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)

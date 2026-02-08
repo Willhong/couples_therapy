@@ -135,6 +135,8 @@ class SharedReframing(models.Model):
         default=PrivacyLevel.FULL
     )
     partner_response = EncryptedTextField(null=True, blank=True)
+    is_read = models.BooleanField(default=False)
+    notified_at = models.DateTimeField(null=True, blank=True)
     shared_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

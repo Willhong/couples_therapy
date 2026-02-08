@@ -124,8 +124,10 @@ class SharedReframingSerializer(serializers.ModelSerializer):
             'shared_at',
             'partner_response',
             'shared_by_email',
+            'is_read',
+            'notified_at',
         ]
-        read_only_fields = ['id', 'shared_at', 'message', 'shared_by_email']
+        read_only_fields = ['id', 'shared_at', 'message', 'shared_by_email', 'is_read', 'notified_at']
 
     def validate_message_id(self, value):
         """Validate message exists and has reframing data."""
