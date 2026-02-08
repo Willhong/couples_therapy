@@ -90,11 +90,14 @@ Plans:
   3. User receives daily conversation prompts; both partners must answer before seeing each other's response
   4. User can browse conversation topic library by category
   5. User receives prompt to re-engage after cool-down period ends
-**Plans**: TBD
+**Plans**: 5 plans in 2 waves
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [x] 04-01-PLAN.md — Cool-down timer: backend model + API, frontend countdown + breathing guide (Wave 1)
+- [x] 04-02-PLAN.md — Daily prompts: backend models + auto-assignment + seed data, frontend prompt card + reveal (Wave 1)
+- [x] 04-03-PLAN.md — Topic library: browsable prompt library with category tabs (Wave 1)
+- [x] 04-04-PLAN.md — Abuse screening (SAFE-02): safety assessment + risk scoring + crisis resources (Wave 1)
+- [x] 04-05-PLAN.md — Polish: TODO fixes, infrastructure hardening, automated test foundation (Wave 2)
 
 ## Progress
 
@@ -106,7 +109,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 | 1. Foundation & Safety | 4/4 | ✓ Complete | 2026-01-23 |
 | 2. Core Reframing | 5/5 | ✓ Complete | 2026-02-02 |
 | 3. Audio Pipeline | 10/10 | ✓ Complete | 2026-02-08 |
-| 4. Partner & Engagement | 0/2 | Not started | - |
+| 4. Partner & Engagement | 5/5 | ✓ Complete | 2026-02-08 |
 
 ---
 *Roadmap created: 2026-01-23*
@@ -116,5 +119,6 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 *Phase 3 planned: 2026-02-03 (7 plans in 4 waves)*
 *Phase 3 gap closure: 2026-02-04 (3 plans addressing UAT gaps)*
 *Phase 3 complete: 2026-02-08 (10/10 plans, gap closure verified)*
+*Phase 4 complete: 2026-02-08 (5/5 plans, all requirements implemented)*
 *Depth: quick (4 phases)*
 *Coverage: 32/32 v1 requirements mapped*
