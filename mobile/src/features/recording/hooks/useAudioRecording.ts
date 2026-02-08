@@ -9,8 +9,12 @@ import { RecordingState } from '../types';
 /** Maximum recording duration in seconds (30 minutes) */
 const MAX_DURATION = 1800;
 
-/** Metering polling interval in milliseconds */
-const METERING_INTERVAL = 100;
+/**
+ * Metering polling interval in milliseconds.
+ * Aligned with useWaveform throttle (150ms) to avoid unnecessary
+ * getStatusAsync() calls that won't trigger a state update.
+ */
+const METERING_INTERVAL = 150;
 
 /**
  * Normalize metering value from dB (-60 to 0) to 0-1 range
@@ -86,7 +90,7 @@ export function useAudioRecording(): UseAudioRecordingReturn {
         metering: [],
       });
 
-      // Poll metering data every 100ms
+      // Poll metering data every METERING_INTERVAL ms
       meteringIntervalRef.current = setInterval(async () => {
         if (!recordingRef.current) return;
 
