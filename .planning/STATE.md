@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** 갈등 상황에서 상대방의 관점을 이해하도록 돕는 리프레이밍
-**Current focus:** All 4 phases complete. v1 requirements fully implemented. Automated test foundation added.
+**Current focus:** v1 feature-complete. Post-Phase 4 hardening complete: crisis detection, PIPA compliance, partner UX, shared content viewer. Production readiness (WS4) remaining.
 
 ## Current Position
 
-Phase: 4 of 4 (Partner & Engagement)
-Plan: 5 of 5 in current phase
-Status: All phases complete
-Last activity: 2026-02-08 - Phase 4 implemented (cool-down, prompts, topics, safety)
+Phase: Post-Phase 4 (v1 Hardening)
+Plan: All feature plans complete
+Status: v1 Feature-Complete — production readiness remaining
+Last activity: 2026-02-08 - Crisis detection, PIPA compliance, partner UX, shared content viewer
 
-Progress: [████████████████] 100% (24/24 plans)
+Progress: [████████████████] 100% (24/24 plans + 4 hardening workstreams)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
-- Average duration: 6 min
-- Total execution time: 116 min
+- Total plans completed: 24 + 4 hardening workstreams
+- Average duration: 6 min (plans) / 15 min (hardening)
+- Total execution time: ~180 min
 
 **By Phase:**
 
@@ -30,11 +30,12 @@ Progress: [████████████████] 100% (24/24 plans)
 | 1. Foundation & Safety | 4/4 | 32m | 8m |
 | 2. Core Reframing | 5/5 | 39m | 8m |
 | 3. Audio Pipeline | 10/10 | 45m | 5m |
-| 4. Partner & Engagement | 0/2 | - | - |
+| 4. Partner & Engagement | 5/5 | ~30m | 6m |
+| Post-4. v1 Hardening | 4/4 | ~60m | 15m |
 
 **Recent Trend:**
-- Last 5 plans: 6m, 8m, 8m, 2m, 5m
-- Trend: Stable
+- Last 5 plans: ultrawork parallel execution
+- Trend: Accelerating via parallel agents
 
 *Updated after each plan completion*
 
@@ -112,7 +113,11 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+**Production Readiness (WS4):**
+- WS4-01: PostgreSQL migration (production DB setup)
+- WS4-02: Push notifications (Expo Push for consent, prompts, cooldown, insights)
+- WS4-03: Performance optimization (Redis production, API profiling, bundle audit)
+- WS4-04: App Store preparation (metadata, screenshots, privacy policy URL, age rating)
 
 ### Bug Fixes (2026-01-24 ~ 2026-02-02)
 
@@ -130,20 +135,42 @@ None yet.
 
 ### Blockers/Concerns
 
-**From Research (address in Phase 3+):**
-- Korean legal requirements (PIPA compliance, recording consent laws) need validation
-- Abuse screening protocols for digital context need expert consultation
+**Resolved:**
+- ~~Korean legal requirements (PIPA compliance)~~ → ✅ Privacy policy, terms, data deletion/export implemented
+- ~~Abuse screening protocols~~ → ✅ Safety assessment + crisis detection with Korean hotlines
+- ~~Partner-side receiving UI~~ → ✅ Shared content viewer with privacy levels
 
-**From Phase 2:**
+**Remaining:**
 - Prompt engineering for non-judgmental reframing needs iteration
 - Cultural adaptation for Korean communication styles (nunchi) needs deeper research
-- Partner-side receiving UI deferred to Phase 4
-
-**From 01-01 Execution:**
 - dj-rest-auth has deprecation warnings about allauth settings (library issue, not blocking)
+- Production infrastructure (PostgreSQL, Redis, Celery workers) not yet configured
+
+### Decisions (Post-Phase 4 Hardening)
+
+| Decision | Rationale | Phase |
+|----------|-----------|-------|
+| Keyword-based crisis detection (no LLM) | Zero latency for critical safety; pre-LLM check in chat views | Post-4 |
+| AsyncMock for async pipeline tests | Properly handles asyncio.run() in Django sync test runner | Post-4 |
+| Data anonymization over hard delete | PIPA allows anonymization; preserves referential integrity | Post-4 |
+| SharedReframing privacy levels (full/summary/none) | User controls how much partner sees; progressive disclosure | Post-4 |
+| Share API for invite codes | Native sharing (SMS/KakaoTalk) via React Native Share API | Post-4 |
+
+## Test Coverage
+
+| Module | Tests | Pass Rate |
+|--------|-------|-----------|
+| apps/users | 12 | 100% |
+| apps/couples | 11 | 100% |
+| apps/chat | 14 | 100% |
+| apps/cooldown | 9 | 100% |
+| apps/safety | 11 | 100% |
+| apps/prompts | 9 | 100% |
+| **Total** | **66** | **100%** |
 
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Phase 3 complete and verified (all 10 plans including gap closure)
+Stopped at: v1 feature-complete. All 4 phases + hardening workstreams done. 66/66 tests passing.
 Resume file: None
+Next: WS4 production readiness (requires server infrastructure)

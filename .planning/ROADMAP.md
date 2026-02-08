@@ -99,10 +99,32 @@ Plans:
 - [x] 04-04-PLAN.md — Abuse screening (SAFE-02): safety assessment + risk scoring + crisis resources (Wave 1)
 - [x] 04-05-PLAN.md — Polish: TODO fixes, infrastructure hardening, automated test foundation (Wave 2)
 
+### Post-Phase 4: v1 Hardening
+**Goal**: Harden the application for launch readiness — crisis safety, legal compliance, partner UX polish, and shared content features.
+**Depends on**: Phase 4
+**Workstreams**: 4 completed via ultrawork parallel execution
+
+Workstreams:
+- [x] WS3-03 — Crisis detection: Korean keyword monitoring, CrisisEvent logging, hotline auto-response (1393, 1577-0199, 1366)
+- [x] WS3-02 — PIPA legal compliance: privacy policy, terms of service, data deletion/export endpoints
+- [x] WS2-04 — Partner invitation UX: Share API, partner status indicator, welcome screen
+- [x] WS2-05 — Partner shared content viewer: SharedReframing respond/read/unread-count, privacy-level display
+
+### Future: Production Readiness (WS4)
+**Goal**: Prepare infrastructure and distribution for app store launch.
+**Depends on**: Post-Phase 4
+**Status**: Not started (requires server infrastructure)
+
+Plans:
+- [ ] WS4-01 — PostgreSQL migration from SQLite
+- [ ] WS4-02 — Push notifications (Expo Push)
+- [ ] WS4-03 — Performance optimization (Redis, API profiling, bundle audit)
+- [ ] WS4-04 — App Store preparation (metadata, screenshots, age rating)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
+Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4 -> Post-4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -110,6 +132,8 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 | 2. Core Reframing | 5/5 | ✓ Complete | 2026-02-02 |
 | 3. Audio Pipeline | 10/10 | ✓ Complete | 2026-02-08 |
 | 4. Partner & Engagement | 5/5 | ✓ Complete | 2026-02-08 |
+| Post-4. v1 Hardening | 4/4 | ✓ Complete | 2026-02-08 |
+| WS4. Production Readiness | 0/4 | Pending | — |
 
 ---
 *Roadmap created: 2026-01-23*
@@ -120,5 +144,6 @@ Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4
 *Phase 3 gap closure: 2026-02-04 (3 plans addressing UAT gaps)*
 *Phase 3 complete: 2026-02-08 (10/10 plans, gap closure verified)*
 *Phase 4 complete: 2026-02-08 (5/5 plans, all requirements implemented)*
-*Depth: quick (4 phases)*
-*Coverage: 32/32 v1 requirements mapped*
+*Post-Phase 4 hardening: 2026-02-08 (crisis detection, PIPA, partner UX, shared viewer)*
+*Depth: quick (4 phases + hardening)*
+*Coverage: 32/32 v1 requirements mapped + 4 hardening workstreams*
