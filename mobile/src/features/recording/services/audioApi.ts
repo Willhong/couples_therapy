@@ -117,14 +117,24 @@ export async function assignSpeakers(
   });
 }
 
+interface PostActionResponse {
+  conversation_id?: string;
+  result?: {
+    mode: string;
+    final_response?: string;
+    message_id?: string;
+  };
+}
+
 /**
  * Set post-transcript action (reframe, comfort, or keep)
  */
 export async function setPostAction(
   recordingId: string,
   action: PostTranscriptAction
-): Promise<void> {
-  await api.post(`/audio/${recordingId}/action/`, { action });
+): Promise<PostActionResponse> {
+  const response = await api.post<PostActionResponse>(`/audio/${recordingId}/action/`, { action });
+  return response.data;
 }
 
 /**

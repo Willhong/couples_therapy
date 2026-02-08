@@ -19,7 +19,7 @@ export default function PostRecordingChoiceScreen(): React.ReactElement {
     async (action: PostTranscriptAction) => {
       if (!recordingId) return;
 
-      await setPostAction(recordingId, action);
+      const response = await setPostAction(recordingId, action);
 
       if (action === 'keep') {
         // Navigate to transcript view to see the result
@@ -27,12 +27,14 @@ export default function PostRecordingChoiceScreen(): React.ReactElement {
           pathname: '/(main)/transcript/[id]',
           params: { id: recordingId },
         });
-      } else if (action === 'reframe') {
-        // Go to chat for reframing, can view transcript later
-        router.replace('/(main)/chat');
-      } else if (action === 'comfort') {
-        // Go to chat for comfort
-        router.replace('/(main)/chat');
+      } else if (action === 'reframe' || action === 'comfort') {
+        // Go to chat with conversation that backend created
+        router.replace({
+          pathname: '/(main)/chat',
+          params: response.conversation_id
+            ? { conversationId: response.conversation_id }
+            : undefined,
+        });
       }
     },
     [recordingId, router]
