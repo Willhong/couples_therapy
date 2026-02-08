@@ -1,0 +1,9 @@
+"""App configuration for prompts."""
+
+from django.apps import AppConfig
+
+
+class PromptsConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.prompts'
+    verbose_name = 'Daily Prompts'
