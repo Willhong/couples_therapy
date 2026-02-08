@@ -168,3 +168,68 @@ class UserProfileTest(TestCase):
         response = self.client.get(self.user_url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class UserDataExportTest(TestCase):
+    """Test PIPA compliance - user data export."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='export@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.export_url = '/api/v1/users/me/data-export/'
+
+    def test_export_user_data(self):
+        """Test user can export their personal data."""
+        response = self.client.get(self.export_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('profile', response.data)
+        self.assertIn('conversations', response.data)
+        self.assertIn('couple_status', response.data)
+        self.assertEqual(response.data['profile']['email'], 'export@example.com')
+
+    def test_export_unauthenticated(self):
+        """Test unauthenticated request is rejected."""
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.export_url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class UserDataDeletionTest(TestCase):
+    """Test PIPA compliance - user data deletion."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='delete@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.delete_url = '/api/v1/users/me/'
+
+    def test_delete_user_account(self):
+        """Test user can delete their account and data is anonymized."""
+        user_id = self.user.id
+        response = self.client.delete(self.delete_url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Verify user is anonymized
+        deleted_user = User.objects.get(id=user_id)
+        self.assertTrue(deleted_user.email.startswith('deleted_'))
+        self.assertTrue(deleted_user.email.endswith('@anonymized.com'))
+        self.assertEqual(deleted_user.first_name, '')
+        self.assertEqual(deleted_user.last_name, '')
+        self.assertFalse(deleted_user.is_active)
+
+    def test_delete_unauthenticated(self):
+        """Test unauthenticated request is rejected."""
+        self.client.force_authenticate(user=None)
+        response = self.client.delete(self.delete_url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

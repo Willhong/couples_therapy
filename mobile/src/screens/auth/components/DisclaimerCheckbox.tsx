@@ -6,6 +6,7 @@ interface DisclaimerCheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   onTermsPress?: () => void;
+  onPrivacyPress?: () => void;
 }
 
 /**
@@ -15,7 +16,8 @@ interface DisclaimerCheckboxProps {
 export function DisclaimerCheckbox({
   checked,
   onChange,
-  onTermsPress
+  onTermsPress,
+  onPrivacyPress
 }: DisclaimerCheckboxProps): React.ReactElement {
   return (
     <View style={styles.container}>
@@ -30,6 +32,10 @@ export function DisclaimerCheckbox({
           본 서비스는 전문 상담을 대체하지 않습니다.{' '}
           <Pressable onPress={onTermsPress}>
             <Text style={styles.link}>이용약관</Text>
+          </Pressable>
+          {' 및 '}
+          <Pressable onPress={onPrivacyPress}>
+            <Text style={styles.link}>개인정보처리방침</Text>
           </Pressable>
           에 동의합니다.
         </Text>

@@ -85,9 +85,8 @@ export function SignUpScreen(): React.ReactElement {
   }, [email, password, signUp, isFormValid, loading]);
 
   const handleTermsPress = useCallback(() => {
-    // TODO: Navigate to terms screen
-    Alert.alert('이용약관', '이용약관 페이지는 준비 중입니다.');
-  }, []);
+    router.push('/(auth)/terms');
+  }, [router]);
 
   const navigateToSignIn = useCallback(() => {
     router.replace('/(auth)/sign-in');

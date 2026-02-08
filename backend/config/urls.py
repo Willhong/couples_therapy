@@ -19,6 +19,9 @@ urlpatterns = [
     # JWT token endpoints (simplejwt)
     path('api/v1/auth/token/', include('apps.users.urls')),
 
+    # User data management (PIPA compliance)
+    path('api/v1/users/', include('apps.users.user_urls')),
+
     # App endpoints
     path('api/v1/couples/', include('apps.couples.urls')),
     path('api/v1/consents/', include('apps.consents.urls')),
