@@ -192,9 +192,11 @@ export function LiveConsentFlow({
           <Text style={styles.statusDesc}>
             파트너의 동의를 기다리고 있습니다...
           </Text>
-          <Pressable style={styles.secondaryButton} onPress={onCancel}>
-            <Text style={styles.secondaryButtonText}>취소</Text>
-          </Pressable>
+          <View style={styles.buttonGroup}>
+            <Pressable style={styles.secondaryButton} onPress={onCancel}>
+              <Text style={styles.secondaryButtonText}>취소</Text>
+            </Pressable>
+          </View>
         </View>
       </SafeAreaView>
     );
@@ -273,9 +275,11 @@ export function LiveConsentFlow({
             <Text style={styles.statusDesc}>
               파트너가 녹음을 시작하면{'\n'}알림이 표시됩니다.
             </Text>
-            <Pressable style={styles.secondaryButton} onPress={onCancel}>
-              <Text style={styles.secondaryButtonText}>닫기</Text>
-            </Pressable>
+            <View style={styles.buttonGroup}>
+              <Pressable style={styles.secondaryButton} onPress={onCancel}>
+                <Text style={styles.secondaryButtonText}>닫기</Text>
+              </Pressable>
+            </View>
           </View>
         </SafeAreaView>
       );
@@ -418,6 +422,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
+    minHeight: 48,
+    justifyContent: 'center',
   },
   primaryButtonText: {
     color: '#FFFFFF',
@@ -429,6 +435,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
+    minHeight: 48,
+    justifyContent: 'center',
   },
   secondaryButtonText: {
     color: '#374151',

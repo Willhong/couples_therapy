@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { usePartner } from '@/hooks/usePartner';
-import DualConsentPrompt from '@/components/consent/DualConsentPrompt';
+import { LiveConsentFlow } from '@/features/recording/components/LiveConsentFlow';
 import { ConversationList } from '@/features/conversations';
+import type { RecordingMode, TranscriptResult } from '@/features/recording/types';
 
 /**
  * Home screen - unified conversation list with quick action buttons.
@@ -20,7 +21,7 @@ export default function Home(): React.ReactElement {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const { couple, connectionStatus } = usePartner();
-  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [showLiveConsent, setShowLiveConsent] = useState(false);
 
   // Get display name from email
   const displayName = user?.email?.split('@')[0] || '사용자';
@@ -44,28 +45,27 @@ export default function Home(): React.ReactElement {
       );
       return;
     }
-    setShowConsentModal(true);
+    setShowLiveConsent(true);
   };
 
-  // Handle consent approved
-  const handleConsentApproved = () => {
-    setShowConsentModal(false);
-    Alert.alert(
-      '동의 완료',
-      '녹음 기능은 Phase 3에서 구현됩니다.',
-      [{ text: '확인' }]
-    );
-  };
-
-  // Handle consent declined
-  const handleConsentDeclined = () => {
-    setShowConsentModal(false);
-    Alert.alert(
-      '녹음 취소',
-      '녹음을 시작하려면 양측 동의가 필요합니다.',
-      [{ text: '확인' }]
-    );
-  };
+  // Handle transcription complete from LiveConsentFlow
+  const handleTranscriptionComplete = useCallback(
+    (recordingId: string, mode: RecordingMode, _result: TranscriptResult) => {
+      setShowLiveConsent(false);
+      if (mode === 'narration') {
+        router.push({
+          pathname: '/(main)/post-recording-choice',
+          params: { recordingId },
+        });
+      } else {
+        router.push({
+          pathname: '/(main)/transcript/[id]',
+          params: { id: recordingId },
+        });
+      }
+    },
+    [router]
+  );
 
   // Handle sign out
   const handleSignOut = async () => {
@@ -111,13 +111,19 @@ export default function Home(): React.ReactElement {
         <ConversationList />
       </View>
 
-      {/* Dual consent modal */}
-      <DualConsentPrompt
-        visible={showConsentModal}
-        onConsent={handleConsentApproved}
-        onDecline={handleConsentDeclined}
-        onClose={() => setShowConsentModal(false)}
-      />
+      {/* Live consent flow overlay */}
+      {showLiveConsent && (
+        <View style={StyleSheet.absoluteFill}>
+          <LiveConsentFlow
+            onTranscriptionComplete={handleTranscriptionComplete}
+            onFallbackToNarration={() => {
+              setShowLiveConsent(false);
+              router.push('/(main)/record');
+            }}
+            onCancel={() => setShowLiveConsent(false)}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
