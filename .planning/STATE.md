@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** 갈등 상황에서 상대방의 관점을 이해하도록 돕는 리프레이밍
-**Current focus:** Phase 3 gap closure in progress. Next: Phase 4 - Partner & Engagement
+**Current focus:** Phase 3 gap closure complete. Next: Phase 4 - Partner & Engagement
 
 ## Current Position
 
 Phase: 3 of 4 (Audio Pipeline)
 Plan: 10 of 10 in gap-closure wave
-Status: Gap closure complete (03-08 pending separately)
-Last activity: 2026-02-08 - Completed 03-10-PLAN.md (waveform performance)
+Status: Phase 3 fully complete (all gap closure plans done)
+Last activity: 2026-02-08 - Completed 03-08-PLAN.md (home record flow unification)
 
-Progress: [██████████████████░] 95% (18/19 plans)
+Progress: [███████████████████] 100% (19/19 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: 6 min
-- Total execution time: 111 min
+- Total execution time: 116 min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [██████████████████░] 95% (18/19
 |-------|-------|-------|----------|
 | 1. Foundation & Safety | 4/4 | 32m | 8m |
 | 2. Core Reframing | 5/5 | 39m | 8m |
-| 3. Audio Pipeline | 9/10 | 40m | 4m |
+| 3. Audio Pipeline | 10/10 | 45m | 5m |
 | 4. Partner & Engagement | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 7m, 6m, 8m, 8m, 2m
+- Last 5 plans: 6m, 8m, 8m, 2m, 5m
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -107,6 +107,8 @@ Recent decisions affecting current work:
 | 150ms waveform throttle interval | Balances visual smoothness with render performance | 03-10 |
 | React.memo with custom comparison on WaveformVisualizer | Avoids deep array comparison while detecting meaningful changes | 03-10 |
 | Metering polling aligned to 150ms | Matches waveform throttle to avoid wasted getStatusAsync() calls | 03-10 |
+| Back button calls handleCancelRecording in recording phase | Prevents orphaned recording state on back navigation | 03-08 |
+| Header hidden during active recording | Red indicator takes priority; prevents accidental back navigation | 03-08 |
 
 ### Pending Todos
 
@@ -143,5 +145,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 03-10-PLAN.md (waveform performance gap closure)
+Stopped at: Completed 03-08-PLAN.md (home record flow unification)
 Resume file: None
