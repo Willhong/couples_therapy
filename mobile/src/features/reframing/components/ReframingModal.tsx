@@ -105,9 +105,15 @@ export function ReframingModal({
     Alert.alert('복사됨', '분석 내용이 클립보드에 복사되었습니다.');
   };
 
-  const handleSave = () => {
-    setSaved(!saved);
-    // TODO: API call to save to collection
+  const handleSave = async () => {
+    try {
+      const { api } = await import('@/lib/api');
+      const conversationId = messageId.split('-')[0]; // Extract conversation ID from message ID pattern
+      await api.post(`/chat/conversations/${conversationId}/messages/${messageId}/toggle_saved/`);
+      setSaved(!saved);
+    } catch (error) {
+      console.error('Failed to toggle save state:', error);
+    }
   };
 
   // Check for abuse flag

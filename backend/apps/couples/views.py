@@ -84,7 +84,7 @@ class InviteCodeViewSet(viewsets.ViewSet):
         invite_code.used_at = timezone.now()
         invite_code.save()
 
-        # TODO: Send push notification to partner
+        # NOTE: Push notification to partner will be added when notification infrastructure is set up (WS4-02)
 
         serializer = CoupleSerializer(couple, context={'request': request})
         return Response({
@@ -129,6 +129,6 @@ class CoupleViewSet(viewsets.ViewSet):
         couple.disconnected_at = timezone.now()
         couple.save()
 
-        # TODO: Send push notification to ex-partner
+        # NOTE: Push notification to partner will be added when notification infrastructure is set up (WS4-02)
 
         return Response({'message': '파트너 연결이 해제되었습니다.'})

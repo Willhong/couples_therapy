@@ -42,3 +42,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# OMC tooling
+.omc/
+.planning/agent-history.json

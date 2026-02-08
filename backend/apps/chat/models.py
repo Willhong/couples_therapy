@@ -66,6 +66,7 @@ class Message(models.Model):
     # For reframing responses
     has_reframing = models.BooleanField(default=False)
     reframing_data = models.JSONField(null=True, blank=True)  # Structured reframing
+    is_saved = models.BooleanField(default=False)  # Save to collection
 
     # Metadata
     token_count = models.IntegerField(null=True)  # For context management

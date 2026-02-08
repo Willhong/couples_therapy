@@ -16,6 +16,7 @@ export default function ChatRoute(): React.ReactElement {
   const { currentReframing, openReframing, closeReframing, isVisible } =
     useReframing();
   const { shareReframing, sharing } = usePartnerSharing();
+  const [sendMessageRef, setSendMessageRef] = React.useState<((text: string) => Promise<void>) | null>(null);
 
   const handleOpenReframing = useCallback(
     (data: ReframingData, messageId: string) => {
@@ -36,14 +37,21 @@ export default function ChatRoute(): React.ReactElement {
   const handleFollowUp = useCallback(
     (prompt: string) => {
       closeReframing();
-      // TODO: Send follow-up message to chat
+      // Send the follow-up suggestion as a new user message
+      if (sendMessageRef) {
+        sendMessageRef(prompt);
+      }
     },
-    [closeReframing]
+    [closeReframing, sendMessageRef]
   );
 
   return (
     <>
-      <ChatScreen conversationId={conversationId} onOpenReframing={handleOpenReframing} />
+      <ChatScreen
+        conversationId={conversationId}
+        onOpenReframing={handleOpenReframing}
+        onSendMessageReady={setSendMessageRef}
+      />
 
       {currentReframing && (
         <ReframingModal

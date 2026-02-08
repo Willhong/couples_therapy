@@ -27,4 +27,7 @@ urlpatterns = [
     path('api/v1/audio/', include('apps.audio.urls')),
     path('api/v1/conversations/', include('apps.conversations.urls')),
     path('api/v1/patterns/', include('apps.patterns.urls')),
+    path('api/v1/cooldown/', include('apps.cooldown.urls')),
+    path('api/v1/prompts/', include('apps.prompts.urls')),
+    path('api/v1/safety/', include('apps.safety.urls')),
 ]

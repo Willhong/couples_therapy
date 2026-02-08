@@ -15,6 +15,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'content',
             'has_reframing',
             'reframing_data',
+            'is_saved',
             'created_at',
         ]
         read_only_fields = ['id', 'created_at']

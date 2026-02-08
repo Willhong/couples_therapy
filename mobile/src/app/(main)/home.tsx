@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePartner } from '@/hooks/usePartner';
 import { LiveConsentFlow } from '@/features/recording/components/LiveConsentFlow';
 import { ConversationList } from '@/features/conversations';
+import { DailyPromptCard } from '@/features/prompts';
 import type { RecordingMode, TranscriptResult } from '@/features/recording/types';
 
 /**
@@ -104,6 +105,20 @@ export default function Home(): React.ReactElement {
           <Text style={styles.actionLabel}>갈등 녹음</Text>
         </Pressable>
       </View>
+
+      {/* Cool-down button */}
+      <View style={styles.cooldownRow}>
+        <Pressable
+          style={styles.cooldownButton}
+          onPress={() => router.push('/(main)/cooldown')}
+        >
+          <Text style={styles.cooldownIcon}>{'⏸'}</Text>
+          <Text style={styles.cooldownLabel}>쿨다운</Text>
+        </Pressable>
+      </View>
+
+      {/* Daily Prompt Card */}
+      {hasPartner && <DailyPromptCard />}
 
       {/* Unified conversation list */}
       <View style={styles.listContainer}>
@@ -203,5 +218,30 @@ const styles = StyleSheet.create({
     color: '#374151',
     paddingHorizontal: 16,
     paddingBottom: 8,
+  },
+  cooldownRow: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  cooldownButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(107, 127, 215, 0.1)',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#6B7FD7',
+  },
+  cooldownIcon: {
+    fontSize: 18,
+    marginRight: 8,
+    color: '#6B7FD7',
+  },
+  cooldownLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6B7FD7',
   },
 });

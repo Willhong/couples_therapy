@@ -121,6 +121,25 @@ class MessageViewSet(viewsets.ModelViewSet):
 
         return super().create(request, *args, **kwargs)
 
+    @action(detail=True, methods=['post'])
+    def toggle_saved(self, request, conversation_pk=None, pk=None):
+        """Toggle the saved state of a message."""
+        try:
+            message = self.get_queryset().get(pk=pk)
+        except Message.DoesNotExist:
+            return Response(
+                {'detail': '메시지를 찾을 수 없습니다.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        message.is_saved = not message.is_saved
+        message.save()
+
+        return Response({
+            'is_saved': message.is_saved,
+            'message_id': str(message.id)
+        })
+
 
 class SharedReframingViewSet(viewsets.ModelViewSet):
     """ViewSet for managing shared reframings."""

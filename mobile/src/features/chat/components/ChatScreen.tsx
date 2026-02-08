@@ -23,15 +23,24 @@ import type { ReframingData, ChatMessage } from '../types';
 interface Props {
   conversationId?: string;
   onOpenReframing?: (reframingData: ReframingData, messageId: string) => void;
+  onSendMessageReady?: (sendMessage: (text: string) => Promise<void>) => void;
 }
 
 export function ChatScreen({
   conversationId,
   onOpenReframing,
+  onSendMessageReady,
 }: Props): React.ReactElement {
   const [inputText, setInputText] = useState('');
   const { messages, loading, isTyping, statusMessage, sendMessage, stopStreaming } =
     useChat(conversationId || null);
+
+  // Provide sendMessage function to parent component
+  React.useEffect(() => {
+    if (onSendMessageReady) {
+      onSendMessageReady(sendMessage);
+    }
+  }, [sendMessage, onSendMessageReady]);
 
   const handleSend = useCallback(
     (text: string) => {

@@ -73,6 +73,9 @@ INSTALLED_APPS = [
     'apps.audio',
     'apps.conversations',
     'apps.patterns',
+    'apps.cooldown',
+    'apps.prompts',
+    'apps.safety',
 ]
 
 SITE_ID = 1  # Required for django-allauth
@@ -278,6 +281,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 # Development: run Celery tasks synchronously (no Redis required)
 CELERY_TASK_ALWAYS_EAGER = env.bool('CELERY_TASK_ALWAYS_EAGER', default=True)
+CELERY_TASK_EAGER_PROPAGATES = True  # Propagate exceptions in eager mode
 
 
 # OpenAI API Key (direct API for transcription, separate from LangChain)

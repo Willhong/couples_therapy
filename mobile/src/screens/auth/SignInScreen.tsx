@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
+import { api } from '@/lib/api';
 
 /**
  * Sign in screen with email and password
@@ -57,8 +58,39 @@ export function SignInScreen(): React.ReactElement {
   }, [router]);
 
   const handleForgotPassword = useCallback(() => {
-    // TODO: Navigate to password reset screen
-    Alert.alert('비밀번호 찾기', '비밀번호 재설정 기능은 준비 중입니다.');
+    Alert.prompt(
+      '비밀번호 찾기',
+      '가입하신 이메일 주소를 입력해주세요.',
+      [
+        {
+          text: '취소',
+          style: 'cancel',
+        },
+        {
+          text: '전송',
+          onPress: async (resetEmail?: string) => {
+            if (!resetEmail || resetEmail.trim().length === 0) {
+              Alert.alert('오류', '이메일을 입력해주세요.');
+              return;
+            }
+
+            try {
+              await api.post('/auth/password/reset/', { email: resetEmail.trim() });
+              Alert.alert(
+                '이메일 전송 완료',
+                '비밀번호 재설정 이메일을 발송했습니다. 이메일을 확인해주세요.'
+              );
+            } catch (err) {
+              const message = err instanceof Error ? err.message : '비밀번호 재설정 요청에 실패했습니다.';
+              Alert.alert('오류', message);
+            }
+          },
+        },
+      ],
+      'plain-text',
+      '',
+      'email-address'
+    );
   }, []);
 
   return (
