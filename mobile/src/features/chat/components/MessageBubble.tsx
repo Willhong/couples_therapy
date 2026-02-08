@@ -16,6 +16,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import type { ChatMessage, ReframingData } from '../types';
+import { CrisisResponseCard } from '@/features/safety';
 
 interface Props {
   message: ChatMessage;
@@ -32,6 +33,7 @@ function formatTime(date: Date): string {
 function MessageBubbleComponent({ message, onOpenReframing }: Props): React.ReactElement {
   const isUser = message.user._id === 'user';
   const isSystem = message.user._id === 'system';
+  const isCrisis = message.mode === 'crisis';
   const hasReframing = message.reframingData && !isUser;
 
   const handleLongPress = useCallback(async () => {
@@ -42,6 +44,19 @@ function MessageBubbleComponent({ message, onOpenReframing }: Props): React.Reac
       console.error('Failed to copy:', error);
     }
   }, [message.text]);
+
+  // Render crisis response card instead of normal bubble
+  if (isCrisis && !isUser) {
+    return (
+      <View style={[styles.container, styles.containerLeft]}>
+        <Text style={styles.senderName}>긴급 안전 지원</Text>
+        <CrisisResponseCard crisisType={message.crisisType} message={message.text} />
+        <Text style={[styles.timestamp, styles.timestampLeft]}>
+          {formatTime(message.createdAt)}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, isUser ? styles.containerRight : styles.containerLeft]}>

@@ -141,6 +141,8 @@ export function useChat(conversationId: string | null): UseChatReturn {
                     is_abuse_detected: false,
                   }
                 : undefined,
+              mode: streamResult.mode,
+              crisisType: streamResult.crisisType,
             };
             addMessage(aiMessage);
           }

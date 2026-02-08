@@ -1,7 +1,9 @@
 /**
  * Safety feature exports
  */
-export * from './components/SafetyAssessment';
+export { SafetyAssessment } from './components/SafetyAssessment';
 export * from './hooks/useSafetyStatus';
 export * from './services/safetyApi';
-export * from './types';
+export type { SafetyAssessment as SafetyAssessmentType } from './types';
+export type * from './types';
+export { default as CrisisResponseCard } from './components/CrisisResponseCard';

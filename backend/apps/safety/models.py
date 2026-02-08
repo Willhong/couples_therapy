@@ -1,5 +1,6 @@
 """Models for safety assessment and abuse screening."""
 
+import uuid
 from django.db import models
 from django.conf import settings
 
@@ -54,3 +55,68 @@ class SafetyAssessment(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.get_risk_level_display()}"
+
+
+class CrisisEvent(models.Model):
+    """Crisis event detected in user messages."""
+
+    CRISIS_TYPE_CHOICES = [
+        ('suicide', 'Suicide'),
+        ('violence', 'Violence'),
+        ('emergency', 'Emergency'),
+    ]
+
+    SEVERITY_CHOICES = [
+        ('high', 'High'),
+        ('medium', 'Medium'),
+        ('low', 'Low'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='crisis_events',
+        verbose_name='사용자'
+    )
+    conversation = models.ForeignKey(
+        'chat.Conversation',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='crisis_events',
+        verbose_name='대화'
+    )
+    crisis_type = models.CharField(
+        max_length=20,
+        choices=CRISIS_TYPE_CHOICES,
+        verbose_name='위기 유형'
+    )
+    severity = models.CharField(
+        max_length=20,
+        choices=SEVERITY_CHOICES,
+        verbose_name='심각도'
+    )
+    matched_keywords = models.JSONField(
+        default=list,
+        verbose_name='감지된 키워드'
+    )
+    message_content = models.TextField(
+        verbose_name='트리거 메시지'
+    )
+    response_shown = models.TextField(
+        verbose_name='표시된 응답'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='생성일'
+    )
+
+    class Meta:
+        db_table = 'crisis_events'
+        verbose_name = '위기 이벤트'
+        verbose_name_plural = '위기 이벤트'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.email} - {self.get_crisis_type_display()} ({self.created_at.strftime('%Y-%m-%d')})"

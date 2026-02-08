@@ -21,6 +21,7 @@ from .serializers import (
 from .services.llm_service import get_provider_info, LLMConfigurationError
 from .services.reframing_graph import run_reframing_pipeline, run_comfort_pipeline
 from .services.context_manager import ConversationContextManager
+from apps.safety.crisis import detect_crisis
 
 logger = logging.getLogger(__name__)
 
@@ -150,14 +151,67 @@ class SharedReframingViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Return reframings shared with the authenticated user."""
-        return SharedReframing.objects.filter(shared_with=self.request.user)
+        return SharedReframing.objects.filter(shared_with=self.request.user).select_related(
+            'message', 'shared_by'
+        ).order_by('-shared_at')
 
     @action(detail=False, methods=['get'])
     def sent(self, request):
         """Return reframings shared by the authenticated user."""
-        queryset = SharedReframing.objects.filter(shared_by=request.user)
+        queryset = SharedReframing.objects.filter(shared_by=request.user).select_related(
+            'message', 'shared_with'
+        ).order_by('-shared_at')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def respond(self, request, pk=None):
+        """Add partner response to a shared reframing."""
+        try:
+            shared = self.get_queryset().get(pk=pk)
+        except SharedReframing.DoesNotExist:
+            return Response(
+                {'detail': '공유된 리프레이밍을 찾을 수 없습니다.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        partner_response = request.data.get('partner_response')
+        if not partner_response:
+            return Response(
+                {'detail': 'partner_response가 필요합니다.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        shared.partner_response = partner_response
+        shared.save()
+
+        return Response(self.get_serializer(shared).data)
+
+    @action(detail=True, methods=['post'])
+    def read(self, request, pk=None):
+        """Mark a shared reframing as read."""
+        try:
+            shared = self.get_queryset().get(pk=pk)
+        except SharedReframing.DoesNotExist:
+            return Response(
+                {'detail': '공유된 리프레이밍을 찾을 수 없습니다.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        shared.is_read = True
+        shared.save()
+
+        return Response({'status': 'success', 'is_read': True})
+
+    @action(detail=False, methods=['get'], url_path='unread-count')
+    def unread_count(self, request):
+        """Return count of unread shared reframings."""
+        count = SharedReframing.objects.filter(
+            shared_with=request.user,
+            is_read=False
+        ).count()
+
+        return Response({'count': count})
 
 
 @api_view(['GET'])
@@ -231,6 +285,40 @@ def reframe_message(request):
     # Get conversation context
     context_manager = ConversationContextManager(str(conversation_id))
     conversation_context = context_manager.get_context_for_ai()
+
+    # Crisis detection check
+    crisis_result = detect_crisis(user_message)
+    if crisis_result['is_crisis']:
+        from apps.safety.models import CrisisEvent
+        CrisisEvent.objects.create(
+            user=request.user,
+            conversation=conversation,
+            crisis_type=crisis_result['crisis_type'],
+            severity=crisis_result['severity'],
+            matched_keywords=crisis_result['matched_keywords'],
+            message_content=user_message[:500],
+            response_shown='crisis_safety_response'
+        )
+        safety_response = (
+            "긴급 도움이 필요하신 것 같습니다.\n\n"
+            "지금 힘든 상황이라면, 전문 상담사와 이야기해 주세요:\n"
+            "• 자살예방상담전화: 1393 (24시간)\n"
+            "• 정신건강위기상담전화: 1577-0199 (24시간)\n"
+            "• 여성긴급전화: 1366 (24시간)\n"
+            "• 경찰: 112\n\n"
+            "당신은 혼자가 아닙니다. 도움을 받을 수 있습니다."
+        )
+        ai_msg = Message.objects.create(
+            conversation=conversation,
+            role=Message.Role.ASSISTANT,
+            content=safety_response,
+        )
+        return Response({
+            'mode': 'crisis',
+            'crisis_type': crisis_result['crisis_type'],
+            'final_response': safety_response,
+            'message_id': str(ai_msg.id),
+        })
 
     # Run two-mode reframing pipeline
     try:
@@ -477,6 +565,40 @@ def comfort_message(request):
     # Get conversation context
     context_manager = ConversationContextManager(str(conversation_id))
     conversation_context = context_manager.get_context_for_ai()
+
+    # Crisis detection check
+    crisis_result = detect_crisis(user_message)
+    if crisis_result['is_crisis']:
+        from apps.safety.models import CrisisEvent
+        CrisisEvent.objects.create(
+            user=request.user,
+            conversation=conversation,
+            crisis_type=crisis_result['crisis_type'],
+            severity=crisis_result['severity'],
+            matched_keywords=crisis_result['matched_keywords'],
+            message_content=user_message[:500],
+            response_shown='crisis_safety_response'
+        )
+        safety_response = (
+            "긴급 도움이 필요하신 것 같습니다.\n\n"
+            "지금 힘든 상황이라면, 전문 상담사와 이야기해 주세요:\n"
+            "• 자살예방상담전화: 1393 (24시간)\n"
+            "• 정신건강위기상담전화: 1577-0199 (24시간)\n"
+            "• 여성긴급전화: 1366 (24시간)\n"
+            "• 경찰: 112\n\n"
+            "당신은 혼자가 아닙니다. 도움을 받을 수 있습니다."
+        )
+        ai_msg = Message.objects.create(
+            conversation=conversation,
+            role=Message.Role.ASSISTANT,
+            content=safety_response,
+        )
+        return Response({
+            'mode': 'crisis',
+            'crisis_type': crisis_result['crisis_type'],
+            'final_response': safety_response,
+            'message_id': str(ai_msg.id),
+        })
 
     # Run comfort pipeline
     try:

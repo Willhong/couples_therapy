@@ -64,4 +64,6 @@ export interface ChatMessage {
     name?: string;
   };
   reframingData?: ReframingData;
+  mode?: 'chat' | 'reframing' | 'comfort' | 'crisis';
+  crisisType?: string;
 }
