@@ -1,8 +1,9 @@
 /**
  * WaveformVisualizer component
  * Renders real-time audio metering data as vertical bars
+ * Memoized to prevent unnecessary re-renders during recording
  */
-import React from 'react';
+import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 const MAX_HEIGHT = 80;
@@ -14,7 +15,7 @@ interface Props {
   isRecording: boolean;
 }
 
-export function WaveformVisualizer({
+function WaveformVisualizerComponent({
   waveformData,
   isRecording,
 }: Props): React.ReactElement {
@@ -25,7 +26,7 @@ export function WaveformVisualizer({
       <View style={styles.barsContainer}>
         {waveformData.map((value, index) => (
           <View
-            key={index}
+            key={`bar-${index}`}
             style={[
               styles.bar,
               {
@@ -39,6 +40,17 @@ export function WaveformVisualizer({
     </View>
   );
 }
+
+export const WaveformVisualizer = memo(WaveformVisualizerComponent, (prev, next) => {
+  // Re-render if isRecording changes
+  if (prev.isRecording !== next.isRecording) return false;
+  // Re-render if data length changes (new bar added or reset)
+  if (prev.waveformData.length !== next.waveformData.length) return false;
+  // Compare last value to detect actual data changes
+  const len = prev.waveformData.length;
+  if (len === 0) return true;
+  return prev.waveformData[len - 1] === next.waveformData[len - 1];
+});
 
 const styles = StyleSheet.create({
   container: {
