@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { api, getApiErrorMessage } from '@/lib/api';
 import { createInviteLink } from '@/utils/deepLink';
 import { useAuth } from '@/hooks/useAuth';
@@ -245,6 +246,33 @@ export function PartnerProvider({ children }: PartnerProviderProps): React.React
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  /**
+   * Refresh when app returns to foreground
+   */
+  useEffect(() => {
+    const handleAppState = (nextState: AppStateStatus) => {
+      if (nextState === 'active') {
+        refresh();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppState);
+    return () => subscription.remove();
+  }, [refresh]);
+
+  /**
+   * Poll for partner connection when not yet connected (every 30s)
+   */
+  useEffect(() => {
+    if (connectionStatus === 'active' || !user) return;
+
+    const interval = setInterval(() => {
+      refresh();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [connectionStatus, user, refresh]);
 
   const value: PartnerContextType = {
     couple,
