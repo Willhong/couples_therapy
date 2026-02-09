@@ -262,3 +262,129 @@ class DailyPromptTest(TestCase):
 
         # Should fail or indicate no couple
         self.assertIn(response.status_code, [status.HTTP_400_BAD_REQUEST, status.HTTP_404_NOT_FOUND])
+
+
+# ============================================================================
+# Edge Case Tests: HTTP 404/400 instead of 500
+# ============================================================================
+
+class PromptSoloUserEdgeCaseTest(TestCase):
+    """Test prompt endpoints when user has no couple."""
+
+    def setUp(self):
+        self.solo_user = User.objects.create_user(
+            email='prompt_solo@example.com', password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.solo_user)
+
+    def test_today_prompt_without_couple(self):
+        """GET today prompt without couple should return 404, not 500."""
+        response = self.client.get('/api/v1/prompts/today/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for today prompt without couple")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_prompt_history_without_couple(self):
+        """GET prompt history without couple should return 404, not 500."""
+        response = self.client.get('/api/v1/prompts/history/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for prompt history without couple")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_respond_prompt_without_couple(self):
+        """POST respond without couple should return 404, not 500."""
+        response = self.client.post('/api/v1/prompts/respond/', {
+            'response_text': 'My answer'
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for respond prompt without couple")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_reveal_responses_without_couple(self):
+        """GET reveal without couple should return 404, not 500."""
+        response = self.client.get('/api/v1/prompts/reveal/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for reveal without couple")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class PromptDisconnectedCoupleEdgeCaseTest(TestCase):
+    """Test prompt endpoints after couple disconnection."""
+
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            email='pdisc1@example.com', password='TestPass123!'
+        )
+        self.user2 = User.objects.create_user(
+            email='pdisc2@example.com', password='TestPass123!'
+        )
+        # Create disconnected couple
+        self.couple = Couple.objects.create(
+            user1=self.user1,
+            user2=self.user2,
+            status=Couple.Status.DISCONNECTED,
+            connected_at=timezone.now(),
+            disconnected_at=timezone.now()
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user1)
+
+    def test_today_prompt_after_disconnect(self):
+        """GET today prompt after disconnect should return 404, not 500."""
+        response = self.client.get('/api/v1/prompts/today/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for today prompt after disconnect")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_prompt_history_after_disconnect(self):
+        """GET prompt history after disconnect should return 404, not 500."""
+        response = self.client.get('/api/v1/prompts/history/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for prompt history after disconnect")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class PromptInvalidInputEdgeCaseTest(TestCase):
+    """Test prompt endpoints with invalid input."""
+
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            email='pinv1@example.com', password='TestPass123!'
+        )
+        self.user2 = User.objects.create_user(
+            email='pinv2@example.com', password='TestPass123!'
+        )
+        self.couple = Couple.objects.create(
+            user1=self.user1,
+            user2=self.user2,
+            status=Couple.Status.ACTIVE,
+            connected_at=timezone.now()
+        )
+        DailyPrompt.objects.create(
+            text_ko='Test prompt',
+            category='daily',
+            difficulty_level=1,
+            is_active=True
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user1)
+
+    def test_respond_with_empty_body(self):
+        """POST respond with empty body should return 400, not 500."""
+        # First get today's prompt to create assignment
+        self.client.get('/api/v1/prompts/today/')
+        response = self.client.post('/api/v1/prompts/respond/', {}, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for empty respond body")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_respond_without_getting_prompt_first(self):
+        """POST respond without getting today's prompt first should return 404, not 500."""
+        # Don't call today's prompt first - so no assignment exists for today
+        response = self.client.post('/api/v1/prompts/respond/', {
+            'response_text': 'My answer without prompt'
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for respond without prompt assignment")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

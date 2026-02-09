@@ -207,3 +207,96 @@ class CoupleManagementTest(TestCase):
 
         self.assertEqual(partner, self.user2)
         self.assertEqual(partner.email, 'user2@example.com')
+
+
+# ============================================================================
+# Edge Case Tests: HTTP 404/400 instead of 500
+# ============================================================================
+
+class CoupleEdgeCaseTest(TestCase):
+    """Test couple edge cases return proper status codes, not 500."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='couple_edge@example.com', password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_get_couple_info_when_no_couple(self):
+        """Solo user getting couple info should return couple=None, not 500."""
+        response = self.client.get('/api/v1/couples/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for solo user getting couple info")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(response.data['couple'])
+
+    def test_disconnect_when_no_couple(self):
+        """Disconnecting when no couple exists should return 404, not 500."""
+        response = self.client.post('/api/v1/couples/disconnect/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for disconnect without couple")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_redeem_empty_code(self):
+        """Redeeming empty code should return 400, not 500."""
+        response = self.client.post('/api/v1/couples/invite/redeem/', {
+            'code': ''
+        })
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for empty invite code")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_redeem_nonexistent_code(self):
+        """Redeeming non-existent code should return 404, not 500."""
+        response = self.client.post('/api/v1/couples/invite/redeem/', {
+            'code': 'ZZZZZ9'
+        })
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for non-existent invite code")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_redeem_with_no_body(self):
+        """Redeeming with no body should return 400, not 500."""
+        response = self.client.post('/api/v1/couples/invite/redeem/', {}, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for empty redeem body")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class DisconnectedCoupleAccessTest(TestCase):
+    """Test accessing couple features after disconnection."""
+
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            email='disc_a@example.com', password='TestPass123!'
+        )
+        self.user2 = User.objects.create_user(
+            email='disc_b@example.com', password='TestPass123!'
+        )
+        # Create then disconnect
+        self.couple = Couple.objects.create(
+            user1=self.user1,
+            user2=self.user2,
+            status=Couple.Status.DISCONNECTED,
+            connected_at=timezone.now(),
+            disconnected_at=timezone.now()
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user1)
+
+    def test_get_couple_info_after_disconnect(self):
+        """Getting couple info after disconnect should return couple=None, not 500."""
+        response = self.client.get('/api/v1/couples/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for couple info after disconnect")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Active couple should be None
+        self.assertIsNone(response.data['couple'])
+
+    def test_disconnect_already_disconnected(self):
+        """Disconnecting already disconnected couple should return 404, not 500."""
+        response = self.client.post('/api/v1/couples/disconnect/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for disconnect of already disconnected couple")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

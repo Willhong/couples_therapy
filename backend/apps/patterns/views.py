@@ -2,7 +2,7 @@
 
 import logging
 from collections import Counter
-from datetime import timedelta
+from datetime import date, timedelta
 
 from django.db.models import Avg, Count
 from django.db.models.functions import TruncWeek
@@ -45,15 +45,35 @@ def pattern_list(request):
     # Filter by date range
     date_from = request.query_params.get('date_from')
     if date_from:
+        try:
+            date.fromisoformat(date_from)
+        except (ValueError, TypeError):
+            return Response(
+                {'detail': '잘못된 날짜 형식입니다.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         queryset = queryset.filter(created_at__date__gte=date_from)
 
     date_to = request.query_params.get('date_to')
     if date_to:
+        try:
+            date.fromisoformat(date_to)
+        except (ValueError, TypeError):
+            return Response(
+                {'detail': '잘못된 날짜 형식입니다.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         queryset = queryset.filter(created_at__date__lte=date_to)
 
     # Simple pagination
-    page = int(request.query_params.get('page', 1))
-    page_size = min(int(request.query_params.get('page_size', 20)), 50)
+    try:
+        page = int(request.query_params.get('page', 1))
+    except (ValueError, TypeError):
+        page = 1
+    try:
+        page_size = min(int(request.query_params.get('page_size', 20)), 50)
+    except (ValueError, TypeError):
+        page_size = 20
     start = (page - 1) * page_size
     end = start + page_size
 
@@ -217,8 +237,14 @@ def weekly_summaries(request):
     user = request.user
     queryset = WeeklySummary.objects.filter(user=user)
 
-    page = int(request.query_params.get('page', 1))
-    page_size = min(int(request.query_params.get('page_size', 10)), 50)
+    try:
+        page = int(request.query_params.get('page', 1))
+    except (ValueError, TypeError):
+        page = 1
+    try:
+        page_size = min(int(request.query_params.get('page_size', 10)), 50)
+    except (ValueError, TypeError):
+        page_size = 10
     start = (page - 1) * page_size
     end = start + page_size
 

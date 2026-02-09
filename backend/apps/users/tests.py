@@ -568,3 +568,139 @@ class BearerTokenEdgeCaseTest(ThrottleMixin, TestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(token)}')
         response = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+# ============================================================================
+# Edge Case Tests: HTTP 404/400/405 instead of 500
+# ============================================================================
+
+class DataExportEdgeCaseTest(ThrottleMixin, TestCase):
+    """Test data export edge cases.
+
+    BUG: Mobile settings.tsx line 85 calls api.post('/users/me/data-export/')
+    but backend view is @api_view(['GET']) only. POST returns 405.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            email='export_edge@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_data_export_post_returns_405(self):
+        """POST to data-export should return 405 Method Not Allowed.
+
+        BUG: Mobile sends POST but backend only accepts GET.
+        This documents the mismatch - mobile should use GET.
+        """
+        response = self.client.post('/api/v1/users/me/data-export/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for POST to GET-only data-export")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_data_export_put_returns_405(self):
+        """PUT to data-export should return 405."""
+        response = self.client.put('/api/v1/users/me/data-export/')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_data_export_delete_returns_405(self):
+        """DELETE to data-export should return 405."""
+        response = self.client.delete('/api/v1/users/me/data-export/')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class DataDeletionEdgeCaseTest(ThrottleMixin, TestCase):
+    """Test data deletion edge cases."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            email='del_edge@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_double_delete_returns_401(self):
+        """Deleting account twice with real token should fail on second attempt.
+
+        Note: force_authenticate bypasses token validation, so we use
+        real Bearer tokens to test that inactive users are rejected.
+        """
+        # Get real token first
+        self.client.force_authenticate(user=None)
+        login_response = self.client.post('/api/v1/auth/token/', {
+            'email': 'del_edge@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        access_token = login_response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        # First delete
+        response1 = self.client.delete('/api/v1/users/me/')
+        self.assertEqual(response1.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Second delete - user is now inactive, token should be rejected
+        response2 = self.client.delete('/api/v1/users/me/')
+        self.assertEqual(response2.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_export_after_delete_returns_401(self):
+        """Exporting data after account deletion with real token should return 401."""
+        # Get real token first
+        self.client.force_authenticate(user=None)
+        login_response = self.client.post('/api/v1/auth/token/', {
+            'email': 'del_edge@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        access_token = login_response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        self.client.delete('/api/v1/users/me/')
+        response = self.client.get('/api/v1/users/me/data-export/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PushTokenEdgeCaseTest(ThrottleMixin, TestCase):
+    """Test push token edge cases."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            email='push_edge@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_register_empty_push_token(self):
+        """Empty push token should return 400, not 500."""
+        response = self.client.post('/api/v1/users/push-token/', {
+            'push_token': '',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for empty push token")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_very_long_push_token(self):
+        """Very long push token should not cause 500."""
+        long_token = 'ExponentPushToken[' + 'x' * 10000 + ']'
+        response = self.client.post('/api/v1/users/push-token/', {
+            'push_token': long_token,
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for very long push token")
+        # May succeed (200) or fail (400) depending on field length constraints
+        self.assertIn(response.status_code, [
+            status.HTTP_200_OK,
+            status.HTTP_400_BAD_REQUEST,
+        ])
+
+    def test_unregister_when_no_token_exists(self):
+        """Unregistering when no token set should succeed (idempotent)."""
+        response = self.client.post('/api/v1/users/push-token/unregister/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for unregister when no token")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

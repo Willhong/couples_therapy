@@ -143,3 +143,103 @@ class CoolDownTest(TestCase):
 
         cooldown = CoolDown.objects.get(user=solo_user)
         self.assertIsNone(cooldown.couple)
+
+
+# ============================================================================
+# Edge Case Tests: HTTP 404/400 instead of 500
+# ============================================================================
+
+class CoolDownNonExistentUUIDTest(TestCase):
+    """Test cooldown with non-existent UUIDs returns 404, not 500."""
+
+    def setUp(self):
+        import uuid
+        self.user = User.objects.create_user(
+            email='cooldown_edge@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.fake_uuid = str(uuid.uuid4())
+
+    def test_complete_nonexistent_cooldown(self):
+        """POST complete with non-existent cooldown UUID should return 404."""
+        response = self.client.post(f'/api/v1/cooldown/{self.fake_uuid}/complete/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for completing non-existent cooldown")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_complete_already_completed_cooldown(self):
+        """POST complete on already-completed cooldown should return 400."""
+        cooldown = CoolDown.objects.create(
+            user=self.user,
+            duration_seconds=600,
+            is_active=False,
+            completed_at=timezone.now()
+        )
+        response = self.client.post(f'/api/v1/cooldown/{cooldown.id}/complete/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for completing already-completed cooldown")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class CoolDownCrossUserAccessTest(TestCase):
+    """Test cross-user access to cooldown resources."""
+
+    def setUp(self):
+        self.user_a = User.objects.create_user(
+            email='cool_a@example.com', password='TestPass123!'
+        )
+        self.user_b = User.objects.create_user(
+            email='cool_b@example.com', password='TestPass123!'
+        )
+        self.cooldown_b = CoolDown.objects.create(
+            user=self.user_b,
+            duration_seconds=600,
+            is_active=True
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user_a)
+
+    def test_user_a_cannot_complete_user_b_cooldown(self):
+        """User A should get 404 completing User B's cooldown."""
+        response = self.client.post(f'/api/v1/cooldown/{self.cooldown_b.id}/complete/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for cross-user cooldown completion")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class CoolDownMalformedInputTest(TestCase):
+    """Test cooldown with malformed input returns 400, not 500."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='cool_malform@example.com', password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_start_cooldown_negative_duration(self):
+        """Negative duration_seconds should return 400, not 500."""
+        response = self.client.post('/api/v1/cooldown/start/', {
+            'duration_seconds': -100
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for negative duration")
+        self.assertIn(response.status_code, [400, 201])
+
+    def test_start_cooldown_string_duration(self):
+        """String duration_seconds should return 400, not 500."""
+        response = self.client.post('/api/v1/cooldown/start/', {
+            'duration_seconds': 'not-a-number'
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for string duration")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_complete_malformed_uuid(self):
+        """Malformed UUID in cooldown complete URL should return 404."""
+        response = self.client.post('/api/v1/cooldown/not-a-uuid/complete/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for malformed UUID in cooldown URL")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

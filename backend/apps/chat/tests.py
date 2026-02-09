@@ -1,8 +1,10 @@
 """Tests for chat and conversation functionality."""
 
+import unittest
 from unittest.mock import patch, MagicMock, AsyncMock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework import status
 
@@ -886,3 +888,398 @@ class PaginationEdgeCaseTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         results = response.data.get('results', response.data)
         self.assertEqual(len(results), 0)
+
+
+# ============================================================================
+# Edge Case Tests: HTTP 404/400 instead of 500
+# ============================================================================
+
+class NonExistentUUIDEdgeCaseTest(TestCase):
+    """Test that non-existent UUID resources return 404, not 500."""
+
+    def setUp(self):
+        import uuid
+        self.user = User.objects.create_user(
+            email='edge404@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.fake_uuid = str(uuid.uuid4())
+
+    def test_get_nonexistent_conversation_detail(self):
+        """GET conversation detail with non-existent UUID should return 404."""
+        response = self.client.get(f'/api/v1/chat/conversations/{self.fake_uuid}/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 instead of 404 for non-existent conversation")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_messages_for_nonexistent_conversation(self):
+        """GET messages for non-existent conversation should return 200 empty or 404."""
+        response = self.client.get(
+            f'/api/v1/chat/conversations/{self.fake_uuid}/messages/'
+        )
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for messages of non-existent conversation")
+        # DRF ModelViewSet returns empty queryset (200) when conversation doesn't match user
+        self.assertIn(response.status_code, [200, 404])
+
+    def test_post_message_to_nonexistent_conversation(self):
+        """POST message to non-existent conversation should return 404."""
+        response = self.client.post(
+            f'/api/v1/chat/conversations/{self.fake_uuid}/messages/',
+            {'role': 'user', 'content': 'test message'},
+            format='json'
+        )
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for posting to non-existent conversation")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_nonexistent_conversation(self):
+        """DELETE non-existent conversation should return 404."""
+        response = self.client.delete(f'/api/v1/chat/conversations/{self.fake_uuid}/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for deleting non-existent conversation")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_reframe_with_nonexistent_conversation_id(self):
+        """POST reframe with non-existent conversation_id should return 404."""
+        response = self.client.post('/api/v1/chat/reframe/', {
+            'conversation_id': self.fake_uuid,
+            'message': 'test message',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for reframe with non-existent conversation")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_comfort_with_nonexistent_conversation_id(self):
+        """POST comfort with non-existent conversation_id should return 404."""
+        response = self.client.post('/api/v1/chat/comfort/', {
+            'conversation_id': self.fake_uuid,
+            'message': 'I feel sad',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for comfort with non-existent conversation")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_save_reframing_with_nonexistent_conversation_id(self):
+        """POST save-reframing with non-existent conversation_id should return 404."""
+        response = self.client.post('/api/v1/chat/save-reframing/', {
+            'conversation_id': self.fake_uuid,
+            'content': 'test content',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for save-reframing with non-existent conversation")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_share_reframing_with_nonexistent_message_id(self):
+        """POST share with non-existent message_id should return 404."""
+        response = self.client.post('/api/v1/chat/share/', {
+            'message_id': self.fake_uuid,
+            'privacy_level': 'full',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for share with non-existent message_id")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_respond_to_nonexistent_shared_reframing(self):
+        """POST respond to non-existent shared reframing should return 404."""
+        response = self.client.post(
+            f'/api/v1/chat/shared/{self.fake_uuid}/respond/',
+            {'partner_response': 'test'},
+            format='json'
+        )
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for respond to non-existent shared reframing")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_read_nonexistent_shared_reframing(self):
+        """POST read on non-existent shared reframing should return 404."""
+        response = self.client.post(f'/api/v1/chat/shared/{self.fake_uuid}/read/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for marking non-existent shared reframing as read")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_toggle_saved_nonexistent_conversation_and_message(self):
+        """Toggle saved on non-existent conversation+message should not return 500."""
+        import uuid
+        fake_conv = str(uuid.uuid4())
+        fake_msg = str(uuid.uuid4())
+        response = self.client.post(
+            f'/api/v1/chat/conversations/{fake_conv}/messages/{fake_msg}/toggle_saved/'
+        )
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for toggle_saved with non-existent IDs")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class CrossUserAccessEdgeCaseTest(TestCase):
+    """Test that User A cannot access User B's chat resources (returns 404, not 500)."""
+
+    def setUp(self):
+        self.user_a = User.objects.create_user(
+            email='usera@example.com', password='TestPass123!'
+        )
+        self.user_b = User.objects.create_user(
+            email='userb@example.com', password='TestPass123!'
+        )
+        # Create conversation owned by user B
+        self.conv_b = Conversation.objects.create(
+            user=self.user_b,
+            conversation_type=Conversation.ConversationType.TEXT,
+            title='UserB private'
+        )
+        self.msg_b = Message.objects.create(
+            conversation=self.conv_b,
+            role=Message.Role.ASSISTANT,
+            content='Private response',
+            has_reframing=True,
+            reframing_data={'test': 'data'}
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user_a)
+
+    def test_user_a_cannot_get_user_b_conversation_detail(self):
+        """User A should get 404 for User B's conversation detail."""
+        response = self.client.get(f'/api/v1/chat/conversations/{self.conv_b.id}/')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_a_gets_empty_messages_for_user_b_conversation(self):
+        """User A should get empty list for User B's conversation messages."""
+        response = self.client.get(
+            f'/api/v1/chat/conversations/{self.conv_b.id}/messages/'
+        )
+        self.assertNotEqual(response.status_code, 500)
+        results = response.data.get('results', response.data)
+        self.assertEqual(len(results), 0)
+
+    def test_user_a_cannot_post_message_to_user_b_conversation(self):
+        """User A should get 404 posting to User B's conversation."""
+        response = self.client.post(
+            f'/api/v1/chat/conversations/{self.conv_b.id}/messages/',
+            {'role': 'user', 'content': 'hacked!'},
+            format='json'
+        )
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_a_cannot_reframe_in_user_b_conversation(self):
+        """User A should get 404 reframing in User B's conversation."""
+        response = self.client.post('/api/v1/chat/reframe/', {
+            'conversation_id': str(self.conv_b.id),
+            'message': 'test',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_a_cannot_comfort_in_user_b_conversation(self):
+        """User A should get 404 using comfort in User B's conversation."""
+        response = self.client.post('/api/v1/chat/comfort/', {
+            'conversation_id': str(self.conv_b.id),
+            'message': 'test',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_a_cannot_share_user_b_message(self):
+        """User A should get 404 sharing User B's message."""
+        response = self.client.post('/api/v1/chat/share/', {
+            'message_id': str(self.msg_b.id),
+            'privacy_level': 'full',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_a_cannot_save_reframing_in_user_b_conversation(self):
+        """User A should get 404 saving reframing in User B's conversation."""
+        response = self.client.post('/api/v1/chat/save-reframing/', {
+            'conversation_id': str(self.conv_b.id),
+            'content': 'hacked content',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class InvalidInputEdgeCaseTest(TestCase):
+    """Test that invalid input returns 400, not 500."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='invalid@example.com', password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_reframe_empty_body(self):
+        """POST reframe with empty body should return 400."""
+        response = self.client.post('/api/v1/chat/reframe/', {}, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_comfort_empty_body(self):
+        """POST comfort with empty body should return 400."""
+        response = self.client.post('/api/v1/chat/comfort/', {}, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_save_reframing_empty_body(self):
+        """POST save-reframing with empty body should return 400."""
+        response = self.client.post('/api/v1/chat/save-reframing/', {}, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_share_empty_body(self):
+        """POST share with empty body should return 400."""
+        response = self.client.post('/api/v1/chat/share/', {}, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_reframe_with_wrong_field_names(self):
+        """POST reframe with wrong field names should return 400."""
+        response = self.client.post('/api/v1/chat/reframe/', {
+            'conv_id': 'something',
+            'msg': 'something',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_comfort_with_wrong_field_names(self):
+        """POST comfort with wrong field names should return 400."""
+        response = self.client.post('/api/v1/chat/comfort/', {
+            'conv_id': 'something',
+            'msg': 'something',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_malformed_uuid_in_conversation_url(self):
+        """Malformed UUID in conversation URL should return 404 (URL mismatch)."""
+        response = self.client.get('/api/v1/chat/conversations/not-a-uuid/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for malformed UUID in conversation URL")
+        # DRF router returns 404 for malformed UUID since it doesn't match the URL pattern
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_malformed_uuid_in_reframe_body(self):
+        """Malformed UUID in reframe body should return 404, not 500."""
+        response = self.client.post('/api/v1/chat/reframe/', {
+            'conversation_id': 'not-a-valid-uuid',
+            'message': 'test',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for malformed UUID in reframe body")
+        self.assertEqual(response.status_code, 404)
+
+    def test_malformed_uuid_in_comfort_body(self):
+        """Malformed UUID in comfort body should return 404, not 500."""
+        response = self.client.post('/api/v1/chat/comfort/', {
+            'conversation_id': 'not-a-valid-uuid',
+            'message': 'test',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for malformed UUID in comfort body")
+        self.assertEqual(response.status_code, 404)
+
+    def test_malformed_uuid_in_share_body(self):
+        """Malformed UUID in share body should return 404, not 500."""
+        response = self.client.post('/api/v1/chat/share/', {
+            'message_id': 'not-a-valid-uuid',
+            'privacy_level': 'full',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for malformed UUID in share body")
+        self.assertEqual(response.status_code, 404)
+
+    def test_malformed_uuid_in_save_reframing_body(self):
+        """Malformed UUID in save-reframing body should return 404, not 500."""
+        response = self.client.post('/api/v1/chat/save-reframing/', {
+            'conversation_id': 'not-a-valid-uuid',
+            'content': 'test',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for malformed UUID in save-reframing body")
+        self.assertEqual(response.status_code, 404)
+
+
+class ShareWithoutPartnerEdgeCaseTest(TestCase):
+    """Test sharing reframing without a partner (solo user)."""
+
+    def setUp(self):
+        self.solo_user = User.objects.create_user(
+            email='solo_share@example.com', password='TestPass123!'
+        )
+        self.conversation = Conversation.objects.create(
+            user=self.solo_user,
+            conversation_type=Conversation.ConversationType.TEXT
+        )
+        self.reframing_msg = Message.objects.create(
+            conversation=self.conversation,
+            role=Message.Role.ASSISTANT,
+            content='Reframed content',
+            has_reframing=True,
+            reframing_data={'analysis': 'test'}
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.solo_user)
+
+    def test_share_reframing_without_partner_returns_400(self):
+        """Solo user sharing reframing should get 400, not 500."""
+        response = self.client.post('/api/v1/chat/share/', {
+            'message_id': str(self.reframing_msg.id),
+            'privacy_level': 'full',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 when solo user tried to share reframing")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class DisconnectedCoupleEdgeCaseTest(TestCase):
+    """Test behavior after couple disconnection."""
+
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            email='disc1@example.com', password='TestPass123!'
+        )
+        self.user2 = User.objects.create_user(
+            email='disc2@example.com', password='TestPass123!'
+        )
+        # Create then disconnect
+        self.couple = Couple.objects.create(
+            user1=self.user1,
+            user2=self.user2,
+            status=Couple.Status.DISCONNECTED,
+            connected_at=timezone.now(),
+            disconnected_at=timezone.now()
+        )
+        self.conversation = Conversation.objects.create(
+            user=self.user1,
+            couple=self.couple,
+            conversation_type=Conversation.ConversationType.TEXT
+        )
+        self.reframing_msg = Message.objects.create(
+            conversation=self.conversation,
+            role=Message.Role.ASSISTANT,
+            content='Reframed content',
+            has_reframing=True,
+            reframing_data={'analysis': 'test'}
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user1)
+
+    def test_share_reframing_after_disconnect_returns_400(self):
+        """Sharing after disconnect should get 400 (no active couple), not 500."""
+        response = self.client.post('/api/v1/chat/share/', {
+            'message_id': str(self.reframing_msg.id),
+            'privacy_level': 'full',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for share after couple disconnect")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_shared_reframings_list_after_disconnect(self):
+        """Listing shared reframings after disconnect should not return 500."""
+        response = self.client.get('/api/v1/chat/shared/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 listing shared reframings after disconnect")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

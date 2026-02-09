@@ -3,6 +3,7 @@
 import asyncio
 import logging
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
@@ -269,7 +270,7 @@ def reframe_message(request):
             id=conversation_id,
             user=request.user
         )
-    except Conversation.DoesNotExist:
+    except (Conversation.DoesNotExist, ValueError, ValidationError):
         return Response(
             {'detail': '대화를 찾을 수 없습니다.'},
             status=status.HTTP_404_NOT_FOUND
@@ -417,7 +418,7 @@ def save_reframing(request):
             id=conversation_id,
             user=request.user
         )
-    except Conversation.DoesNotExist:
+    except (Conversation.DoesNotExist, ValueError, ValidationError):
         return Response(
             {'detail': '대화를 찾을 수 없습니다.'},
             status=status.HTTP_404_NOT_FOUND
@@ -477,7 +478,7 @@ def share_reframing(request):
                 {'detail': '메시지를 찾을 수 없습니다.'},
                 status=status.HTTP_404_NOT_FOUND
             )
-    except Message.DoesNotExist:
+    except (Message.DoesNotExist, ValueError, ValidationError):
         return Response(
             {'detail': '메시지를 찾을 수 없습니다.'},
             status=status.HTTP_404_NOT_FOUND
@@ -549,7 +550,7 @@ def comfort_message(request):
             id=conversation_id,
             user=request.user
         )
-    except Conversation.DoesNotExist:
+    except (Conversation.DoesNotExist, ValueError, ValidationError):
         return Response(
             {'detail': '대화를 찾을 수 없습니다.'},
             status=status.HTTP_404_NOT_FOUND

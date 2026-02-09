@@ -195,3 +195,54 @@ class SafetyAssessmentTest(TestCase):
         # Check that assessment data was stored
         self.assertIsNotNone(assessment.assessment_data)
         self.assertIsInstance(assessment.assessment_data, dict)
+
+
+# ============================================================================
+# Edge Case Tests: HTTP 404/400 instead of 500
+# ============================================================================
+
+class SafetyInvalidInputEdgeCaseTest(TestCase):
+    """Test safety endpoints with invalid input return 400, not 500."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='safety_edge@example.com', password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_assess_empty_body(self):
+        """POST assess with empty body should return 400, not 500."""
+        response = self.client.post('/api/v1/safety/assess/', {}, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for empty safety assessment body")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_assess_with_wrong_field_names(self):
+        """POST assess with wrong field names should return 400, not 500."""
+        response = self.client.post('/api/v1/safety/assess/', {
+            'wrong_field': 'value',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for wrong field names in safety assessment")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_assess_with_invalid_power_balance(self):
+        """POST assess with invalid power_balance should return 400, not 500."""
+        response = self.client.post('/api/v1/safety/assess/', {
+            'power_balance': 'not-a-number',
+            'fear': 'no',
+            'control': 'no',
+            'verbal_abuse': 'no',
+            'physical_safety': 'no',
+        }, format='json')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for invalid power_balance")
+        self.assertIn(response.status_code, [400, 201])
+
+    def test_safety_status_not_completed(self):
+        """GET safety status when not completed should return 404, not 500."""
+        response = self.client.get('/api/v1/safety/status/')
+        self.assertNotEqual(response.status_code, 500,
+                            "Server returned 500 for safety status not yet completed")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
