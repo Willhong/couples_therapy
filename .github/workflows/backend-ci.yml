@@ -1,0 +1,73 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'backend/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ruff
+        run: pip install ruff
+      - name: Lint
+        run: cd backend && ruff check .
+        continue-on-error: true  # Don't block on lint initially
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: test_couplesai
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install coverage
+
+      - name: Run tests
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.development
+          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_couplesai
+          CELERY_TASK_ALWAYS_EAGER: 'true'
+        run: |
+          cd backend
+          coverage run manage.py test --verbosity=2
+          coverage report --fail-under=50
+
+      - name: Coverage report
+        if: always()
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.development
+        run: |
+          cd backend
+          coverage report -m

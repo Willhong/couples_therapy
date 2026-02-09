@@ -1,0 +1,49 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'backend/Dockerfile'
+      - 'docker-compose.yml'
+      - '.github/workflows/docker-ci.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'backend/Dockerfile'
+      - 'docker-compose.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create dummy .env
+        run: |
+          cat > backend/.env << 'EOF'
+          DJANGO_SECRET_KEY=ci-test-secret-key-not-for-production
+          ALLOWED_HOSTS=localhost
+          DATABASE_URL=postgres://couplesai:couplesai_password@db:5432/couplesai
+          REDIS_URL=redis://redis:6379/0
+          CELERY_BROKER_URL=redis://redis:6379/1
+          CELERY_RESULT_BACKEND=redis://redis:6379/1
+          FERNET_KEYS=Tw6IKPg_AApN_RVtLWwmCGM20q3sUkURg7LwWvjClSA=
+          EOF
+
+      - name: Build Docker images
+        run: docker compose -f docker-compose.yml build
+
+      - name: Start services
+        run: |
+          docker compose -f docker-compose.yml up -d
+          sleep 30
+
+      - name: Health check
+        run: |
+          curl -f http://localhost:8000/health/ || exit 1
+          echo "Health check passed!"
+
+      - name: Cleanup
+        if: always()
+        run: docker compose -f docker-compose.yml down -v
