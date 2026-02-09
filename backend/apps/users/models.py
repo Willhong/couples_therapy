@@ -38,6 +38,10 @@ class User(AbstractUser):
     # Push notifications
     expo_push_token = models.CharField(max_length=255, blank=True, default='')
 
+    # Profile display
+    display_name = models.CharField(max_length=50, blank=True, default='')
+    avatar_color = models.CharField(max_length=7, blank=True, default='#C4A092')
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 

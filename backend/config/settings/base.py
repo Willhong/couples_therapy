@@ -76,6 +76,8 @@ INSTALLED_APPS = [
     'apps.cooldown',
     'apps.prompts',
     'apps.safety',
+    'apps.checkins',
+    'apps.activities',
 ]
 
 SITE_ID = 1  # Required for django-allauth

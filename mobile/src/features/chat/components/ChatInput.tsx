@@ -12,6 +12,8 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { VoiceInputButton } from './VoiceInputButton';
+import { TopicRecommendButton } from './TopicRecommendButton';
 
 interface Props {
   onSend: (text: string) => void;
@@ -50,31 +52,37 @@ export function ChatInput({
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <View style={styles.container}>
-        <TextInput
-          style={[styles.input, disabled && styles.inputDisabled]}
-          value={text}
-          onChangeText={setText}
-          placeholder={placeholder}
-          placeholderTextColor="#9CA3AF"
-          multiline
-          maxLength={2000}
-          editable={!disabled}
-          returnKeyType="send"
-          blurOnSubmit={false}
-          onSubmitEditing={handleSend}
-        />
-        <TouchableOpacity
-          style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
-          onPress={handleSend}
-          disabled={!canSend}
-          activeOpacity={0.7}
-        >
-          <Ionicons
-            name="send"
-            size={24}
-            color={canSend ? '#6B7FD7' : '#D1D5DB'}
+        <View style={styles.inputRow}>
+          <TextInput
+            style={[styles.input, disabled && styles.inputDisabled]}
+            value={text}
+            onChangeText={setText}
+            placeholder={placeholder}
+            placeholderTextColor="#9CA3AF"
+            multiline
+            maxLength={2000}
+            editable={!disabled}
+            returnKeyType="send"
+            blurOnSubmit={false}
+            onSubmitEditing={handleSend}
           />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
+            onPress={handleSend}
+            disabled={!canSend}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="send"
+              size={24}
+              color={canSend ? '#6B7FD7' : '#D1D5DB'}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.quickActions}>
+          <VoiceInputButton />
+          <TopicRecommendButton />
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -85,13 +93,20 @@ ChatInput.displayName = 'ChatInput';
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
     paddingHorizontal: 12,
     paddingVertical: 8,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  quickActions: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingTop: 8,
   },
   input: {
     flex: 1,

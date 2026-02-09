@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Linking } from 'react-native';
 import { router } from 'expo-router';
 import { api } from '@/lib/api';
 import { TokenStorage } from '@/lib/auth';
+import { ProfileCard } from '@/features/settings/components/ProfileCard';
 
 interface UserData {
   email: string;
@@ -135,15 +136,15 @@ export default function SettingsScreen(): React.ReactElement {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Profile Section */}
+      {/* Profile Card */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>프로필</Text>
+        <ProfileCard email={userData?.email || ''} />
+      </View>
+
+      {/* Account Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>계정</Text>
         <View style={styles.card}>
-          <View style={styles.profileItem}>
-            <Text style={styles.label}>이메일</Text>
-            <Text style={styles.value}>{userData?.email || '정보 없음'}</Text>
-          </View>
-          <View style={styles.separator} />
           <View style={styles.profileItem}>
             <Text style={styles.label}>커플 상태</Text>
             <Text style={styles.value}>
@@ -152,6 +153,28 @@ export default function SettingsScreen(): React.ReactElement {
                 : '연결되지 않음'}
             </Text>
           </View>
+        </View>
+      </View>
+
+      {/* Support Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>지원</Text>
+        <View style={styles.card}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => Linking.openURL('mailto:help@togethertherapy.kr?subject=도움말 문의')}
+          >
+            <Text style={styles.menuText}>도움말</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+          <View style={styles.separator} />
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => Linking.openURL('mailto:feedback@togethertherapy.kr?subject=앱 피드백')}
+          >
+            <Text style={styles.menuText}>피드백 보내기</Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
         </View>
       </View>
 

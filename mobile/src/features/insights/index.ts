@@ -26,3 +26,4 @@ export {
 export { TriggerHighlight } from './components/TriggerHighlight';
 export { WeeklySummaryCard } from './components/WeeklySummaryCard';
 export { InsightsDashboard } from './components/InsightsDashboard';
+export { InsightsPreviewCard } from './components/InsightsPreviewCard';

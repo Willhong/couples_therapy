@@ -44,4 +44,6 @@ urlpatterns = [
     path('api/v1/cooldown/', include('apps.cooldown.urls')),
     path('api/v1/prompts/', include('apps.prompts.urls')),
     path('api/v1/safety/', include('apps.safety.urls')),
+    path('api/v1/checkins/', include('apps.checkins.urls')),
+    path('api/v1/activities/', include('apps.activities.urls')),
 ]

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Pressable,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -13,6 +14,9 @@ import { usePartner } from '@/hooks/usePartner';
 import { LiveConsentFlow } from '@/features/recording/components/LiveConsentFlow';
 import { ConversationList } from '@/features/conversations';
 import { DailyPromptCard } from '@/features/prompts';
+import { StreakCard, CheckInSection } from '@/features/checkin';
+import { ActivitiesSection } from '@/features/activities';
+import { InsightsPreviewCard } from '@/features/insights/components/InsightsPreviewCard';
 import { api } from '@/lib/api';
 import type { RecordingMode, TranscriptResult } from '@/features/recording/types';
 
@@ -25,6 +29,7 @@ export default function Home(): React.ReactElement {
   const { couple, connectionStatus } = usePartner();
   const [showLiveConsent, setShowLiveConsent] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [streakKey, setStreakKey] = useState(0);
 
   // Get display name from email
   const displayName = user?.email?.split('@')[0] || '사용자';
@@ -110,94 +115,108 @@ export default function Home(): React.ReactElement {
         </Pressable>
       </View>
 
-      {/* Partner Status Card */}
-      {!hasPartner ? (
-        <Pressable
-          style={styles.partnerInviteCard}
-          onPress={() => router.push('/onboarding/partner-link')}
-        >
-          <View style={styles.partnerInviteContent}>
-            <Text style={styles.partnerInviteIcon}>👥</Text>
-            <View style={styles.partnerInviteText}>
-              <Text style={styles.partnerInviteTitle}>파트너를 초대해보세요</Text>
-              <Text style={styles.partnerInviteSubtitle}>
-                함께 대화하고 관계를 개선해요
+      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Partner Status Card */}
+        {!hasPartner ? (
+          <Pressable
+            style={styles.partnerInviteCard}
+            onPress={() => router.push('/onboarding/partner-link')}
+          >
+            <View style={styles.partnerInviteContent}>
+              <Text style={styles.partnerInviteIcon}>👥</Text>
+              <View style={styles.partnerInviteText}>
+                <Text style={styles.partnerInviteTitle}>파트너를 초대해보세요</Text>
+                <Text style={styles.partnerInviteSubtitle}>
+                  함께 대화하고 관계를 개선해요
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.partnerInviteArrow}>›</Text>
+          </Pressable>
+        ) : (
+          <View style={styles.partnerConnectedCard}>
+            <View style={styles.partnerConnectedIndicator} />
+            <View style={styles.partnerConnectedContent}>
+              <Text style={styles.partnerConnectedLabel}>연결됨</Text>
+              <Text style={styles.partnerConnectedEmail}>
+                {couple?.partner?.email || '파트너'}
               </Text>
             </View>
           </View>
-          <Text style={styles.partnerInviteArrow}>›</Text>
-        </Pressable>
-      ) : (
-        <View style={styles.partnerConnectedCard}>
-          <View style={styles.partnerConnectedIndicator} />
-          <View style={styles.partnerConnectedContent}>
-            <Text style={styles.partnerConnectedLabel}>연결됨</Text>
-            <Text style={styles.partnerConnectedEmail}>
-              {couple?.partner?.email || '파트너'}
-            </Text>
-          </View>
+        )}
+
+        {/* Streak Card */}
+        <StreakCard key={streakKey} />
+
+        {/* Daily Check-in */}
+        <CheckInSection onCheckInComplete={() => setStreakKey((k) => k + 1)} />
+
+        {/* Quick action buttons */}
+        <View style={styles.actionRow}>
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => router.push('/(main)/chat')}
+          >
+            <Text style={styles.actionIcon}>{'>'}</Text>
+            <Text style={styles.actionLabel}>텍스트 대화</Text>
+          </Pressable>
+
+          <Pressable
+            style={[styles.actionButton, !hasPartner && styles.disabledButton]}
+            onPress={handleRecordPress}
+          >
+            <Text style={styles.actionIcon}>{'O'}</Text>
+            <Text style={styles.actionLabel}>갈등 녹음</Text>
+          </Pressable>
         </View>
-      )}
 
-      {/* Quick action buttons */}
-      <View style={styles.actionRow}>
-        <Pressable
-          style={styles.actionButton}
-          onPress={() => router.push('/(main)/chat')}
-        >
-          <Text style={styles.actionIcon}>{'>'}</Text>
-          <Text style={styles.actionLabel}>텍스트 대화</Text>
-        </Pressable>
+        {/* Cool-down button */}
+        <View style={styles.cooldownRow}>
+          <Pressable
+            style={styles.cooldownButton}
+            onPress={() => router.push('/(main)/cooldown')}
+          >
+            <Text style={styles.cooldownIcon}>{'⏸'}</Text>
+            <Text style={styles.cooldownLabel}>쿨다운</Text>
+          </Pressable>
+        </View>
 
-        <Pressable
-          style={[styles.actionButton, !hasPartner && styles.disabledButton]}
-          onPress={handleRecordPress}
-        >
-          <Text style={styles.actionIcon}>{'O'}</Text>
-          <Text style={styles.actionLabel}>갈등 녹음</Text>
-        </Pressable>
-      </View>
+        {/* Couple Activities */}
+        {hasPartner && <ActivitiesSection />}
 
-      {/* Cool-down button */}
-      <View style={styles.cooldownRow}>
-        <Pressable
-          style={styles.cooldownButton}
-          onPress={() => router.push('/(main)/cooldown')}
-        >
-          <Text style={styles.cooldownIcon}>{'⏸'}</Text>
-          <Text style={styles.cooldownLabel}>쿨다운</Text>
-        </Pressable>
-      </View>
+        {/* Weekly Insights Preview */}
+        {hasPartner && <InsightsPreviewCard />}
 
-      {/* Shared content notification */}
-      {hasPartner && unreadCount > 0 && (
-        <Pressable
-          style={styles.sharedNotificationCard}
-          onPress={() => router.push('/(main)/shared' as any)}
-        >
-          <View style={styles.sharedNotificationContent}>
-            <Text style={styles.sharedNotificationIcon}>💬</Text>
-            <View style={styles.sharedNotificationText}>
-              <Text style={styles.sharedNotificationTitle}>
-                파트너가 {unreadCount}개의 리프레이밍을 공유했습니다
-              </Text>
-              <Text style={styles.sharedNotificationSubtitle}>탭하여 확인하기</Text>
+        {/* Shared content notification */}
+        {hasPartner && unreadCount > 0 && (
+          <Pressable
+            style={styles.sharedNotificationCard}
+            onPress={() => router.push('/(main)/shared' as any)}
+          >
+            <View style={styles.sharedNotificationContent}>
+              <Text style={styles.sharedNotificationIcon}>💬</Text>
+              <View style={styles.sharedNotificationText}>
+                <Text style={styles.sharedNotificationTitle}>
+                  파트너가 {unreadCount}개의 리프레이밍을 공유했습니다
+                </Text>
+                <Text style={styles.sharedNotificationSubtitle}>탭하여 확인하기</Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.sharedBadge}>
-            <Text style={styles.sharedBadgeText}>{unreadCount}</Text>
-          </View>
-        </Pressable>
-      )}
+            <View style={styles.sharedBadge}>
+              <Text style={styles.sharedBadgeText}>{unreadCount}</Text>
+            </View>
+          </Pressable>
+        )}
 
-      {/* Daily Prompt Card */}
-      {hasPartner && <DailyPromptCard />}
+        {/* Daily Prompt Card */}
+        {hasPartner && <DailyPromptCard />}
 
-      {/* Unified conversation list */}
-      <View style={styles.listContainer}>
-        <Text style={styles.sectionTitle}>최근 대화</Text>
-        <ConversationList />
-      </View>
+        {/* Unified conversation list */}
+        <View style={styles.listContainer}>
+          <Text style={styles.sectionTitle}>최근 대화</Text>
+          <ConversationList />
+        </View>
+      </ScrollView>
 
       {/* Live consent flow overlay */}
       {showLiveConsent && (
@@ -281,9 +300,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#374151',
   },
-  listContainer: {
+  scrollContent: {
     flex: 1,
+  },
+  listContainer: {
     paddingTop: 4,
+    minHeight: 200,
   },
   sectionTitle: {
     fontSize: 16,
