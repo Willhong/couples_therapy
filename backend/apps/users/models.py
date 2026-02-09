@@ -35,6 +35,9 @@ class User(AbstractUser):
     onboarding_completed = models.BooleanField(default=False)
     tutorial_completed = models.BooleanField(default=False)
 
+    # Push notifications
+    expo_push_token = models.CharField(max_length=255, blank=True, default='')
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 

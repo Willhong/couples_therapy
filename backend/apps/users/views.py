@@ -102,3 +102,30 @@ def user_data_deletion(request):
         user.save()
 
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def register_push_token(request):
+    """Register Expo push token for the authenticated user."""
+    token = request.data.get('push_token')
+    if not token:
+        return Response(
+            {'detail': 'push_token이 필요합니다.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    request.user.expo_push_token = token
+    request.user.save(update_fields=['expo_push_token'])
+
+    return Response({'status': 'success'})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unregister_push_token(request):
+    """Unregister push token for the authenticated user."""
+    request.user.expo_push_token = ''
+    request.user.save(update_fields=['expo_push_token'])
+
+    return Response({'status': 'success'})
