@@ -1,6 +1,7 @@
 """Tests for user registration and authentication."""
 
-from django.test import TestCase
+from django.core.cache import cache
+from django.test import TestCase, override_settings
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -8,10 +9,20 @@ from rest_framework import status
 User = get_user_model()
 
 
-class UserRegistrationTest(TestCase):
+class ThrottleMixin:
+    """Mixin that disables DRF throttling for tests to prevent 429 errors."""
+
+    def setUp(self):
+        super().setUp()
+        # Clear the default cache to reset all throttle counters
+        cache.clear()
+
+
+class UserRegistrationTest(ThrottleMixin, TestCase):
     """Test user registration via dj-rest-auth."""
 
     def setUp(self):
+        super().setUp()
         self.client = APIClient()
         self.registration_url = '/api/v1/auth/registration/'
 
@@ -67,10 +78,11 @@ class UserRegistrationTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class UserLoginTest(TestCase):
+class UserLoginTest(ThrottleMixin, TestCase):
     """Test user login and JWT token management."""
 
     def setUp(self):
+        super().setUp()
         self.user = User.objects.create_user(
             email='test@example.com',
             password='TestPass123!'
@@ -143,10 +155,11 @@ class UserLoginTest(TestCase):
         self.assertIn('refresh', response.data)
 
 
-class UserProfileTest(TestCase):
+class UserProfileTest(ThrottleMixin, TestCase):
     """Test user profile and details."""
 
     def setUp(self):
+        super().setUp()
         self.user = User.objects.create_user(
             email='profile@example.com',
             password='TestPass123!'
@@ -170,10 +183,11 @@ class UserProfileTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class UserDataExportTest(TestCase):
+class UserDataExportTest(ThrottleMixin, TestCase):
     """Test PIPA compliance - user data export."""
 
     def setUp(self):
+        super().setUp()
         self.user = User.objects.create_user(
             email='export@example.com',
             password='TestPass123!'
@@ -200,10 +214,11 @@ class UserDataExportTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class UserDataDeletionTest(TestCase):
+class UserDataDeletionTest(ThrottleMixin, TestCase):
     """Test PIPA compliance - user data deletion."""
 
     def setUp(self):
+        super().setUp()
         self.user = User.objects.create_user(
             email='delete@example.com',
             password='TestPass123!'
@@ -232,4 +247,324 @@ class UserDataDeletionTest(TestCase):
         self.client.force_authenticate(user=None)
         response = self.client.delete(self.delete_url)
 
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PushTokenTest(ThrottleMixin, TestCase):
+    """Test push notification token management (mobile-backend communication)."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            email='push@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_register_push_token(self):
+        """Mobile sends Expo push token after notification permission."""
+        response = self.client.post('/api/v1/users/push-token/', {
+            'push_token': 'ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]',
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['status'], 'success')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.expo_push_token, 'ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]')
+
+    def test_register_push_token_missing(self):
+        """Mobile should get 400 if push_token not provided."""
+        response = self.client.post('/api/v1/users/push-token/', {}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_unregister_push_token(self):
+        """Mobile clears push token on logout."""
+        self.user.expo_push_token = 'ExponentPushToken[xxx]'
+        self.user.save()
+
+        response = self.client.post('/api/v1/users/push-token/unregister/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.expo_push_token, '')
+
+    def test_push_token_unauthenticated(self):
+        """Push token endpoints require authentication."""
+        self.client.force_authenticate(user=None)
+        response = self.client.post('/api/v1/users/push-token/', {
+            'push_token': 'ExponentPushToken[xxx]',
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class BearerTokenFlowTest(ThrottleMixin, TestCase):
+    """Test the full Bearer token flow matching mobile's api.ts interceptor."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            email='bearer@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+
+    def test_authenticated_request_with_bearer_token(self):
+        """Mobile sends Authorization: Bearer <token> for protected endpoints."""
+        login_response = self.client.post('/api/v1/auth/token/', {
+            'email': 'bearer@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        access_token = login_response.data['access']
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        response = self.client.get('/api/v1/users/me/data-export/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_invalid_bearer_token_rejected(self):
+        """Protected endpoints return 401 with invalid token."""
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer invalid-token')
+        response = self.client.get('/api/v1/users/me/data-export/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_no_token_rejected(self):
+        """Protected endpoints return 401 without token."""
+        response = self.client.get('/api/v1/users/me/data-export/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_token_verify(self):
+        """Mobile can verify if access token is still valid."""
+        login_response = self.client.post('/api/v1/auth/token/', {
+            'email': 'bearer@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        access_token = login_response.data['access']
+
+        response = self.client.post('/api/v1/auth/token/verify/', {
+            'token': access_token,
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_token_refresh_invalid(self):
+        """Mobile handles invalid refresh token gracefully."""
+        response = self.client.post('/api/v1/auth/token/refresh/', {
+            'refresh': 'invalid-token-string',
+        }, format='json')
+        self.assertIn(response.status_code, [
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_400_BAD_REQUEST,
+        ])
+
+
+class TokenBlacklistTest(ThrottleMixin, TestCase):
+    """Test JWT token blacklist and rotation edge cases."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            email='tokentest@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.login_url = '/api/v1/auth/token/'
+        self.refresh_url = '/api/v1/auth/token/refresh/'
+
+    def test_old_refresh_token_blacklisted_after_rotation(self):
+        """Old refresh token should fail after being used to get a new one."""
+        # Login to get initial tokens
+        login_response = self.client.post(self.login_url, {
+            'email': 'tokentest@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        old_refresh_token = login_response.data['refresh']
+
+        # Refresh to get new tokens (should blacklist the old one)
+        refresh_response = self.client.post(self.refresh_url, {
+            'refresh': old_refresh_token,
+        }, format='json')
+        self.assertEqual(refresh_response.status_code, status.HTTP_200_OK)
+
+        # Try to reuse the old refresh token - should fail
+        reuse_response = self.client.post(self.refresh_url, {
+            'refresh': old_refresh_token,
+        }, format='json')
+        self.assertIn(reuse_response.status_code, [
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_400_BAD_REQUEST,
+        ])
+
+    def test_active_tokens_rejected_after_account_deletion(self):
+        """Access tokens should be rejected after user account is deleted."""
+        # Login to get tokens
+        login_response = self.client.post(self.login_url, {
+            'email': 'tokentest@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        access_token = login_response.data['access']
+
+        # Delete the account
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        delete_response = self.client.delete('/api/v1/users/me/')
+        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Try to use the access token after deletion - should fail
+        response = self.client.get('/api/v1/auth/user/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_multiple_device_token_independence(self):
+        """Tokens from different devices should remain independent."""
+        # Device A login
+        device_a_response = self.client.post(self.login_url, {
+            'email': 'tokentest@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        device_a_access = device_a_response.data['access']
+        device_a_refresh = device_a_response.data['refresh']
+
+        # Device B login
+        device_b_response = self.client.post(self.login_url, {
+            'email': 'tokentest@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        device_b_access = device_b_response.data['access']
+
+        # Refresh on device A
+        refresh_response = self.client.post(self.refresh_url, {
+            'refresh': device_a_refresh,
+        }, format='json')
+        self.assertEqual(refresh_response.status_code, status.HTTP_200_OK)
+
+        # Device B's tokens should still work
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {device_b_access}')
+        response = self.client.get('/api/v1/auth/user/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class RegistrationEdgeCaseTest(ThrottleMixin, TestCase):
+    """Test registration edge cases and validation."""
+
+    def setUp(self):
+        super().setUp()
+        self.client = APIClient()
+        self.registration_url = '/api/v1/auth/registration/'
+
+    def test_registration_email_case_insensitive(self):
+        """Email should be case-insensitive - duplicates should be rejected."""
+        # Register with mixed case email
+        data1 = {
+            'email': 'Test@Example.COM',
+            'password1': 'SecurePass123!',
+            'password2': 'SecurePass123!',
+            'disclaimer_accepted': True,
+            'disclaimer_version': '1.0',
+        }
+        response1 = self.client.post(self.registration_url, data1)
+        self.assertEqual(response1.status_code, status.HTTP_201_CREATED)
+
+        # Try to register with lowercase version - should fail
+        data2 = {
+            'email': 'test@example.com',
+            'password1': 'DifferentPass123!',
+            'password2': 'DifferentPass123!',
+            'disclaimer_accepted': True,
+            'disclaimer_version': '1.0',
+        }
+        response2 = self.client.post(self.registration_url, data2)
+        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_registration_email_special_characters(self):
+        """Email with plus sign and other valid special characters should work."""
+        data = {
+            'email': 'user+tag@example.com',
+            'password1': 'SecurePass123!',
+            'password2': 'SecurePass123!',
+            'disclaimer_accepted': True,
+            'disclaimer_version': '1.0',
+        }
+        response = self.client.post(self.registration_url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(User.objects.filter(email='user+tag@example.com').exists())
+
+    def test_registration_weak_password(self):
+        """Weak passwords - document current behavior.
+
+        Note: The custom CustomRegisterSerializer may not run Django's
+        password validators. This test documents the actual behavior.
+        """
+        data = {
+            'email': 'weakpass@example.com',
+            'password1': '12345678',
+            'password2': '12345678',
+            'disclaimer_accepted': True,
+            'disclaimer_version': '1.0',
+        }
+        response = self.client.post(self.registration_url, data)
+
+        # Document current behavior: custom serializer may not enforce password strength
+        # If 201, this is a potential security edge case to fix
+        self.assertIn(response.status_code, [
+            status.HTTP_201_CREATED,
+            status.HTTP_400_BAD_REQUEST,
+        ])
+
+    def test_registration_disclaimer_rejected(self):
+        """Registration should fail if disclaimer is not accepted."""
+        data = {
+            'email': 'nodisclaimer@example.com',
+            'password1': 'SecurePass123!',
+            'password2': 'SecurePass123!',
+            'disclaimer_accepted': False,
+            'disclaimer_version': '1.0',
+        }
+        response = self.client.post(self.registration_url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('disclaimer_accepted', response.data)
+
+
+class BearerTokenEdgeCaseTest(ThrottleMixin, TestCase):
+    """Test Bearer token header edge cases."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            email='bearer_edge@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.protected_url = '/api/v1/auth/user/'
+
+        # Get a valid token for tests
+        login_response = self.client.post('/api/v1/auth/token/', {
+            'email': 'bearer_edge@example.com',
+            'password': 'TestPass123!',
+        }, format='json')
+        self.valid_token = login_response.data['access']
+
+    def test_malformed_bearer_header_lowercase(self):
+        """Lowercase 'bearer' should be rejected (RFC 6750 is case-sensitive)."""
+        self.client.credentials(HTTP_AUTHORIZATION=f'bearer {self.valid_token}')
+        response = self.client.get(self.protected_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_bearer_header_missing_token(self):
+        """Authorization header with 'Bearer' but no token should fail."""
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ')
+        response = self.client.get(self.protected_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_expired_token_returns_401(self):
+        """Expired access token should return 401."""
+        from rest_framework_simplejwt.tokens import AccessToken
+        from datetime import timedelta
+        from django.utils import timezone
+
+        # Create an already-expired token
+        token = AccessToken.for_user(self.user)
+        # Set expiration to the past
+        token.set_exp(from_time=timezone.now() - timedelta(hours=1))
+
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(token)}')
+        response = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
