@@ -108,7 +108,7 @@ export default function SharedScreen(): React.ReactElement {
 
   if (loading && !refreshing) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>공유받은 내용</Text>
         </View>
@@ -120,7 +120,7 @@ export default function SharedScreen(): React.ReactElement {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>공유받은 내용</Text>
       </View>

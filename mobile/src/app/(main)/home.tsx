@@ -98,7 +98,7 @@ export default function Home(): React.ReactElement {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       {/* Header */}
       <View style={styles.header}>
         <View>
