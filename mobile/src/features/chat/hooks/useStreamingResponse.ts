@@ -12,6 +12,8 @@ interface StreamResult {
   analysis?: ReframingData['analysis'];
   suggestions?: string[];
   messageId?: string; // Database UUID for the AI message
+  mode?: 'chat' | 'reframing' | 'comfort' | 'crisis';
+  crisisType?: string;
 }
 
 interface UseStreamingResponseReturn {

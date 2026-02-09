@@ -43,7 +43,6 @@ export function usePartnerSharing(): UsePartnerSharingReturn {
 
         // Don't attempt connection if WS_BASE_URL is not properly configured
         if (!WS_BASE_URL || WS_BASE_URL === 'ws://localhost:8000') {
-          console.log('WebSocket: Skipping connection (dev mode or not configured)');
           return;
         }
 
@@ -75,13 +74,12 @@ export function usePartnerSharing(): UsePartnerSharingReturn {
         };
 
         ws.onerror = (error) => {
-          console.log('WebSocket error (non-critical):', error);
           // Don't update state on error - onclose will handle it
         };
 
         wsRef.current = ws;
       } catch (error) {
-        console.log('WebSocket connection failed:', error);
+        // Connection failed - will retry
       }
     }
 

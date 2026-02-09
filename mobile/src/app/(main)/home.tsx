@@ -173,7 +173,7 @@ export default function Home(): React.ReactElement {
       {hasPartner && unreadCount > 0 && (
         <Pressable
           style={styles.sharedNotificationCard}
-          onPress={() => router.push('/(main)/shared')}
+          onPress={() => router.push('/(main)/shared' as any)}
         >
           <View style={styles.sharedNotificationContent}>
             <Text style={styles.sharedNotificationIcon}>💬</Text>

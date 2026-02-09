@@ -66,7 +66,7 @@ export default function SharedScreen(): React.ReactElement {
   const handleItemPress = useCallback(
     (item: SharedReframing) => {
       router.push({
-        pathname: '/(main)/shared/[id]',
+        pathname: '/(main)/shared/[id]' as any,
         params: { id: item.id },
       });
     },

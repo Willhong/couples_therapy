@@ -180,7 +180,7 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
           break;
 
         default:
-          console.log('Unknown WebSocket message type:', data.type);
+          break;
       }
     } catch (e) {
       console.error('Failed to parse WebSocket message:', e);
@@ -211,21 +211,18 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
       const ws = new WebSocket(fullUrl);
 
       ws.onopen = () => {
-        console.log('WebSocket connected');
         setIsConnected(true);
         setError(null);
         reconnectAttemptsRef.current = 0;
       };
 
       ws.onclose = (event) => {
-        console.log('WebSocket disconnected:', event.code);
         setIsConnected(false);
 
         // Attempt reconnection if not intentional close
         if (event.code !== 1000 && reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
           const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
           reconnectAttemptsRef.current++;
-          console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttemptsRef.current})`);
 
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();

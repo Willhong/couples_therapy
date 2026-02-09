@@ -85,7 +85,7 @@ export function SignUpScreen(): React.ReactElement {
   }, [email, password, signUp, isFormValid, loading]);
 
   const handleTermsPress = useCallback(() => {
-    router.push('/(auth)/terms');
+    router.push('/(auth)/terms' as any);
   }, [router]);
 
   const navigateToSignIn = useCallback(() => {

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/hooks/useAuth';
 import { PartnerProvider } from '@/hooks/usePartner';
 import { useInviteLink } from '@/utils/deepLink';
+import { registerForPushNotifications, setupNotificationResponseHandler } from '@/services/notifications';
 
 /**
  * Deep link handler component
@@ -19,6 +20,11 @@ function DeepLinkHandler({ children }: { children: React.ReactNode }): React.Rea
  * Wraps the entire app with AuthProvider, PartnerProvider, and configures navigation
  */
 export default function RootLayout(): React.ReactElement {
+  useEffect(() => {
+    registerForPushNotifications();
+    setupNotificationResponseHandler();
+  }, []);
+
   return (
     <AuthProvider>
       <PartnerProvider>
