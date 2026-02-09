@@ -56,7 +56,7 @@ jobs:
 
       - name: Run tests
         env:
-          DJANGO_SETTINGS_MODULE: config.settings.development
+          DJANGO_SETTINGS_MODULE: config.settings.testing
           DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_couplesai
           CELERY_TASK_ALWAYS_EAGER: 'true'
         run: |
@@ -67,7 +67,7 @@ jobs:
       - name: Coverage report
         if: always()
         env:
-          DJANGO_SETTINGS_MODULE: config.settings.development
+          DJANGO_SETTINGS_MODULE: config.settings.testing
         run: |
           cd backend
           coverage report -m
