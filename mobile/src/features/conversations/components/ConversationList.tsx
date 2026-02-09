@@ -35,8 +35,11 @@ export function ConversationList(): React.ReactElement {
   const handlePress = useCallback(
     (item: ConversationEntry) => {
       if (item.type === 'text') {
-        // Navigate to existing chat screen
-        router.push('/(main)/chat');
+        // Navigate to existing chat screen with conversation ID
+        router.push({
+          pathname: '/(main)/chat',
+          params: { conversationId: item.id },
+        });
         return;
       }
 
@@ -118,7 +121,7 @@ export function ConversationList(): React.ReactElement {
 const styles = StyleSheet.create({
   list: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 100,
   },
   centered: {
     flex: 1,

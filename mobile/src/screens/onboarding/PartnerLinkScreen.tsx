@@ -11,10 +11,12 @@ import {
   Share,
   Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { usePartner } from '@/hooks/usePartner';
 import { useAuth } from '@/hooks/useAuth';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 
 /**
@@ -25,6 +27,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
   const router = useRouter();
   const params = useLocalSearchParams<{ code?: string }>();
   const { user } = useAuth();
+  const { markTutorialCompleted } = useOnboarding();
   const {
     connectionStatus,
     myInviteCode,
@@ -146,6 +149,8 @@ export default function PartnerLinkScreen(): React.ReactElement {
       clearError();
       await enterCode(inputCode);
       // Success - connectionStatus will update to 'active'
+      // Mark tutorial as completed for partner-invited users
+      await markTutorialCompleted();
     } catch {
       // Error is handled in usePartner
     } finally {
@@ -197,7 +202,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
   // Show success state if connected
   if (connectionStatus === 'active' && couple?.partner) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.header}>
           <ProgressBar currentStep={2} totalSteps={3} />
           <Text style={styles.title}>파트너 연결 완료</Text>
@@ -214,17 +219,18 @@ export default function PartnerLinkScreen(): React.ReactElement {
         <Pressable style={styles.primaryButton} onPress={handleContinue}>
           <Text style={styles.primaryButtonText}>계속하기</Text>
         </Pressable>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView
-      style={styles.scrollContainer}
-      contentContainerStyle={styles.scrollContent}
-      keyboardShouldPersistTaps="handled"
-    >
-      <View style={styles.container}>
+    <SafeAreaView style={styles.scrollContainer} edges={['bottom']}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <ProgressBar currentStep={2} totalSteps={3} />
@@ -392,7 +398,8 @@ export default function PartnerLinkScreen(): React.ReactElement {
           </View>
         </View>
       </Modal>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
