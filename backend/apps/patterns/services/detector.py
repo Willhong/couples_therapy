@@ -56,7 +56,7 @@ def _parse_json_response(response: str) -> dict:
         try:
             return json.loads(json_str)
         except json.JSONDecodeError:
-            pass
+            logger.debug("JSON substring parse failed, trying full response")
 
     try:
         return json.loads(response)

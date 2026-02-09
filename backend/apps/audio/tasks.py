@@ -161,13 +161,3 @@ def _create_conversation_for_recording(recording):
 
     logger.info(f"Created conversation {conversation.id} for recording {recording.id}")
     return conversation
-
-
-@shared_task
-def generate_weekly_pattern_summary():
-    """Generate weekly communication pattern summary (placeholder).
-
-    Scheduled by Celery beat for Monday 9am KST.
-    Will be fully implemented in a future plan.
-    """
-    logger.info("Weekly pattern summary generation triggered (placeholder)")

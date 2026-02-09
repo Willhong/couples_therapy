@@ -28,7 +28,7 @@ env.read_env(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xw=#kq-b4mvs%jj6e304#6g1dh_rhgs3d#bz-3m1i!&d0!=v_('
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-xw=#kq-b4mvs%jj6e304#6g1dh_rhgs3d#bz-3m1i!&d0!=v_(')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -83,6 +83,7 @@ SITE_ID = 1  # Required for django-allauth
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # Must be high in list
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -163,6 +164,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -186,7 +188,9 @@ REST_FRAMEWORK = {
         'anon': '20/minute',
         'user': '100/minute',
         'auth': '5/minute',  # For login/token endpoints
-    }
+    },
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
 
 
@@ -231,9 +235,7 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # No username field in custom User mod
 
 # Fernet encryption key for djfernet
 # SECURITY WARNING: Generate a new key for production and keep it secret!
-FERNET_KEYS = [
-    'Tw6IKPg_AApN_RVtLWwmCGM20q3sUkURg7LwWvjClSA=',
-]
+FERNET_KEYS = env.list('FERNET_KEYS', default=['Tw6IKPg_AApN_RVtLWwmCGM20q3sUkURg7LwWvjClSA='])
 
 
 # Channel layers configuration (overridden in development.py and production.py)

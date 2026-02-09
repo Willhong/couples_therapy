@@ -13,6 +13,9 @@ redis>=5.0
 django-cors-headers>=4.3
 python-dotenv>=1.0
 django-environ>=0.11
+whitenoise>=6.5
+sentry-sdk>=2.0
+ruff>=0.4.0
 
 # Celery async task queue
 celery>=5.4.0
@@ -32,3 +35,6 @@ langgraph>=0.2.0
 langchain-openai>=0.2.0
 langchain-anthropic>=0.3.0
 langchain-google-genai>=2.0.0
+
+# Expo push notifications
+exponent-server-sdk>=2.1
