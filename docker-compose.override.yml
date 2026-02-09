@@ -1,0 +1,25 @@
+version: '3.8'
+
+# Development overrides - active by default with docker-compose up
+services:
+  backend:
+    volumes:
+      - ./backend:/app
+      - media_data:/app/media
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      CELERY_TASK_ALWAYS_EAGER: "true"
+    command: python manage.py runserver 0.0.0.0:8000
+
+  celery-worker:
+    volumes:
+      - ./backend:/app
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      CELERY_TASK_ALWAYS_EAGER: "true"
+
+  celery-beat:
+    volumes:
+      - ./backend:/app
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development

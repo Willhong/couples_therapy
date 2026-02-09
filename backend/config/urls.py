@@ -8,7 +8,18 @@ Base URL: /api/v1/
 from django.contrib import admin
 from django.urls import path, include
 
+from apps.core.health import liveness, readiness
+from apps.core import views as core_views
+
 urlpatterns = [
+    # Health checks (unauthenticated)
+    path('health/', liveness),
+    path('health/ready/', readiness),
+
+    # Public pages (App Store compliance)
+    path('privacy-policy/', core_views.privacy_policy, name='privacy-policy'),
+    path('terms/', core_views.terms_of_service, name='terms'),
+
     # Admin
     path('admin/', admin.site.urls),
 
