@@ -35,7 +35,7 @@ def pattern_list(request):
         page_size: items per page (default 20, max 50)
     """
     user = request.user
-    queryset = Pattern.objects.filter(user=user)
+    queryset = Pattern.objects.filter(user=user).select_related('conversation', 'couple')
 
     # Filter by pattern_type
     pattern_type = request.query_params.get('pattern_type')

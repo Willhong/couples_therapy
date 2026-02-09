@@ -62,6 +62,11 @@ class Pattern(models.Model):
     class Meta:
         db_table = 'patterns'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'pattern_type']),
+            models.Index(fields=['couple', '-created_at']),
+            models.Index(fields=['conversation']),
+        ]
 
     def __str__(self):
         return f"Pattern({self.pattern_type}): {self.content[:50]}"

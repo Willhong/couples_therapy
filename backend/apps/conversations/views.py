@@ -29,7 +29,7 @@ def unified_list(request):
     user = request.user
     queryset = Conversation.objects.filter(
         user=user,
-    ).order_by('-updated_at')
+    ).select_related('couple').order_by('-updated_at')
 
     # Simple page-number pagination
     try:

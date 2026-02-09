@@ -41,7 +41,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Return conversations for the authenticated user only."""
-        return Conversation.objects.filter(user=self.request.user)
+        return Conversation.objects.filter(user=self.request.user).select_related('couple').order_by('-updated_at')
 
     def perform_create(self, serializer):
         """Create conversation for the authenticated user."""
@@ -82,7 +82,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         except Conversation.DoesNotExist:
             return Message.objects.none()
 
-        return Message.objects.filter(conversation=conversation)
+        return Message.objects.filter(conversation=conversation).order_by('created_at')
 
     def get_serializer_context(self):
         """Add conversation to serializer context."""
@@ -97,7 +97,7 @@ class MessageViewSet(viewsets.ModelViewSet):
                 )
                 context['conversation'] = conversation
             except Conversation.DoesNotExist:
-                pass
+                logger.warning(f"Conversation {conversation_id} not found for user {self.request.user.id}")
 
         return context
 

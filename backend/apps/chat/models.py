@@ -41,6 +41,10 @@ class Conversation(models.Model):
     class Meta:
         db_table = 'conversations'
         ordering = ['-updated_at']
+        indexes = [
+            models.Index(fields=['user', '-updated_at']),
+            models.Index(fields=['couple', '-updated_at']),
+        ]
 
     def __str__(self):
         return f"Conversation {self.id} - {self.user.email}"
@@ -75,6 +79,9 @@ class Message(models.Model):
     class Meta:
         db_table = 'messages'
         ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['conversation', 'created_at']),
+        ]
 
     def __str__(self):
         return f"Message {self.id} ({self.role})"
