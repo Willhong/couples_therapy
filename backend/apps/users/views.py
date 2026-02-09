@@ -115,6 +115,12 @@ def register_push_token(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+    if len(token) > 255:
+        return Response(
+            {'detail': '유효하지 않은 푸시 토큰입니다.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     request.user.expo_push_token = token
     request.user.save(update_fields=['expo_push_token'])
 
