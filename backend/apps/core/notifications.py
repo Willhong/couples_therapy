@@ -33,6 +33,14 @@ NOTIFICATION_MESSAGES = {
         'title': '주간 인사이트',
         'body': '이번 주 대화 패턴 분석이 준비되었습니다.',
     },
+    'partner_connected': {
+        'title': '파트너 연결',
+        'body': '파트너가 초대를 수락했습니다!',
+    },
+    'partner_disconnected': {
+        'title': '파트너 연결 해제',
+        'body': '파트너가 연결을 해제했습니다.',
+    },
 }
 
 

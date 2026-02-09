@@ -1,5 +1,7 @@
 """Views for partner linking and couple management."""
 
+import logging
+
 from django.db import models
 from django.utils import timezone
 from rest_framework import viewsets, status
@@ -9,6 +11,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import InviteCode, Couple
 from .serializers import InviteCodeSerializer, CoupleSerializer
+from apps.core.notifications import send_push_notification
+
+logger = logging.getLogger(__name__)
 
 
 class InviteCodeViewSet(viewsets.ViewSet):
@@ -84,7 +89,16 @@ class InviteCodeViewSet(viewsets.ViewSet):
         invite_code.used_at = timezone.now()
         invite_code.save()
 
-        # NOTE: Push notification to partner will be added when notification infrastructure is set up (WS4-02)
+        # Send push notification to partner (the inviter)
+        try:
+            if invite_code.creator.expo_push_token:
+                send_push_notification(
+                    invite_code.creator.expo_push_token,
+                    'partner_connected',
+                    data={'couple_id': couple.id}
+                )
+        except Exception as e:
+            logger.warning(f"Failed to send partner connected notification: {e}")
 
         serializer = CoupleSerializer(couple, context={'request': request})
         return Response({
@@ -125,10 +139,22 @@ class CoupleViewSet(viewsets.ViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+        # Get partner before disconnecting
+        partner = couple.user2 if couple.user1 == request.user else couple.user1
+
         couple.status = Couple.Status.DISCONNECTED
         couple.disconnected_at = timezone.now()
         couple.save()
 
-        # NOTE: Push notification to partner will be added when notification infrastructure is set up (WS4-02)
+        # Send push notification to partner
+        try:
+            if partner.expo_push_token:
+                send_push_notification(
+                    partner.expo_push_token,
+                    'partner_disconnected',
+                    data={'couple_id': couple.id}
+                )
+        except Exception as e:
+            logger.warning(f"Failed to send partner disconnected notification: {e}")
 
         return Response({'message': '파트너 연결이 해제되었습니다.'})
