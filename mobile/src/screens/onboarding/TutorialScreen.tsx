@@ -17,6 +17,8 @@ import {
   walkthroughable,
 } from 'react-native-copilot';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { colors, alpha } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 const { width } = Dimensions.get('window');
 
@@ -194,9 +196,9 @@ export default function TutorialScreen(): React.ReactElement {
       }}
       stepNumberComponent={() => null}
       overlay="svg"
-      backdropColor="rgba(0, 0, 0, 0.7)"
+      backdropColor={alpha(colors.black, 0.7)}
       tooltipStyle={styles.tooltip}
-      arrowColor="#FFFFFF"
+      arrowColor={colors.white}
       animated
       androidStatusBarVisible
       verticalOffset={androidOffset}
@@ -209,7 +211,7 @@ export default function TutorialScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   titleContainer: {
     padding: 24,
@@ -218,41 +220,42 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 24,
   },
   mockLayout: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
   },
   settingsIcon: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
   },
   settingsText: {
     fontSize: 14,
-    color: '#4B5563',
+    color: colors.gray600,
   },
   content: {
     flex: 1,
@@ -260,24 +263,24 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   mockCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   conflictCard: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
+    backgroundColor: colors.errorBg,
+    borderColor: colors.errorBg,
   },
   insightsCard: {
-    backgroundColor: '#F0FDF4',
-    borderColor: '#BBF7D0',
+    backgroundColor: colors.successBg,
+    borderColor: colors.successBg,
   },
   cardIcon: {
     fontSize: 32,
@@ -286,12 +289,12 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
     marginBottom: 4,
   },
   cardDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   tooltip: {
@@ -299,8 +302,8 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
+    backgroundColor: colors.white,
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -308,12 +311,12 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: alpha(colors.white, 0.9),
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
 });

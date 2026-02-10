@@ -6,7 +6,8 @@
 import React, { useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { Ionicons } from '@expo/vector-icons';
+import { VolumeX, Play, Pause } from 'lucide-react-native';
+import { colors } from '@/theme';
 
 interface Props {
   isPlaying: boolean;
@@ -52,7 +53,7 @@ export function AudioPlayer({
   if (!isAvailable) {
     return (
       <View style={styles.unavailableContainer}>
-        <Ionicons name="volume-mute-outline" size={18} color="#9CA3AF" />
+        <VolumeX size={18} color={colors.textTertiary} />
         <Text style={styles.unavailableText}>오디오 없음</Text>
       </View>
     );
@@ -68,11 +69,11 @@ export function AudioPlayer({
           pressed && styles.playButtonPressed,
         ]}
       >
-        <Ionicons
-          name={isPlaying ? 'pause' : 'play'}
-          size={22}
-          color="#FFFFFF"
-        />
+        {isPlaying ? (
+          <Pause size={22} color={colors.white} />
+        ) : (
+          <Play size={22} color={colors.white} />
+        )}
       </Pressable>
 
       {/* Progress bar */}
@@ -82,9 +83,9 @@ export function AudioPlayer({
           value={position}
           minimumValue={0}
           maximumValue={duration || 1}
-          minimumTrackTintColor="#6B7FD7"
-          maximumTrackTintColor="#E5E7EB"
-          thumbTintColor="#6B7FD7"
+          minimumTrackTintColor={colors.primary}
+          maximumTrackTintColor={colors.border}
+          thumbTintColor={colors.primary}
           onSlidingComplete={handleSliderComplete}
         />
       </View>
@@ -103,16 +104,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
     gap: 10,
   },
   playButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
     minWidth: 80,
     textAlign: 'right',
   },
@@ -138,13 +139,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
     gap: 6,
   },
   unavailableText: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
 });

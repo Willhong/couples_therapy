@@ -15,6 +15,7 @@ import {
   Platform,
 } from 'react-native';
 import type { SpeakerMap } from '../types';
+import { colors, alpha } from '@/theme';
 
 interface Props {
   visible: boolean;
@@ -81,7 +82,7 @@ export function SpeakerAssignment({
                 value={localMap[speaker] || ''}
                 onChangeText={(text) => handleChange(speaker, text)}
                 placeholder={DEFAULT_NAMES[idx] || `화자 ${idx + 1}`}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textTertiary}
                 maxLength={20}
               />
             </View>
@@ -112,11 +113,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: alpha(colors.black, 0.5),
   },
   modal: {
     width: '85%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 24,
     gap: 16,
@@ -124,12 +125,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.gray800,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 8,
   },
@@ -139,16 +140,16 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.gray700,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: colors.gray300,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 16,
-    color: '#1F2937',
+    color: colors.gray800,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -162,19 +163,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   skipButton: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
   },
   skipButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   confirmButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
   },
   confirmButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
 });

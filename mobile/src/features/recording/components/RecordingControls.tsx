@@ -4,7 +4,8 @@
  */
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Play, Pause, Bookmark } from 'lucide-react-native';
+import { colors, alpha } from '@/theme';
 import { BookmarkButton } from './BookmarkButton';
 
 interface Props {
@@ -58,7 +59,7 @@ export function RecordingControls({
               onPress={isPaused ? onResume : onPause}
               hitSlop={12}
             >
-              <Ionicons name={isPaused ? "play" : "pause"} size={24} color="#FFFFFF" />
+              {isPaused ? <Play size={24} color={colors.white} /> : <Pause size={24} color={colors.white} />}
             </Pressable>
 
             {/* Stop button */}
@@ -76,7 +77,7 @@ export function RecordingControls({
               onPress={onBookmark}
               hitSlop={12}
             >
-              <Ionicons name="bookmark-outline" size={24} color="#FFFFFF" />
+              <Bookmark size={24} color={colors.white} />
               {bookmarkCount > 0 && (
                 <View style={styles.badge}>
                   <Text style={styles.badgeText}>{bookmarkCount}</Text>
@@ -118,15 +119,15 @@ const styles = StyleSheet.create({
   timer: {
     fontSize: 48,
     fontWeight: '300',
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     fontVariant: ['tabular-nums'],
     marginBottom: 32,
   },
   timerActive: {
-    color: '#1F2937',
+    color: colors.gray800,
   },
   timerPaused: {
-    color: '#C4A092',
+    color: colors.accentWarm,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 36,
     borderWidth: 4,
-    borderColor: '#D1D5DB',
+    borderColor: colors.gray300,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -160,14 +161,14 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
   },
   stopButton: {
     width: 72,
     height: 72,
     borderRadius: 36,
     borderWidth: 4,
-    borderColor: '#EF4444',
+    borderColor: colors.error,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -175,13 +176,13 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 4,
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
   },
   sideButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: alpha(colors.white, 0.15),
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -4,
     right: -4,
-    backgroundColor: '#C4A092',
+    backgroundColor: colors.accentWarm,
     borderRadius: 10,
     minWidth: 20,
     height: 20,
@@ -200,10 +201,10 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   hint: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
 });

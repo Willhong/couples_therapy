@@ -12,8 +12,9 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ArrowLeftRight, Heart, FileText, ChevronRight } from 'lucide-react-native';
 import type { PostTranscriptAction } from '@/features/recording/types';
+import { colors } from '@/theme';
 
 interface Props {
   mode: 'standalone' | 'inline';
@@ -25,7 +26,7 @@ interface ActionConfig {
   action: PostTranscriptAction;
   label: string;
   description: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: React.ComponentType<{ size?: number; color?: string }>;
   color: string;
   bgColor: string;
 }
@@ -35,25 +36,25 @@ const ACTIONS: ActionConfig[] = [
     action: 'reframe',
     label: '리프레이밍 받기',
     description: '상대방의 관점에서 상황을 다시 바라봅니다',
-    icon: 'swap-horizontal',
-    color: '#7C3AED',
-    bgColor: '#F5F3FF',
+    icon: ArrowLeftRight,
+    color: colors.purple,
+    bgColor: colors.purpleBg,
   },
   {
     action: 'comfort',
     label: '위로 받기',
     description: '공감과 위로의 메시지를 받습니다',
-    icon: 'heart',
-    color: '#D97706',
-    bgColor: '#FFFBEB',
+    icon: Heart,
+    color: colors.warningAmber,
+    bgColor: colors.warningBg,
   },
   {
     action: 'keep',
     label: '기록만 남기기',
     description: '전사 결과만 저장하고 마칩니다',
-    icon: 'document-text',
-    color: '#6B7280',
-    bgColor: '#F9FAFB',
+    icon: FileText,
+    color: colors.textSecondary,
+    bgColor: colors.bgPage,
   },
 ];
 
@@ -97,7 +98,7 @@ export function PostTranscriptActions({
               {loadingAction === config.action ? (
                 <ActivityIndicator size="small" color={config.color} />
               ) : (
-                <Ionicons name={config.icon} size={20} color={config.color} />
+                <config.icon size={20} color={config.color} />
               )}
               <Text
                 style={[styles.inlineButtonText, { color: config.color }]}
@@ -134,11 +135,11 @@ export function PostTranscriptActions({
               {loadingAction === config.action ? (
                 <ActivityIndicator size="small" color={config.color} />
               ) : (
-                <Ionicons name={config.icon} size={24} color={config.color} />
+                <config.icon size={24} color={config.color} />
               )}
             </View>
             <Text style={styles.cardLabel}>{config.label}</Text>
-            <Ionicons name="chevron-forward" size={18} color="#9CA3AF" />
+            <ChevronRight size={18} color={colors.textTertiary} />
           </View>
           <Text style={styles.cardDescription}>{config.description}</Text>
         </Pressable>
@@ -153,13 +154,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    backgroundColor: '#FFFFFF',
+    borderTopColor: colors.border,
+    backgroundColor: colors.white,
   },
   inlineTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -186,12 +187,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   standaloneCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 14,
     padding: 20,
     borderLeftWidth: 4,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     gap: 8,
   },
   cardHeader: {
@@ -210,11 +211,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 17,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
   },
   cardDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 20,
     marginLeft: 56,
   },

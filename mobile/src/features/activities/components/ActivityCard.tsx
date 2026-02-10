@@ -1,20 +1,21 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MessageCircle, Gamepad2, Dumbbell, Heart, Star, Clock } from 'lucide-react-native';
 import type { Activity } from '../api';
+import { colors } from '@/theme';
 
-const CATEGORY_ICONS: Record<string, string> = {
-  conversation: 'chatbubble-ellipses-outline',
-  game: 'game-controller-outline',
-  exercise: 'fitness-outline',
-  date: 'heart-outline',
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ size: number; color: string }>> = {
+  conversation: MessageCircle,
+  game: Gamepad2,
+  exercise: Dumbbell,
+  date: Heart,
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  conversation: '#E8EFEA',
-  game: '#F5EBE7',
-  exercise: '#E8EFEA',
-  date: '#F5EBE7',
+  conversation: colors.successBg,
+  game: colors.primaryLight,
+  exercise: colors.successBg,
+  date: colors.primaryLight,
 };
 
 interface Props {
@@ -23,17 +24,17 @@ interface Props {
 }
 
 export function ActivityCard({ activity, onPress }: Props): React.ReactElement {
-  const iconName = CATEGORY_ICONS[activity.category] || 'star-outline';
-  const iconBg = CATEGORY_COLORS[activity.category] || '#E8EFEA';
+  const IconComp = CATEGORY_ICONS[activity.category] || Star;
+  const iconBg = CATEGORY_COLORS[activity.category] || colors.successBg;
 
   return (
     <Pressable style={styles.container} onPress={() => onPress(activity)}>
       <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
-        <Ionicons name={iconName as any} size={20} color="#7C9082" />
+        <IconComp size={20} color={colors.accentSage} />
       </View>
       <Text style={styles.title} numberOfLines={2}>{activity.title}</Text>
       <View style={styles.meta}>
-        <Ionicons name="time-outline" size={12} color="#ADADAD" />
+        <Clock size={12} color={colors.textTertiary} />
         <Text style={styles.metaText}>{activity.estimated_minutes}분</Text>
       </View>
     </Pressable>
@@ -42,12 +43,12 @@ export function ActivityCard({ activity, onPress }: Props): React.ReactElement {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
     gap: 12,
     borderWidth: 1,
-    borderColor: '#E8E4DF',
+    borderColor: colors.border,
     width: 140,
   },
   iconContainer: {
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#2D2D2D',
+    color: colors.textPrimary,
     lineHeight: 20,
   },
   meta: {
@@ -70,6 +71,6 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 12,
-    color: '#ADADAD',
+    color: colors.textTertiary,
   },
 });

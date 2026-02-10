@@ -1,20 +1,25 @@
 /**
  * Main app layout with tab navigation.
- * 4 tabs: Home, Chat, Record, Insights
+ * 4 tabs: Home, Activities, Diary, Insights
  */
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { House, CalendarHeart, MessageSquareHeart, BarChart3 } from 'lucide-react-native';
+import { colors } from '@/theme';
 
 export default function MainLayout(): React.ReactElement {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#6B7FD7',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: '#ADADAD',
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
-          borderTopColor: '#E5E7EB',
+          borderTopColor: '#E8E4DF',
+          height: 84,
+          paddingTop: 12,
+          paddingBottom: 28,
+          paddingHorizontal: 40,
         },
         headerShown: false,
       }}
@@ -24,25 +29,25 @@ export default function MainLayout(): React.ReactElement {
         options={{
           title: '홈',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <House size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="chat"
+        name="activities"
         options={{
-          title: '대화',
+          title: '활동',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles" size={size} color={color} />
+            <CalendarHeart size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="record"
+        name="journal"
         options={{
-          title: '녹음',
+          title: '일기',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="mic" size={size} color={color} />
+            <MessageSquareHeart size={size} color={color} />
           ),
         }}
       />
@@ -51,8 +56,20 @@ export default function MainLayout(): React.ReactElement {
         options={{
           title: '인사이트',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="analytics" size={size} color={color} />
+            <BarChart3 size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="record"
+        options={{
+          href: null,
         }}
       />
       <Tabs.Screen
@@ -69,6 +86,30 @@ export default function MainLayout(): React.ReactElement {
       />
       <Tabs.Screen
         name="post-recording-choice"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="cooldown"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="topics"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="shared"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="shared/[id]"
         options={{
           href: null,
         }}

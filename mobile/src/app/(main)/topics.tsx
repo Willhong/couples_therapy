@@ -6,6 +6,7 @@ import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { TopicLibrary } from '@/features/prompts/components/TopicLibrary';
+import { colors } from '@/theme';
 
 export default function TopicsScreen() {
   return (
@@ -24,6 +25,6 @@ export default function TopicsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
 });

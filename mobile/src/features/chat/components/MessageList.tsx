@@ -12,6 +12,7 @@ import {
 
 import { MessageBubble } from './MessageBubble';
 import { ChatMessage, ReframingData } from '../types';
+import { colors } from '@/theme';
 
 interface Props {
   messages: ChatMessage[];
@@ -62,7 +63,7 @@ export function MessageList({
 const styles = StyleSheet.create({
   list: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   contentContainer: {
     paddingVertical: 8,

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Bell } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { usePartner } from '@/hooks/usePartner';
 import { LiveConsentFlow } from '@/features/recording/components/LiveConsentFlow';
@@ -19,13 +20,15 @@ import { ActivitiesSection } from '@/features/activities';
 import { InsightsPreviewCard } from '@/features/insights/components/InsightsPreviewCard';
 import { api } from '@/lib/api';
 import type { RecordingMode, TranscriptResult } from '@/features/recording/types';
+import { colors, alpha } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 /**
  * Home screen - unified conversation list with quick action buttons.
  */
 export default function Home(): React.ReactElement {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { couple, connectionStatus } = usePartner();
   const [showLiveConsent, setShowLiveConsent] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -96,26 +99,43 @@ export default function Home(): React.ReactElement {
     [router]
   );
 
-  // Handle sign out
-  const handleSignOut = async () => {
-    await signOut();
-    router.replace('/(auth)/sign-in');
-  };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       {/* Header */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>안녕하세요,</Text>
-          <Text style={styles.name}>{displayName}님</Text>
+        <View style={styles.headerLeft}>
+          {/* Couple avatar */}
+          <View style={styles.coupleAvatar}>
+            <View style={styles.avatarCircleWarm} />
+            <View style={styles.avatarCircleSage} />
+          </View>
+          <View>
+            <Text style={styles.greeting}>좋은 아침이에요</Text>
+            <Text style={styles.name}>{displayName}</Text>
+          </View>
         </View>
-        <Pressable style={styles.settingsButton} onPress={handleSignOut}>
-          <Text style={styles.settingsText}>로그아웃</Text>
+        <Pressable style={styles.bellButton}>
+          <Bell size={20} color={colors.textPrimary} />
         </Pressable>
       </View>
 
-      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollContent}
+        contentContainerStyle={styles.scrollContentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Streak Card */}
+        <StreakCard key={streakKey} />
+
+        {/* Daily Check-in */}
+        <CheckInSection onCheckInComplete={() => setStreakKey((k) => k + 1)} />
+
+        {/* Couple Activities */}
+        {hasPartner && <ActivitiesSection />}
+
+        {/* Weekly Insights Preview */}
+        {hasPartner && <InsightsPreviewCard />}
+
         {/* Partner Status Card */}
         {!hasPartner ? (
           <Pressable
@@ -145,48 +165,6 @@ export default function Home(): React.ReactElement {
           </View>
         )}
 
-        {/* Streak Card */}
-        <StreakCard key={streakKey} />
-
-        {/* Daily Check-in */}
-        <CheckInSection onCheckInComplete={() => setStreakKey((k) => k + 1)} />
-
-        {/* Quick action buttons */}
-        <View style={styles.actionRow}>
-          <Pressable
-            style={styles.actionButton}
-            onPress={() => router.push('/(main)/chat')}
-          >
-            <Text style={styles.actionIcon}>{'>'}</Text>
-            <Text style={styles.actionLabel}>텍스트 대화</Text>
-          </Pressable>
-
-          <Pressable
-            style={[styles.actionButton, !hasPartner && styles.disabledButton]}
-            onPress={handleRecordPress}
-          >
-            <Text style={styles.actionIcon}>{'O'}</Text>
-            <Text style={styles.actionLabel}>갈등 녹음</Text>
-          </Pressable>
-        </View>
-
-        {/* Cool-down button */}
-        <View style={styles.cooldownRow}>
-          <Pressable
-            style={styles.cooldownButton}
-            onPress={() => router.push('/(main)/cooldown')}
-          >
-            <Text style={styles.cooldownIcon}>{'⏸'}</Text>
-            <Text style={styles.cooldownLabel}>쿨다운</Text>
-          </Pressable>
-        </View>
-
-        {/* Couple Activities */}
-        {hasPartner && <ActivitiesSection />}
-
-        {/* Weekly Insights Preview */}
-        {hasPartner && <InsightsPreviewCard />}
-
         {/* Shared content notification */}
         {hasPartner && unreadCount > 0 && (
           <Pressable
@@ -214,7 +192,7 @@ export default function Home(): React.ReactElement {
         {/* Unified conversation list */}
         <View style={styles.listContainer}>
           <Text style={styles.sectionTitle}>최근 대화</Text>
-          <ConversationList />
+          <ConversationList nested />
         </View>
       </ScrollView>
 
@@ -238,118 +216,90 @@ export default function Home(): React.ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  coupleAvatar: {
+    width: 48,
+    height: 48,
+    position: 'relative',
+  },
+  avatarCircleWarm: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.accentWarm,
+    position: 'absolute',
+    left: 0,
+    top: 16,
+  },
+  avatarCircleSage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.accentSage,
+    position: 'absolute',
+    left: 16,
+    top: 0,
   },
   greeting: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: 12,
+    color: colors.textSecondary,
     marginBottom: 2,
   },
   name: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  settingsButton: {
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  settingsText: {
-    fontSize: 14,
-    color: '#4B5563',
-  },
-  actionRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  disabledButton: {
-    opacity: 0.5,
-  },
-  actionIcon: {
+    fontFamily: headingFont,
     fontSize: 18,
-    marginRight: 8,
-    color: '#6B7FD7',
+    color: colors.textPrimary,
   },
-  actionLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
+  bellButton: {
+    width: 44,
+    height: 44,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollContent: {
     flex: 1,
   },
+  scrollContentContainer: {
+    gap: 24,
+    paddingTop: 8,
+    paddingHorizontal: 24,
+    paddingBottom: 100,
+  },
   listContainer: {
-    paddingTop: 4,
     minHeight: 200,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    paddingHorizontal: 16,
+    fontFamily: headingFont,
+    fontSize: 20,
+    color: colors.textPrimary,
     paddingBottom: 8,
-  },
-  cooldownRow: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-  },
-  cooldownButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(107, 127, 215, 0.1)',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#6B7FD7',
-  },
-  cooldownIcon: {
-    fontSize: 18,
-    marginRight: 8,
-    color: '#6B7FD7',
-  },
-  cooldownLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6B7FD7',
   },
   partnerInviteCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FEF3C7',
+    backgroundColor: colors.warningBg,
     borderRadius: 12,
     padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#FDE68A',
+    borderColor: colors.warningBg,
   },
   partnerInviteContent: {
     flexDirection: 'row',
@@ -366,34 +316,32 @@ const styles = StyleSheet.create({
   partnerInviteTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#92400E',
+    color: colors.warning,
     marginBottom: 2,
   },
   partnerInviteSubtitle: {
     fontSize: 13,
-    color: '#78350F',
+    color: colors.warning,
   },
   partnerInviteArrow: {
     fontSize: 24,
-    color: '#92400E',
+    color: colors.warning,
     marginLeft: 8,
   },
   partnerConnectedCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#D1FAE5',
+    backgroundColor: colors.successBg,
     borderRadius: 12,
     padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#A7F3D0',
+    borderColor: colors.successBg,
   },
   partnerConnectedIndicator: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#10B981',
+    backgroundColor: colors.success,
     marginRight: 12,
   },
   partnerConnectedContent: {
@@ -402,24 +350,22 @@ const styles = StyleSheet.create({
   partnerConnectedLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#065F46',
+    color: colors.success,
     marginBottom: 2,
   },
   partnerConnectedEmail: {
     fontSize: 14,
-    color: '#047857',
+    color: colors.success,
   },
   sharedNotificationCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: colors.primaryBg,
     borderRadius: 12,
     padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#C7D2FE',
+    borderColor: colors.primaryLight,
   },
   sharedNotificationContent: {
     flexDirection: 'row',
@@ -436,15 +382,15 @@ const styles = StyleSheet.create({
   sharedNotificationTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#3730A3',
+    color: colors.primary,
     marginBottom: 2,
   },
   sharedNotificationSubtitle: {
     fontSize: 13,
-    color: '#4F46E5',
+    color: colors.primary,
   },
   sharedBadge: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     minWidth: 24,
     height: 24,
@@ -456,6 +402,6 @@ const styles = StyleSheet.create({
   sharedBadgeText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
   },
 });

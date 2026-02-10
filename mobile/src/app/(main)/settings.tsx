@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator, Linking, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { ArrowLeft, Users, Bell, Lock, LifeBuoy, MessageSquare, FileText, Shield, Info, LogOut, ChevronRight } from 'lucide-react-native';
 import { api } from '@/lib/api';
 import { TokenStorage } from '@/lib/auth';
 import { ProfileCard } from '@/features/settings/components/ProfileCard';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 interface UserData {
   email: string;
@@ -15,9 +18,6 @@ interface CoupleStatus {
   partner_email?: string;
 }
 
-/**
- * Settings screen with profile, legal links, data management, and logout
- */
 export default function SettingsScreen(): React.ReactElement {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -72,279 +72,216 @@ export default function SettingsScreen(): React.ReactElement {
     );
   };
 
-  const handleDataExport = async () => {
-    Alert.alert(
-      '데이터 내보내기',
-      '내 데이터를 내보내시겠습니까? 이메일로 데이터가 전송됩니다.',
-      [
-        { text: '취소', style: 'cancel' },
-        {
-          text: '내보내기',
-          onPress: async () => {
-            try {
-              setActionLoading('export');
-              await api.post('/users/me/data-export/');
-              Alert.alert('완료', '데이터 내보내기 요청이 완료되었습니다. 이메일을 확인해주세요.');
-            } catch (error) {
-              console.error('Data export failed:', error);
-              Alert.alert('오류', '데이터 내보내기에 실패했습니다');
-            } finally {
-              setActionLoading(null);
-            }
-          }
-        }
-      ]
-    );
-  };
-
-  const handleAccountDeletion = async () => {
-    Alert.alert(
-      '계정 삭제',
-      '정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
-      [
-        { text: '취소', style: 'cancel' },
-        {
-          text: '삭제',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setActionLoading('delete');
-              await api.delete('/users/me/');
-              await TokenStorage.clearTokens();
-              Alert.alert('완료', '계정이 삭제되었습니다', [
-                { text: '확인', onPress: () => router.replace('/(auth)/sign-in') }
-              ]);
-            } catch (error) {
-              console.error('Account deletion failed:', error);
-              Alert.alert('오류', '계정 삭제에 실패했습니다');
-            } finally {
-              setActionLoading(null);
-            }
-          }
-        }
-      ]
-    );
-  };
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6366F1" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Profile Card */}
-      <View style={styles.section}>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <ArrowLeft size={20} color={colors.textPrimary} />
+        </Pressable>
+        <Text style={styles.headerTitle}>설정</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* Profile Card */}
         <ProfileCard email={userData?.email || ''} />
-      </View>
 
-      {/* Account Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>계정</Text>
-        <View style={styles.card}>
-          <View style={styles.profileItem}>
-            <Text style={styles.label}>커플 상태</Text>
-            <Text style={styles.value}>
-              {coupleStatus?.is_in_couple
-                ? `연결됨 (${coupleStatus.partner_email})`
-                : '연결되지 않음'}
-            </Text>
+        {/* Account Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>계정</Text>
+          <View style={styles.card}>
+            <Pressable style={styles.listItem}>
+              <Users size={20} color={colors.textPrimary} />
+              <Text style={styles.listItemText}>파트너 연결</Text>
+              <ChevronRight size={20} color={colors.textTertiary} />
+            </Pressable>
+            <View style={styles.separator} />
+            <Pressable style={styles.listItem}>
+              <Bell size={20} color={colors.textPrimary} />
+              <Text style={styles.listItemText}>알림</Text>
+              <ChevronRight size={20} color={colors.textTertiary} />
+            </Pressable>
+            <View style={styles.separator} />
+            <Pressable style={styles.listItem}>
+              <Lock size={20} color={colors.textPrimary} />
+              <Text style={styles.listItemText}>개인정보 및 보안</Text>
+              <ChevronRight size={20} color={colors.textTertiary} />
+            </Pressable>
           </View>
         </View>
-      </View>
 
-      {/* Support Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>지원</Text>
-        <View style={styles.card}>
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => Linking.openURL('mailto:help@togethertherapy.kr?subject=도움말 문의')}
-          >
-            <Text style={styles.menuText}>도움말</Text>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-          <View style={styles.separator} />
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => Linking.openURL('mailto:feedback@togethertherapy.kr?subject=앱 피드백')}
-          >
-            <Text style={styles.menuText}>피드백 보내기</Text>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Legal Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>약관 및 정책</Text>
-        <View style={styles.card}>
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push('/(auth)/privacy-policy' as any)}
-          >
-            <Text style={styles.menuText}>개인정보 처리방침</Text>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-          <View style={styles.separator} />
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push('/(auth)/terms' as any)}
-          >
-            <Text style={styles.menuText}>서비스 이용약관</Text>
-            <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Data Management Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>데이터 관리</Text>
-        <View style={styles.card}>
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={handleDataExport}
-            disabled={actionLoading === 'export'}
-          >
-            <Text style={styles.menuText}>데이터 내보내기</Text>
-            {actionLoading === 'export' ? (
-              <ActivityIndicator size="small" color="#6366F1" />
-            ) : (
-              <Text style={styles.chevron}>›</Text>
-            )}
-          </TouchableOpacity>
-          <View style={styles.separator} />
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={handleAccountDeletion}
-            disabled={actionLoading === 'delete'}
-          >
-            <Text style={[styles.menuText, styles.dangerText]}>계정 삭제</Text>
-            {actionLoading === 'delete' ? (
-              <ActivityIndicator size="small" color="#EF4444" />
-            ) : (
-              <Text style={styles.chevron}>›</Text>
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* App Info Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>앱 정보</Text>
-        <View style={styles.card}>
-          <View style={styles.profileItem}>
-            <Text style={styles.label}>버전</Text>
-            <Text style={styles.value}>1.0.0</Text>
+        {/* Support Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>지원</Text>
+          <View style={styles.card}>
+            <Pressable
+              style={styles.listItem}
+              onPress={() => Linking.openURL('mailto:help@togethertherapy.kr?subject=도움말 문의')}
+            >
+              <LifeBuoy size={20} color={colors.textPrimary} />
+              <Text style={styles.listItemText}>도움말 센터</Text>
+              <ChevronRight size={20} color={colors.textTertiary} />
+            </Pressable>
+            <View style={styles.separator} />
+            <Pressable
+              style={styles.listItem}
+              onPress={() => Linking.openURL('mailto:feedback@togethertherapy.kr?subject=앱 피드백')}
+            >
+              <MessageSquare size={20} color={colors.textPrimary} />
+              <Text style={styles.listItemText}>피드백 보내기</Text>
+              <ChevronRight size={20} color={colors.textTertiary} />
+            </Pressable>
           </View>
         </View>
-      </View>
 
-      {/* Logout Button */}
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={handleLogout}
-        disabled={actionLoading === 'logout'}
-      >
-        {actionLoading === 'logout' ? (
-          <ActivityIndicator size="small" color="#FFFFFF" />
-        ) : (
-          <Text style={styles.logoutText}>로그아웃</Text>
-        )}
-      </TouchableOpacity>
-    </ScrollView>
+        {/* About Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>정보</Text>
+          <View style={styles.card}>
+            <Pressable
+              style={styles.listItem}
+              onPress={() => router.push('/(auth)/terms' as any)}
+            >
+              <FileText size={20} color={colors.textPrimary} />
+              <Text style={styles.listItemText}>서비스 이용약관</Text>
+              <ChevronRight size={20} color={colors.textTertiary} />
+            </Pressable>
+            <View style={styles.separator} />
+            <Pressable
+              style={styles.listItem}
+              onPress={() => router.push('/(auth)/privacy-policy' as any)}
+            >
+              <Shield size={20} color={colors.textPrimary} />
+              <Text style={styles.listItemText}>개인정보 처리방침</Text>
+              <ChevronRight size={20} color={colors.textTertiary} />
+            </Pressable>
+            <View style={styles.separator} />
+            <View style={styles.listItem}>
+              <Info size={20} color={colors.textPrimary} />
+              <Text style={styles.listItemText}>버전 1.0.0</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Logout Button */}
+        <Pressable
+          style={styles.logoutButton}
+          onPress={handleLogout}
+          disabled={actionLoading === 'logout'}
+        >
+          {actionLoading === 'logout' ? (
+            <ActivityIndicator size="small" color="#E57373" />
+          ) : (
+            <View style={styles.logoutContent}>
+              <LogOut size={20} color="#E57373" />
+              <Text style={styles.logoutText}>로그아웃</Text>
+            </View>
+          )}
+        </Pressable>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
-  },
-  contentContainer: {
-    padding: 16,
-    paddingBottom: 32,
+    backgroundColor: colors.bgPage,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontFamily: headingFont,
+    color: colors.textPrimary,
+  },
+  headerSpacer: {
+    width: 44,
+    height: 44,
+  },
+  content: {
+    gap: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
   },
   section: {
-    marginBottom: 24,
+    gap: 8,
   },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6B7280',
-    marginBottom: 8,
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#8A8A8A',
     marginLeft: 4,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  profileItem: {
-    paddingVertical: 8,
-  },
-  label: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginBottom: 4,
-  },
-  value: {
-    fontSize: 16,
-    color: '#1F2937',
-    fontWeight: '500',
-  },
-  menuItem: {
+  listItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    padding: 16,
+    gap: 16,
   },
-  menuText: {
-    fontSize: 16,
-    color: '#1F2937',
-  },
-  dangerText: {
-    color: '#EF4444',
-  },
-  chevron: {
-    fontSize: 24,
-    color: '#D1D5DB',
-    fontWeight: '300',
+  listItemText: {
+    flex: 1,
+    fontSize: 15,
+    color: colors.textPrimary,
   },
   separator: {
     height: 1,
-    backgroundColor: '#F3F4F6',
-    marginVertical: 4,
+    backgroundColor: colors.border,
+    marginHorizontal: 16,
   },
   logoutButton: {
-    backgroundColor: '#6366F1',
-    borderRadius: 12,
-    paddingVertical: 16,
+    backgroundColor: colors.white,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 16,
     alignItems: 'center',
-    marginTop: 8,
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  logoutContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   logoutText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
+    color: '#E57373',
   },
 });

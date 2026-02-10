@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { colors } from '@/theme';
 import { api, getApiErrorMessage } from '@/lib/api';
 
 interface SharedReframingDetailProps {
@@ -101,7 +102,7 @@ export function SharedReframingDetail({
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#6B7FD7" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -216,7 +217,7 @@ export function SharedReframingDetail({
         <TextInput
           style={styles.responseInput}
           placeholder="파트너에게 전달할 메시지를 입력하세요..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.textTertiary}
           multiline
           numberOfLines={4}
           value={response}
@@ -229,7 +230,7 @@ export function SharedReframingDetail({
           disabled={submitting}
         >
           {submitting ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={colors.white} />
           ) : (
             <Text style={styles.submitButtonText}>답변하기</Text>
           )}
@@ -242,7 +243,7 @@ export function SharedReframingDetail({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   contentContainer: {
     padding: 16,
@@ -254,22 +255,22 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   header: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   senderText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
     marginBottom: 4,
   },
   dateText: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   contentSection: {
     marginBottom: 16,
@@ -277,11 +278,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 12,
   },
   reframingCard: {
-    backgroundColor: '#EEF2FF',
+    backgroundColor: colors.infoBg,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -289,32 +290,32 @@ const styles = StyleSheet.create({
   reframingText: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#1F2937',
+    color: colors.gray800,
   },
   privacyNotice: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
     marginTop: 8,
   },
   analysisSection: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   analysisTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7FD7',
+    color: colors.primary,
     marginBottom: 8,
   },
   analysisText: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#374151',
+    color: colors.gray700,
   },
   suggestionsSection: {
     marginTop: 8,
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
   },
   suggestionBullet: {
     fontSize: 16,
-    color: '#6B7FD7',
+    color: colors.primary,
     marginRight: 8,
     lineHeight: 22,
   },
@@ -334,15 +335,15 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     lineHeight: 22,
-    color: '#374151',
+    color: colors.gray700,
   },
   restrictedContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 32,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     marginBottom: 16,
   },
   restrictedIcon: {
@@ -352,36 +353,36 @@ const styles = StyleSheet.create({
   restrictedText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 8,
     textAlign: 'center',
   },
   restrictedSubtext: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   responseSection: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   responseInput: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderRadius: 8,
     padding: 12,
     fontSize: 15,
-    color: '#111827',
+    color: colors.textPrimary,
     minHeight: 100,
     textAlignVertical: 'top',
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   submitButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     padding: 14,
     alignItems: 'center',
@@ -392,11 +393,11 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   errorText: {
     fontSize: 16,
-    color: '#DC2626',
+    color: colors.error,
     textAlign: 'center',
   },
 });

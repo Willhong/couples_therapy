@@ -16,11 +16,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { colors } from '@/theme';
 import { ConversationEntry } from '../types';
 import { ConversationCard } from './ConversationCard';
 import { useConversations } from '../hooks/useConversations';
 
-export function ConversationList(): React.ReactElement {
+interface ConversationListProps {
+  /** When true, renders as a plain View instead of FlatList (for use inside ScrollView) */
+  nested?: boolean;
+}
+
+export function ConversationList({ nested = false }: ConversationListProps = {}): React.ReactElement {
   const router = useRouter();
   const {
     conversations,
@@ -70,7 +76,7 @@ export function ConversationList(): React.ReactElement {
     if (!hasMore) return null;
     return (
       <View style={styles.footer}>
-        <ActivityIndicator size="small" color="#6B7FD7" />
+        <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
   }, [hasMore]);
@@ -78,7 +84,7 @@ export function ConversationList(): React.ReactElement {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#6B7FD7" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>불러오는 중...</Text>
       </View>
     );
@@ -88,6 +94,25 @@ export function ConversationList(): React.ReactElement {
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  if (nested) {
+    return (
+      <View>
+        {conversations.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyTitle}>아직 대화가 없어요</Text>
+            <Text style={styles.emptySubtitle}>
+              텍스트 대화를 시작하거나 녹음을 해보세요
+            </Text>
+          </View>
+        ) : (
+          conversations.map((item) => (
+            <ConversationCard key={item.id} item={item} onPress={handlePress} />
+          ))
+        )}
       </View>
     );
   }
@@ -131,11 +156,11 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 8,
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   errorText: {
     fontSize: 14,
-    color: '#EF4444',
+    color: colors.error,
   },
   footer: {
     paddingVertical: 16,
@@ -152,18 +177,18 @@ const styles = StyleSheet.create({
   },
   emptyIcon: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     marginBottom: 12,
   },
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     textAlign: 'center',
   },
 });

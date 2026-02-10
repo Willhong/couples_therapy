@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Animated,
 } from 'react-native';
+import { colors, alpha } from '@/theme';
 import { useDailyPrompt } from '../hooks/useDailyPrompt';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -64,7 +65,7 @@ export function DailyPromptCard() {
   if (loading) {
     return (
       <View style={styles.card}>
-        <ActivityIndicator size="large" color="#6B7FD7" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -98,7 +99,7 @@ export function DailyPromptCard() {
           <TextInput
             style={styles.input}
             placeholder="여기에 답변을 입력하세요 (최대 500자)"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
             value={responseText}
             onChangeText={setResponseText}
             multiline
@@ -117,7 +118,7 @@ export function DailyPromptCard() {
             disabled={!responseText.trim() || submitting}
           >
             {submitting ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.white} />
             ) : (
               <Text style={styles.submitButtonText}>답변하기</Text>
             )}
@@ -128,7 +129,7 @@ export function DailyPromptCard() {
       {/* Waiting for partner */}
       {userResponded && !bothResponded && (
         <View style={styles.waitingContainer}>
-          <ActivityIndicator size="small" color="#6B7FD7" />
+          <ActivityIndicator size="small" color={colors.primary} />
           <Text style={styles.waitingText}>
             파트너의 답변을 기다리는 중...
           </Text>
@@ -179,12 +180,12 @@ export function DailyPromptCard() {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 8,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -199,13 +200,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
   },
   category: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6B7FD7',
-    backgroundColor: 'rgba(107, 127, 215, 0.1)',
+    color: colors.primary,
+    backgroundColor: alpha(colors.primary, 0.1),
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
   promptText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 16,
     lineHeight: 24,
   },
@@ -221,25 +222,25 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 12,
     fontSize: 14,
-    color: '#111827',
+    color: colors.textPrimary,
     minHeight: 80,
     textAlignVertical: 'top',
   },
   charCount: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     textAlign: 'right',
     marginTop: 4,
     marginBottom: 8,
   },
   submitButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   waitingContainer: {
     flexDirection: 'row',
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
   },
   waitingText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   revealContainer: {
     marginTop: 16,
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
   revealTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -284,29 +285,29 @@ const styles = StyleSheet.create({
     minHeight: 80,
   },
   partnerResponse: {
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: alpha(colors.blueMedium, 0.1),
     borderWidth: 1,
-    borderColor: '#3B82F6',
+    borderColor: colors.blueMedium,
   },
   userResponseBox: {
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+    backgroundColor: alpha(colors.primary, 0.1),
     borderWidth: 1,
-    borderColor: '#A855F7',
+    borderColor: colors.primary,
   },
   responseLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   responseText: {
     fontSize: 14,
-    color: '#111827',
+    color: colors.textPrimary,
     lineHeight: 20,
   },
   errorText: {
     fontSize: 14,
-    color: '#EF4444',
+    color: colors.error,
     textAlign: 'center',
   },
 });

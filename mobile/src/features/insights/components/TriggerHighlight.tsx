@@ -5,6 +5,7 @@
  */
 import React, { useMemo } from 'react';
 import { Text, StyleSheet, TextStyle, StyleProp } from 'react-native';
+import { colors, alpha } from '@/theme';
 
 interface Props {
   text: string;
@@ -90,8 +91,8 @@ export function TriggerHighlight({
 
 const styles = StyleSheet.create({
   highlight: {
-    backgroundColor: 'rgba(249, 115, 22, 0.2)',
-    color: '#C2410C',
+    backgroundColor: alpha(colors.warningAmber, 0.2),
+    color: colors.warningDark,
     borderRadius: 2,
     fontWeight: '600',
   },

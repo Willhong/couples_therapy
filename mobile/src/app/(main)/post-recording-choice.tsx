@@ -6,10 +6,12 @@
 import React, { useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { ArrowLeft, CheckCircle, FileText } from 'lucide-react-native';
 import { PostTranscriptActions } from '@/features/transcript/components/PostTranscriptActions';
 import { setPostAction } from '@/features/recording/services/audioApi';
 import type { PostTranscriptAction } from '@/features/recording/types';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 export default function PostRecordingChoiceScreen(): React.ReactElement {
   const { recordingId } = useLocalSearchParams<{ recordingId: string }>();
@@ -69,7 +71,7 @@ export default function PostRecordingChoiceScreen(): React.ReactElement {
       {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={handleGoBack} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color="#1F2937" />
+          <ArrowLeft size={24} color={colors.gray800} />
         </Pressable>
         <View style={styles.headerSpacer} />
       </View>
@@ -78,7 +80,7 @@ export default function PostRecordingChoiceScreen(): React.ReactElement {
       <View style={styles.content}>
         {/* Success icon */}
         <View style={styles.iconCircle}>
-          <Ionicons name="checkmark-circle" size={56} color="#10B981" />
+          <CheckCircle size={56} color={colors.success} />
         </View>
 
         <Text style={styles.title}>녹음이 완료되었어요</Text>
@@ -94,7 +96,7 @@ export default function PostRecordingChoiceScreen(): React.ReactElement {
           style={styles.viewTranscriptLink}
           onPress={handleViewTranscript}
         >
-          <Ionicons name="document-text-outline" size={18} color="#6B7FD7" />
+          <FileText size={18} color={colors.primary} />
           <Text style={styles.viewTranscriptText}>전사 결과 보기</Text>
         </Pressable>
       </View>
@@ -105,7 +107,7 @@ export default function PostRecordingChoiceScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   header: {
     flexDirection: 'row',
@@ -114,7 +116,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   backButton: {
-    padding: 4,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerSpacer: {
     flex: 1,
@@ -131,13 +140,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 15,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 40,
@@ -152,17 +162,17 @@ const styles = StyleSheet.create({
   },
   viewTranscriptText: {
     fontSize: 15,
-    color: '#6B7FD7',
+    color: colors.primary,
     fontWeight: '500',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   errorText: {
     fontSize: 16,
-    color: '#EF4444',
+    color: colors.error,
   },
 });

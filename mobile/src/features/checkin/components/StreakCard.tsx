@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Flame, Heart } from 'lucide-react-native';
 import { getStreak, type Streak } from '../api';
+import { colors } from '@/theme';
 
 export function StreakCard(): React.ReactElement | null {
   const [streak, setStreak] = useState<Streak | null>(null);
@@ -17,13 +18,13 @@ export function StreakCard(): React.ReactElement | null {
   return (
     <View style={styles.container}>
       <View style={styles.left}>
-        <Ionicons name="flame" size={24} color="#7C9082" />
+        <Flame size={24} color={colors.accentSage} />
         <View>
           <Text style={styles.count}>{streak.current_streak}일 연속</Text>
           <Text style={styles.label}>최고 기록: {streak.longest_streak}일</Text>
         </View>
       </View>
-      <Ionicons name="heart" size={20} color="#C4A092" />
+      <Heart size={20} color={colors.accentWarm} />
     </View>
   );
 }
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#E8EFEA',
+    backgroundColor: colors.successBg,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
@@ -47,11 +48,11 @@ const styles = StyleSheet.create({
   count: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#2D2D2D',
+    color: colors.textPrimary,
   },
   label: {
     fontSize: 12,
-    color: '#5A5A5A',
+    color: colors.textSecondary,
     marginTop: 2,
   },
 });

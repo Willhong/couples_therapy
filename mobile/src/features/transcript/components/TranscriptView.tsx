@@ -17,6 +17,7 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
+import { colors, alpha } from '@/theme';
 import { useTranscript } from '../hooks/useTranscript';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { useSessionInsight } from '@/features/insights/hooks/useInsights';
@@ -192,7 +193,7 @@ export function TranscriptView({
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#6B7FD7" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>전사 결과를 불러오는 중...</Text>
       </View>
     );
@@ -288,7 +289,7 @@ export function TranscriptView({
               multiline
               autoFocus
               placeholder="수정된 텍스트를 입력하세요"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={colors.textTertiary}
             />
             <View style={styles.editButtons}>
               <Pressable
@@ -314,45 +315,45 @@ export function TranscriptView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   errorText: {
     fontSize: 16,
-    color: '#EF4444',
+    color: colors.error,
     textAlign: 'center',
   },
   emptyText: {
     fontSize: 16,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   insightCallout: {
-    backgroundColor: '#F0F4FF',
+    backgroundColor: colors.primaryBg,
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E7FF',
+    borderBottomColor: colors.primaryBg,
   },
   insightCalloutTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#6B7FD7',
+    color: colors.primary,
     marginBottom: 2,
   },
   insightCalloutText: {
     fontSize: 13,
-    color: '#4B5563',
+    color: colors.gray600,
   },
   list: {
     flex: 1,
@@ -365,11 +366,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: alpha(colors.black, 0.5),
   },
   editModal: {
     width: '85%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 24,
     gap: 16,
@@ -377,17 +378,17 @@ const styles = StyleSheet.create({
   editTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.gray800,
     textAlign: 'center',
   },
   editInput: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: colors.gray300,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
-    color: '#1F2937',
+    color: colors.gray800,
     minHeight: 80,
     textAlignVertical: 'top',
   },
@@ -402,19 +403,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
   },
   cancelButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   saveButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
   },
   saveButtonText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
 });

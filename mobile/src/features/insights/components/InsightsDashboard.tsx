@@ -12,6 +12,8 @@ import {
   RefreshControl,
   StyleSheet,
 } from 'react-native';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 import { useDashboard, useWeeklySummaries } from '../hooks/useInsights';
 import { WeeklySummaryCard } from './WeeklySummaryCard';
 import {
@@ -36,7 +38,7 @@ export function InsightsDashboard(): React.ReactElement {
   if (loading && !dashboard) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#6B7FD7" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>인사이트를 불러오는 중...</Text>
       </View>
     );
@@ -169,7 +171,7 @@ function StatCard({ label, value, suffix }: StatCardProps): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   contentContainer: {
     paddingHorizontal: 20,
@@ -180,16 +182,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   errorText: {
     fontSize: 16,
-    color: '#EF4444',
+    color: colors.error,
     textAlign: 'center',
   },
   emptyIcon: {
@@ -199,24 +201,24 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.gray800,
     marginBottom: 8,
   },
   emptyDescription: {
     fontSize: 15,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },
   header: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1F2937',
+    color: colors.gray800,
     marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 15,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 20,
   },
   // Stats row
@@ -227,12 +229,12 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 12,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 3,
@@ -241,16 +243,16 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   statSuffix: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   statLabel: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginTop: 4,
   },
   // Sections
@@ -260,16 +262,17 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 12,
   },
   // List card
   listCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -281,29 +284,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: colors.bgAiMessage,
   },
   triggerText: {
     fontSize: 15,
-    color: '#1F2937',
+    color: colors.gray800,
     flex: 1,
     marginRight: 12,
   },
   triggerCount: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   topicText: {
     fontSize: 15,
-    color: '#1F2937',
+    color: colors.gray800,
     flex: 1,
     marginRight: 12,
   },
   topicCount: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   bottomSpacer: {
     height: 32,

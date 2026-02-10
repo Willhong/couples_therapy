@@ -12,8 +12,11 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 /**
  * Sign in screen with email and password
@@ -26,6 +29,7 @@ export function SignInScreen(): React.ReactElement {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const isFormValid = email.length > 0 && password.length > 0;
 
@@ -120,39 +124,52 @@ export function SignInScreen(): React.ReactElement {
           {/* Email Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>이메일</Text>
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                setError('');
-              }}
-              placeholder="example@email.com"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect={false}
-            />
+            <View style={styles.inputWrapper}>
+              <Mail size={20} color={colors.textSecondary} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  setError('');
+                }}
+                placeholder="example@email.com"
+                placeholderTextColor={colors.textTertiary}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect={false}
+              />
+            </View>
           </View>
 
           {/* Password Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>비밀번호</Text>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                setError('');
-              }}
-              placeholder="비밀번호 입력"
-              placeholderTextColor="#9CA3AF"
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="password"
-            />
+            <View style={styles.inputWrapper}>
+              <Lock size={20} color={colors.textSecondary} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  setError('');
+                }}
+                placeholder="비밀번호 입력"
+                placeholderTextColor={colors.textTertiary}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="password"
+              />
+              <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                {showPassword ? (
+                  <EyeOff size={20} color={colors.textSecondary} />
+                ) : (
+                  <Eye size={20} color={colors.textSecondary} />
+                )}
+              </Pressable>
+            </View>
           </View>
 
           {/* Forgot Password Link */}
@@ -170,7 +187,7 @@ export function SignInScreen(): React.ReactElement {
             disabled={!isFormValid || loading}
           >
             {loading ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color={colors.white} />
             ) : (
               <Text style={styles.buttonText}>로그인</Text>
             )}
@@ -192,7 +209,7 @@ export function SignInScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.bgPage,
   },
   scrollContent: {
     flexGrow: 1,
@@ -206,26 +223,27 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 24,
   },
   form: {
     flex: 1,
   },
   errorContainer: {
-    backgroundColor: '#FEF2F2',
-    borderRadius: 8,
+    backgroundColor: colors.errorBg,
+    borderRadius: 12,
     padding: 12,
     marginBottom: 20,
   },
   errorText: {
     fontSize: 14,
-    color: '#EF4444',
+    color: colors.error,
     textAlign: 'center',
   },
   inputGroup: {
@@ -234,18 +252,30 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.textPrimary,
     marginBottom: 8,
   },
-  input: {
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
+    borderColor: colors.border,
+    borderRadius: 16,
+    backgroundColor: colors.white,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 14,
     fontSize: 16,
-    color: '#111827',
-    backgroundColor: '#F9FAFB',
+    color: colors.textPrimary,
+  },
+  eyeButton: {
+    padding: 4,
+    marginLeft: 8,
   },
   forgotContainer: {
     alignSelf: 'flex-end',
@@ -253,19 +283,20 @@ const styles = StyleSheet.create({
   },
   forgotText: {
     fontSize: 14,
-    color: '#4B5563',
+    color: colors.textSecondary,
   },
   button: {
-    backgroundColor: '#4B5563',
-    borderRadius: 8,
-    paddingVertical: 14,
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    height: 56,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonDisabled: {
-    backgroundColor: '#9CA3AF',
+    opacity: 0.5,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -277,11 +308,11 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   footerLink: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#4B5563',
+    color: colors.primary,
   },
 });

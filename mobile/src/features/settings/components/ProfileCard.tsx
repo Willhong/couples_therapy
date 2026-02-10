@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ChevronRight } from 'lucide-react-native';
+import { colors } from '@/theme';
 
 interface Props {
   email: string;
@@ -20,7 +21,7 @@ export function ProfileCard({ email, displayName }: Props): React.ReactElement {
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.email}>{email}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={20} color="#ADADAD" />
+      <ChevronRight size={20} color={colors.textTertiary} />
     </Pressable>
   );
 }
@@ -29,25 +30,25 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
     gap: 16,
     borderWidth: 1,
-    borderColor: '#E8E4DF',
+    borderColor: colors.border,
   },
   avatar: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#C4A092',
+    backgroundColor: colors.accentWarm,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   info: {
     flex: 1,
@@ -56,10 +57,10 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#2D2D2D',
+    color: colors.textPrimary,
   },
   email: {
     fontSize: 13,
-    color: '#8A8A8A',
+    color: colors.textSecondary,
   },
 });

@@ -4,10 +4,19 @@
  */
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MessageSquare, Ear, ArrowLeftRight, HelpCircle } from 'lucide-react-native';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
+
+const ICON_MAP: Record<string, React.ComponentType<{ size: number; color: string }>> = {
+  'chatbubble-outline': MessageSquare,
+  'ear-outline': Ear,
+  'swap-horizontal-outline': ArrowLeftRight,
+  'help-circle-outline': HelpCircle,
+};
 
 interface Props {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: string;
   title: string;
   content: string;
   quotes?: string[];
@@ -21,10 +30,12 @@ export function PerspectiveView({
   quotes,
   highlight,
 }: Props): React.ReactElement {
+  const IconComponent = ICON_MAP[icon] || MessageSquare;
+
   return (
     <View style={[styles.section, highlight && styles.sectionHighlight]}>
       <View style={styles.header}>
-        <Ionicons name={icon} size={20} color="#6B7FD7" />
+        <IconComponent size={20} color={colors.primary} />
         <Text style={styles.title}>{title}</Text>
       </View>
       <Text style={styles.content}>{content}</Text>
@@ -39,20 +50,20 @@ export function PerspectiveView({
 
 const styles = StyleSheet.create({
   section: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
   sectionHighlight: {
-    backgroundColor: '#F0F4FF',
+    backgroundColor: colors.infoBg,
     borderLeftWidth: 4,
-    borderLeftColor: '#6B7FD7',
+    borderLeftColor: colors.primary,
   },
   header: {
     flexDirection: 'row',
@@ -62,23 +73,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
     marginLeft: 8,
   },
   content: {
     fontSize: 15,
-    color: '#374151',
+    color: colors.gray700,
     lineHeight: 22,
   },
   quoteContainer: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderRadius: 8,
     padding: 12,
     marginTop: 8,
   },
   quoteText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
 });

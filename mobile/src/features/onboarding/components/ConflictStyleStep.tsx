@@ -6,6 +6,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 import type { OnboardingFormData, ConflictStyle, CommunicationFrequency } from '../types';
 
 interface ConflictStyleStepProps {
@@ -186,12 +188,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   description: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 24,
     lineHeight: 24,
   },
@@ -201,12 +204,12 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
     marginBottom: 16,
   },
   questionHint: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     marginBottom: 16,
     marginTop: -8,
   },
@@ -216,22 +219,22 @@ const styles = StyleSheet.create({
   optionCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   optionCardSelected: {
-    borderColor: '#6B7FD7',
-    backgroundColor: '#F5F6FF',
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
   },
   radioOuter: {
     width: 22,
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
+    borderColor: colors.gray300,
     marginRight: 12,
     marginTop: 2,
     justifyContent: 'center',
@@ -241,7 +244,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
   },
   optionContent: {
     flex: 1,
@@ -249,47 +252,47 @@ const styles = StyleSheet.create({
   optionLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 4,
   },
   optionLabelSelected: {
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   optionDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   frequencyContainer: {
     gap: 12,
   },
   frequencyOption: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   frequencyOptionSelected: {
-    borderColor: '#6B7FD7',
-    backgroundColor: '#F5F6FF',
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
   },
   frequencyLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 4,
   },
   frequencyLabelSelected: {
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   frequencyDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   errorText: {
     fontSize: 14,
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 8,
   },
 });

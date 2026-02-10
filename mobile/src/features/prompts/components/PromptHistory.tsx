@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import { colors } from '@/theme';
 import { promptsApi } from '../services/promptsApi';
 import type { DailyPromptAssignment } from '../types';
 
@@ -68,7 +69,7 @@ export function PromptHistory() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#6B7FD7" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -110,11 +111,11 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   item: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -123,42 +124,42 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   prompt: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
     marginBottom: 12,
   },
   responsesContainer: {
     gap: 8,
   },
   response: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderRadius: 8,
     padding: 12,
   },
   responseUser: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6B7FD7',
+    color: colors.primary,
     marginBottom: 4,
   },
   responseText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.gray700,
     lineHeight: 20,
   },
   errorText: {
     fontSize: 14,
-    color: '#EF4444',
+    color: colors.error,
     textAlign: 'center',
   },
   emptyText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

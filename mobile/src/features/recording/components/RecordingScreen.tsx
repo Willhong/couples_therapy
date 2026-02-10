@@ -14,8 +14,10 @@ import {
   Switch,
   SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ArrowLeft, Mic, Users } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 import { useAudioRecording } from '../hooks/useAudioRecording';
 import { useWaveform } from '../hooks/useWaveform';
 import { uploadAudio, pollTranscriptionStatus } from '../services/audioApi';
@@ -256,7 +258,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Pressable onPress={handleGoBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#374151" />
+            <ArrowLeft size={24} color={colors.gray700} />
           </Pressable>
           <Text style={styles.headerTitle}>음성 기록</Text>
           <View style={styles.headerSpacer} />
@@ -272,7 +274,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
               style={styles.modeCard}
               onPress={handleSelectNarration}
             >
-              <Ionicons name="mic-outline" size={32} color="#6B7FD7" />
+              <Mic size={32} color={colors.primary} />
               <Text style={styles.modeCardTitle}>혼자 기록하기</Text>
               <Text style={styles.modeCardDesc}>
                 혼자서 상황을 설명하고{'\n'}감정을 기록합니다
@@ -284,7 +286,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
               style={styles.modeCard}
               onPress={handleSelectLive}
             >
-              <Ionicons name="people-outline" size={32} color="#6B7FD7" />
+              <Users size={32} color={colors.primary} />
               <Text style={styles.modeCardTitle}>
                 함께 녹음하기
               </Text>
@@ -318,7 +320,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
         ) : (
           <View style={styles.header}>
             <Pressable onPress={handleCancelRecording} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="#374151" />
+              <ArrowLeft size={24} color={colors.gray700} />
             </Pressable>
             <Text style={styles.headerTitle}>녹음 준비</Text>
             <View style={styles.headerSpacer} />
@@ -333,8 +335,8 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
               <Switch
                 value={showGuided}
                 onValueChange={setShowGuided}
-                trackColor={{ false: '#D1D5DB', true: '#6B7FD7' }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: colors.gray300, true: colors.primary }}
+                thumbColor={colors.white}
               />
             </View>
           )}
@@ -408,7 +410,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.processingContainer}>
-          <ActivityIndicator size="large" color="#6B7FD7" />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.processingText}>
             {phase === 'uploading' ? '업로드 중...' : '음성 처리 중...'}
           </Text>
@@ -435,7 +437,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   // Header with back button
   header: {
@@ -445,15 +447,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   backButton: {
-    padding: 4,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
   },
   headerSpacer: {
     width: 32,
@@ -463,7 +473,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.errorBg,
     paddingVertical: 8,
     gap: 8,
   },
@@ -471,12 +481,12 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
   },
   recordingIndicatorText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#991B1B',
+    color: colors.dangerText,
   },
   // Mode selection
   modeSelectContainer: {
@@ -487,13 +497,13 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.gray800,
     textAlign: 'center',
     marginBottom: 8,
   },
   screenSubtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 48,
   },
@@ -501,12 +511,12 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   modeCard: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   modeCardDisabled: {
     opacity: 0.5,
@@ -514,24 +524,24 @@ const styles = StyleSheet.create({
   modeCardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
     marginTop: 12,
     marginBottom: 4,
   },
   modeCardTitleDisabled: {
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   modeCardDesc: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
   },
   modeCardDescDisabled: {
-    color: '#D1D5DB',
+    color: colors.gray300,
   },
   comingSoonBadge: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
@@ -539,7 +549,7 @@ const styles = StyleSheet.create({
   },
   comingSoonText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     fontWeight: '500',
   },
   // Recording phase
@@ -556,7 +566,7 @@ const styles = StyleSheet.create({
   },
   guidedToggleLabel: {
     fontSize: 15,
-    color: '#374151',
+    color: colors.gray700,
     fontWeight: '500',
   },
   waveformSection: {
@@ -566,25 +576,25 @@ const styles = StyleSheet.create({
   errorContainer: {
     marginHorizontal: 24,
     padding: 16,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorBg,
     borderRadius: 12,
     alignItems: 'center',
     gap: 12,
   },
   errorText: {
     fontSize: 14,
-    color: '#991B1B',
+    color: colors.dangerText,
     textAlign: 'center',
   },
   retryButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
     borderRadius: 8,
   },
   retryButtonText: {
     fontSize: 14,
-    color: '#FFFFFF',
+    color: colors.white,
     fontWeight: '500',
   },
   // Processing
@@ -598,11 +608,11 @@ const styles = StyleSheet.create({
   processingText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
   },
   processingSubtext: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

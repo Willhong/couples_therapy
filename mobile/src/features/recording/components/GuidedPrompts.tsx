@@ -10,7 +10,8 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Hand } from 'lucide-react-native';
+import { colors } from '@/theme';
 import { GuidedPrompt } from '../types';
 
 const GUIDED_PROMPTS: GuidedPrompt[] = [
@@ -56,15 +57,15 @@ const CATEGORY_LABELS: Record<GuidedPrompt['category'], string> = {
 };
 
 const CATEGORY_COLORS: Record<GuidedPrompt['category'], string> = {
-  situation: '#DBEAFE',
-  emotion: '#FEE2E2',
-  need: '#D1FAE5',
+  situation: colors.primaryBg,
+  emotion: colors.errorBg,
+  need: colors.successBg,
 };
 
 const CATEGORY_TEXT_COLORS: Record<GuidedPrompt['category'], string> = {
-  situation: '#1E40AF',
-  emotion: '#991B1B',
-  need: '#065F46',
+  situation: colors.infoText,
+  emotion: colors.dangerText,
+  need: colors.success,
 };
 
 interface Props {
@@ -85,7 +86,7 @@ export function GuidedPrompts({
       <View style={styles.labelRow}>
         <Text style={styles.label}>참고할 질문을 선택하세요</Text>
         <View style={styles.tapHint}>
-          <Ionicons name="hand-left-outline" size={14} color="#9CA3AF" />
+          <Hand size={14} color={colors.textTertiary} />
           <Text style={styles.tapHintText}>탭하여 선택</Text>
         </View>
       </View>
@@ -104,10 +105,10 @@ export function GuidedPrompts({
                 {
                   backgroundColor: isSelected
                     ? CATEGORY_COLORS[prompt.category]
-                    : '#F9FAFB',
+                    : colors.bgPage,
                   borderColor: isSelected
                     ? CATEGORY_TEXT_COLORS[prompt.category]
-                    : '#E5E7EB',
+                    : colors.border,
                 },
               ]}
               onPress={() => onPromptSelect(prompt)}
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   tapHint: {
     flexDirection: 'row',
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
   },
   tapHintText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   scrollContent: {
     paddingHorizontal: 16,
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -187,6 +188,6 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.gray700,
   },
 });

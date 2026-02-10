@@ -12,8 +12,11 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { DisclaimerCheckbox } from './components/DisclaimerCheckbox';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 // Current disclaimer version - update when terms change
 const DISCLAIMER_VERSION = '1.0';
@@ -38,6 +41,8 @@ export function SignUpScreen(): React.ReactElement {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [disclaimerChecked, setDisclaimerChecked] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Validation states
   const [emailTouched, setEmailTouched] = useState(false);
@@ -112,18 +117,21 @@ export function SignUpScreen(): React.ReactElement {
           {/* Email Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>이메일</Text>
-            <TextInput
-              style={[styles.input, emailError ? styles.inputError : null]}
-              value={email}
-              onChangeText={setEmail}
-              onBlur={() => setEmailTouched(true)}
-              placeholder="example@email.com"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect={false}
-            />
+            <View style={[styles.inputWrapper, emailError ? styles.inputError : null]}>
+              <Mail size={20} color={colors.textSecondary} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                onBlur={() => setEmailTouched(true)}
+                placeholder="example@email.com"
+                placeholderTextColor={colors.textTertiary}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect={false}
+              />
+            </View>
             {emailError ? (
               <Text style={styles.errorText}>{emailError}</Text>
             ) : null}
@@ -132,18 +140,28 @@ export function SignUpScreen(): React.ReactElement {
           {/* Password Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>비밀번호</Text>
-            <TextInput
-              style={[styles.input, passwordError ? styles.inputError : null]}
-              value={password}
-              onChangeText={setPassword}
-              onBlur={() => setPasswordTouched(true)}
-              placeholder="8자 이상 입력"
-              placeholderTextColor="#9CA3AF"
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="password-new"
-            />
+            <View style={[styles.inputWrapper, passwordError ? styles.inputError : null]}>
+              <Lock size={20} color={colors.textSecondary} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                onBlur={() => setPasswordTouched(true)}
+                placeholder="8자 이상 입력"
+                placeholderTextColor={colors.textTertiary}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="password-new"
+              />
+              <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                {showPassword ? (
+                  <EyeOff size={20} color={colors.textSecondary} />
+                ) : (
+                  <Eye size={20} color={colors.textSecondary} />
+                )}
+              </Pressable>
+            </View>
             {passwordError ? (
               <Text style={styles.errorText}>{passwordError}</Text>
             ) : null}
@@ -152,18 +170,28 @@ export function SignUpScreen(): React.ReactElement {
           {/* Confirm Password Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>비밀번호 확인</Text>
-            <TextInput
-              style={[styles.input, confirmError ? styles.inputError : null]}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              onBlur={() => setConfirmTouched(true)}
-              placeholder="비밀번호를 다시 입력"
-              placeholderTextColor="#9CA3AF"
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="password-new"
-            />
+            <View style={[styles.inputWrapper, confirmError ? styles.inputError : null]}>
+              <Lock size={20} color={colors.textSecondary} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                onBlur={() => setConfirmTouched(true)}
+                placeholder="비밀번호를 다시 입력"
+                placeholderTextColor={colors.textTertiary}
+                secureTextEntry={!showConfirmPassword}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="password-new"
+              />
+              <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeButton}>
+                {showConfirmPassword ? (
+                  <EyeOff size={20} color={colors.textSecondary} />
+                ) : (
+                  <Eye size={20} color={colors.textSecondary} />
+                )}
+              </Pressable>
+            </View>
             {confirmError ? (
               <Text style={styles.errorText}>{confirmError}</Text>
             ) : null}
@@ -186,7 +214,7 @@ export function SignUpScreen(): React.ReactElement {
             disabled={!isFormValid || loading}
           >
             {loading ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color={colors.white} />
             ) : (
               <Text style={styles.buttonText}>회원가입</Text>
             )}
@@ -208,7 +236,7 @@ export function SignUpScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.bgPage,
   },
   scrollContent: {
     flexGrow: 1,
@@ -222,12 +250,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 24,
   },
   form: {
@@ -239,39 +268,52 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.textPrimary,
     marginBottom: 8,
   },
-  input: {
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
+    borderColor: colors.border,
+    borderRadius: 16,
+    backgroundColor: colors.white,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 14,
     fontSize: 16,
-    color: '#111827',
-    backgroundColor: '#F9FAFB',
+    color: colors.textPrimary,
+  },
+  eyeButton: {
+    padding: 4,
+    marginLeft: 8,
   },
   inputError: {
-    borderColor: '#EF4444',
+    borderColor: colors.error,
   },
   errorText: {
     fontSize: 12,
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 4,
   },
   button: {
-    backgroundColor: '#4B5563',
-    borderRadius: 8,
-    paddingVertical: 14,
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    height: 56,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 24,
   },
   buttonDisabled: {
-    backgroundColor: '#9CA3AF',
+    opacity: 0.5,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -283,11 +325,11 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   footerLink: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#4B5563',
+    color: colors.primary,
   },
 });

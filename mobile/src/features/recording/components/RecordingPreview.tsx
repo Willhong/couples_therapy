@@ -11,7 +11,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
-import { Ionicons } from '@expo/vector-icons';
+import { Play, Pause, RefreshCw, Upload } from 'lucide-react-native';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 interface Props {
   uri: string;
@@ -118,13 +120,9 @@ export function RecordingPreview({
           hitSlop={8}
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color="#6B7FD7" />
+            <ActivityIndicator size="small" color={colors.primary} />
           ) : (
-            <Ionicons
-              name={isPlaying ? 'pause' : 'play'}
-              size={32}
-              color="#6B7FD7"
-            />
+            isPlaying ? <Pause size={32} color={colors.primary} /> : <Play size={32} color={colors.primary} />
           )}
         </Pressable>
 
@@ -149,12 +147,12 @@ export function RecordingPreview({
         </Pressable>
 
         <Pressable style={styles.secondaryButton} onPress={onReRecord}>
-          <Ionicons name="refresh" size={18} color="#6B7280" />
+          <RefreshCw size={18} color={colors.textSecondary} />
           <Text style={styles.secondaryButtonText}>다시 녹음</Text>
         </Pressable>
 
         <Pressable style={styles.primaryButton} onPress={onSubmit}>
-          <Ionicons name="cloud-upload-outline" size={18} color="#FFFFFF" />
+          <Upload size={18} color={colors.white} />
           <Text style={styles.primaryButtonText}>제출하기</Text>
         </Pressable>
       </View>
@@ -175,14 +173,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 24,
   },
   playButton: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#EEF0FB',
+    backgroundColor: colors.primaryBg,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
@@ -192,13 +191,13 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 4,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
     borderRadius: 2,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 2,
   },
   timeRow: {
@@ -208,7 +207,7 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     fontVariant: ['tabular-nums'],
   },
   actionRow: {
@@ -223,11 +222,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
   },
   secondaryButtonText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   primaryButton: {
@@ -237,11 +236,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
   },
   primaryButtonText: {
     fontSize: 14,
-    color: '#FFFFFF',
+    color: colors.white,
     fontWeight: '600',
   },
 });

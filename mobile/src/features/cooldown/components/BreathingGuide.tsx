@@ -8,6 +8,7 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 import { useBreathingAnimation } from '../hooks/useBreathingAnimation';
+import { colors, alpha } from '@/theme';
 
 export function BreathingGuide(): React.ReactElement {
   const { scale, instruction, phase } = useBreathingAnimation();
@@ -45,9 +46,9 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'rgba(107, 127, 215, 0.2)',
+    backgroundColor: alpha(colors.primary, 0.2),
     borderWidth: 3,
-    borderColor: '#6B7FD7',
+    borderColor: colors.primary,
   },
   instructionContainer: {
     position: 'absolute',
@@ -56,11 +57,11 @@ const styles = StyleSheet.create({
   instruction: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
 });

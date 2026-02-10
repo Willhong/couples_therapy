@@ -13,13 +13,15 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { AlertTriangle, Copy, Heart, X, MessageCircle, Hand, Share2 } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
 
 import { PerspectiveView } from './PerspectiveView';
 import { SuggestionList } from './SuggestionList';
 import { ShareModal, PrivacyLevel } from '@/features/sharing/components/ShareModal';
 import { ReframingData } from '@/features/chat/types';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 interface Props {
   visible: boolean;
@@ -126,7 +128,7 @@ export function ReframingModal({
       >
         <View style={styles.container}>
           <View style={styles.abuseWarning}>
-            <Ionicons name="warning" size={48} color="#EF4444" />
+            <AlertTriangle size={48} color={colors.error} />
             <Text style={styles.abuseTitle}>안전이 우려됩니다</Text>
             <Text style={styles.abuseText}>
               말씀하신 내용에서 걱정되는 부분이 있습니다. 혼자 감당하지 않으셔도
@@ -161,25 +163,17 @@ export function ReframingModal({
           <Text style={styles.headerTitle}>관점 분석</Text>
           <View style={styles.headerActions}>
             <TouchableOpacity onPress={handleCopy} style={styles.iconButton}>
-              <Ionicons name="copy-outline" size={22} color="#6B7280" />
+              <Copy size={22} color={colors.textSecondary} />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSave} style={styles.iconButton}>
-              <Ionicons
-                name={saved ? 'heart' : 'heart-outline'}
-                size={22}
-                color={saved ? '#EF4444' : '#6B7280'}
-              />
+              <Heart size={22} color={saved ? colors.error : colors.textSecondary} fill={saved ? colors.error : 'none'} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleClose}
               style={styles.iconButton}
               disabled={!acknowledged}
             >
-              <Ionicons
-                name="close"
-                size={24}
-                color={acknowledged ? '#374151' : '#D1D5DB'}
-              />
+              <X size={24} color={acknowledged ? colors.gray700 : colors.gray300} />
             </TouchableOpacity>
           </View>
         </View>
@@ -236,18 +230,14 @@ export function ReframingModal({
             style={styles.followUpButton}
             onPress={() => onFollowUp('이 부분에 대해 더 자세히 알려주세요')}
           >
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              size={18}
-              color="#6B7FD7"
-            />
+            <MessageCircle size={18} color={colors.primary} />
             <Text style={styles.followUpText}>더 자세히</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.followUpButton}
             onPress={() => onFollowUp('이 분석에 동의하지 않아요')}
           >
-            <Ionicons name="hand-left-outline" size={18} color="#6B7FD7" />
+            <Hand size={18} color={colors.primary} />
             <Text style={styles.followUpText}>동의하지 않아요</Text>
           </TouchableOpacity>
         </View>
@@ -263,7 +253,7 @@ export function ReframingModal({
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-              <Ionicons name="share-outline" size={20} color="#fff" />
+              <Share2 size={20} color={colors.white} />
               <Text style={styles.shareText}>파트너와 공유하기</Text>
             </TouchableOpacity>
           )}
@@ -284,7 +274,7 @@ export function ReframingModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   header: {
     flexDirection: 'row',
@@ -292,14 +282,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
   },
   headerActions: {
     flexDirection: 'row',
@@ -314,23 +305,23 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   acknowledgmentCard: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.infoBg,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
   },
   acknowledgmentText: {
     fontSize: 15,
-    color: '#1E40AF',
+    color: colors.infoText,
     lineHeight: 22,
   },
   followUpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     paddingVertical: 12,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
   },
   followUpButton: {
     flexDirection: 'row',
@@ -340,30 +331,30 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#6B7FD7',
+    borderColor: colors.primary,
   },
   followUpText: {
     fontSize: 14,
-    color: '#6B7FD7',
+    color: colors.primary,
     marginLeft: 6,
   },
   bottomActions: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
   acknowledgeButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
   },
   acknowledgeText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 16,
     fontWeight: '600',
   },
   shareButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: 'row',
@@ -371,7 +362,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   shareText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
@@ -386,19 +377,19 @@ const styles = StyleSheet.create({
   abuseTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 16,
     marginBottom: 8,
   },
   abuseText: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.gray700,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 24,
   },
   resourceCard: {
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorBg,
     borderRadius: 12,
     padding: 16,
     width: '100%',
@@ -407,12 +398,12 @@ const styles = StyleSheet.create({
   resourceTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#991B1B',
+    color: colors.dangerText,
     marginBottom: 8,
   },
   resourceText: {
     fontSize: 15,
-    color: '#7F1D1D',
+    color: colors.dangerTextDark,
     marginBottom: 4,
   },
 });

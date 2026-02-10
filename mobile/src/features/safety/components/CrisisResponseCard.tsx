@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
+import { colors } from '@/theme';
 
 interface HotlineItem {
   name: string;
@@ -62,12 +63,12 @@ export default function CrisisResponseCard({ crisisType, message }: CrisisRespon
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.errorBg,
     borderRadius: 12,
     padding: 16,
     marginVertical: 8,
     borderWidth: 2,
-    borderColor: '#DC2626',
+    borderColor: colors.error,
   },
   header: {
     flexDirection: 'row',
@@ -81,16 +82,16 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#991B1B',
+    color: colors.dangerText,
   },
   message: {
     fontSize: 16,
-    color: '#7F1D1D',
+    color: colors.dangerTextDark,
     marginBottom: 16,
     lineHeight: 24,
   },
   hotlinesContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
@@ -98,22 +99,22 @@ const styles = StyleSheet.create({
   hotlinesTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#991B1B',
+    color: colors.dangerText,
     marginBottom: 12,
   },
   hotlineButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     borderRadius: 8,
     padding: 12,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   hotlineButtonPressed: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
   },
   hotlineContent: {
     flex: 1,
@@ -121,13 +122,13 @@ const styles = StyleSheet.create({
   hotlineName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
     marginBottom: 2,
   },
   hotlineNumber: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#DC2626',
+    color: colors.error,
   },
   phoneIcon: {
     fontSize: 24,
@@ -136,16 +137,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#FCA5A5',
+    borderTopColor: colors.error,
   },
   footerText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#991B1B',
+    color: colors.dangerText,
     marginBottom: 4,
   },
   footerSubtext: {
     fontSize: 14,
-    color: '#B91C1C',
+    color: colors.dangerText,
   },
 });

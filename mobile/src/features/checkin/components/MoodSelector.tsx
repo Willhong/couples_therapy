@@ -1,13 +1,20 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Frown, Meh, Smile } from 'lucide-react-native';
+import { colors } from '@/theme';
+
+const ICON_MAP: Record<string, React.ComponentType<{ size: number; color: string }>> = {
+  'frown': Frown,
+  'meh': Meh,
+  'smile': Smile,
+};
 
 const MOODS = [
-  { value: 1, label: '매우 나쁨', icon: 'sad-outline' as const, color: '#E57373' },
-  { value: 2, label: '나쁨', icon: 'sad-outline' as const, color: '#FFB74D' },
-  { value: 3, label: '보통', icon: 'remove-circle-outline' as const, color: '#FFD54F' },
-  { value: 4, label: '좋음', icon: 'happy-outline' as const, color: '#81C784' },
-  { value: 5, label: '매우 좋음', icon: 'happy-outline' as const, color: '#7C9082' },
+  { value: 1, label: '매우 나쁨', icon: 'frown', color: '#E57373' },
+  { value: 2, label: '나쁨', icon: 'frown', color: '#FFB74D' },
+  { value: 3, label: '보통', icon: 'meh', color: '#FFD54F' },
+  { value: 4, label: '좋음', icon: 'smile', color: '#81C784' },
+  { value: 5, label: '매우 좋음', icon: 'smile', color: colors.primary },
 ];
 
 interface Props {
@@ -29,11 +36,10 @@ export function MoodSelector({ selected, onSelect, disabled = false }: Props): R
           onPress={() => !disabled && onSelect(mood.value)}
           disabled={disabled}
         >
-          <Ionicons
-            name={mood.icon}
-            size={28}
-            color={selected === mood.value ? mood.color : '#ADADAD'}
-          />
+          {(() => {
+            const IconComp = ICON_MAP[mood.icon] || Meh;
+            return <IconComp size={28} color={selected === mood.value ? mood.color : colors.textTertiary} />;
+          })()}
           <Text style={[
             styles.moodLabel,
             selected === mood.value && { color: mood.color, fontWeight: '600' },
@@ -61,7 +67,7 @@ const styles = StyleSheet.create({
   },
   moodLabel: {
     fontSize: 11,
-    color: '#8A8A8A',
+    color: colors.textTertiary,
     marginTop: 4,
   },
 });

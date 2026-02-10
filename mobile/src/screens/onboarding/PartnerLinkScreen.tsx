@@ -18,6 +18,8 @@ import { usePartner } from '@/hooks/usePartner';
 import { useAuth } from '@/hooks/useAuth';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
+import { colors, alpha } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 /**
  * Partner Link screen for onboarding
@@ -251,7 +253,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
               disabled={isGenerating}
             >
               {isGenerating ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color={colors.white} />
               ) : (
                 <Text style={styles.primaryButtonText}>코드 생성하기</Text>
               )}
@@ -297,7 +299,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
             onChangeText={handleCodeChange}
             maxLength={6}
             placeholder="ABC123"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
             autoCapitalize="characters"
             autoCorrect={false}
             keyboardType="default"
@@ -314,7 +316,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
             disabled={inputCode.length !== 6 || isConnecting}
           >
             {isConnecting ? (
-              <ActivityIndicator color="#FFFFFF" />
+              <ActivityIndicator color={colors.white} />
             ) : (
               <Text style={styles.primaryButtonText}>연결하기</Text>
             )}
@@ -389,7 +391,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
                 disabled={isConnecting}
               >
                 {isConnecting ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
+                  <ActivityIndicator color={colors.white} size="small" />
                 ) : (
                   <Text style={styles.modalPrimaryButtonText}>연결하기</Text>
                 )}
@@ -406,7 +408,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   scrollContent: {
     flexGrow: 1,
@@ -416,7 +418,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 32,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   header: {
     marginBottom: 32,
@@ -424,23 +426,24 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginTop: 24,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 24,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -449,14 +452,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 16,
   },
   codeContainer: {
     alignItems: 'center',
   },
   codeDisplay: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderRadius: 8,
     paddingVertical: 16,
     paddingHorizontal: 24,
@@ -468,7 +472,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     fontFamily: 'monospace',
-    color: '#111827',
+    color: colors.textPrimary,
     letterSpacing: 4,
   },
   codeActions: {
@@ -479,22 +483,22 @@ const styles = StyleSheet.create({
   },
   expirationText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   linkText: {
     fontSize: 14,
-    color: '#4B5563',
+    color: colors.gray600,
     textDecorationLine: 'underline',
   },
   inputLabel: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   codeInput: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: colors.gray300,
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -503,29 +507,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 8,
     marginBottom: 16,
-    color: '#111827',
+    color: colors.textPrimary,
   },
   primaryButton: {
-    backgroundColor: '#4B5563',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingVertical: 14,
     alignItems: 'center',
     width: '100%',
   },
   primaryButtonText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: 16,
     fontWeight: '600',
   },
   secondaryButton: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
   },
   secondaryButtonText: {
-    color: '#4B5563',
+    color: colors.gray600,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -533,7 +537,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   errorText: {
-    color: '#DC2626',
+    color: colors.dangerText,
     fontSize: 14,
     marginBottom: 12,
     textAlign: 'center',
@@ -543,7 +547,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   skipButtonText: {
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontSize: 14,
     textDecorationLine: 'underline',
   },
@@ -557,36 +561,37 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#10B981',
+    backgroundColor: colors.success,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
   },
   successIconText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: 40,
     fontWeight: '700',
   },
   successTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   successEmail: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 32,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: alpha(colors.black, 0.5),
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 24,
     width: '100%',
@@ -596,13 +601,14 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
     textAlign: 'center',
   },
   modalMessage: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 20,
     textAlign: 'center',
     lineHeight: 20,
@@ -615,25 +621,25 @@ const styles = StyleSheet.create({
   },
   modalSecondaryButton: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
   },
   modalSecondaryButtonText: {
-    color: '#4B5563',
+    color: colors.gray600,
     fontSize: 14,
     fontWeight: '600',
   },
   modalPrimaryButton: {
     flex: 1,
-    backgroundColor: '#4B5563',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
   },
   modalPrimaryButtonText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: 14,
     fontWeight: '600',
   },

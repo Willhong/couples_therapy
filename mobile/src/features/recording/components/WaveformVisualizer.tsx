@@ -5,6 +5,7 @@
  */
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { colors } from '@/theme';
 
 const MAX_HEIGHT = 80;
 const BAR_WIDTH = 3;
@@ -19,7 +20,7 @@ function WaveformVisualizerComponent({
   waveformData,
   isRecording,
 }: Props): React.ReactElement {
-  const barColor = isRecording ? '#6B7FD7' : '#D1D5DB';
+  const barColor = isRecording ? colors.primary : colors.gray300;
 
   return (
     <View style={styles.container}>

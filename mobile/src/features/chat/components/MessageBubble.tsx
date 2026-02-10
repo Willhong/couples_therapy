@@ -14,7 +14,8 @@ import {
   Alert,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import { Ionicons } from '@expo/vector-icons';
+import { Leaf, ChevronRight } from 'lucide-react-native';
+import { colors } from '@/theme';
 import type { ChatMessage, ReframingData } from '../types';
 import { CrisisResponseCard } from '@/features/safety';
 
@@ -60,9 +61,14 @@ function MessageBubbleComponent({ message, onOpenReframing }: Props): React.Reac
 
   return (
     <View style={[styles.container, isUser ? styles.containerRight : styles.containerLeft]}>
-      {/* Sender name for AI messages */}
+      {/* AI avatar + sender name */}
       {!isUser && !isSystem && (
-        <Text style={styles.senderName}>{message.user.name || 'AI 코치'}</Text>
+        <View style={styles.aiHeader}>
+          <View style={styles.aiAvatar}>
+            <Leaf size={16} color={colors.white} />
+          </View>
+          <Text style={styles.senderName}>{message.user.name || 'AI 코치'}</Text>
+        </View>
       )}
 
       {/* Message bubble with long press */}
@@ -97,7 +103,7 @@ function MessageBubbleComponent({ message, onOpenReframing }: Props): React.Reac
           onPress={() => onOpenReframing(message.reframingData!, message._id)}
         >
           <Text style={styles.viewReframingText}>관점 분석 보기</Text>
-          <Ionicons name="chevron-forward" size={16} color="#6B7FD7" />
+          <ChevronRight size={16} color={colors.primary} />
         </TouchableOpacity>
       )}
     </View>
@@ -116,27 +122,45 @@ const styles = StyleSheet.create({
   containerRight: {
     alignSelf: 'flex-end',
   },
-  senderName: {
-    fontSize: 12,
-    color: '#6B7280',
+  aiHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 4,
     marginLeft: 4,
+    gap: 6,
+  },
+  aiAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  senderName: {
+    fontSize: 12,
+    color: colors.textSecondary,
   },
   bubble: {
-    borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
   },
   bubbleUser: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4,
   },
   bubbleAI: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderBottomLeftRadius: 4,
   },
   bubbleSystem: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: colors.warningBg,
     borderRadius: 12,
   },
   bubblePressed: {
@@ -147,17 +171,17 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   textUser: {
-    color: '#FFFFFF',
+    color: colors.white,
   },
   textAI: {
-    color: '#1F2937',
+    color: colors.textPrimary,
   },
   textSystem: {
-    color: '#92400E',
+    color: colors.warning,
   },
   timestamp: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     marginTop: 4,
   },
   timestampLeft: {
@@ -175,7 +199,7 @@ const styles = StyleSheet.create({
   },
   viewReframingText: {
     fontSize: 13,
-    color: '#6B7FD7',
+    color: colors.primary,
     fontWeight: '500',
   },
 });

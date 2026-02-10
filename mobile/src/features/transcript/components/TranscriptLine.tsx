@@ -7,6 +7,7 @@
  */
 import React, { memo, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { colors } from '@/theme';
 import { TriggerHighlight } from '@/features/insights/components/TriggerHighlight';
 import type { TranscriptSegment } from '@/features/recording/types';
 import type { SpeakerMap } from '../types';
@@ -28,10 +29,10 @@ function formatTimestamp(seconds: number): string {
 }
 
 function getEmotionBorderColor(intensity: number | null): string {
-  if (intensity === null || intensity === undefined) return 'transparent';
-  if (intensity >= 0.7) return '#EF4444'; // high - red
-  if (intensity >= 0.4) return '#F59E0B'; // medium - amber
-  return '#10B981'; // low - green
+  if (intensity === null || intensity === undefined) return colors.transparent;
+  if (intensity >= 0.7) return colors.error; // high - red
+  if (intensity >= 0.4) return colors.warningAmber; // medium - amber
+  return colors.success; // low - green
 }
 
 function TranscriptLineComponent({
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
   },
   speakerLabel: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 3,
     marginLeft: 4,
   },
@@ -143,17 +144,17 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   bubbleUser: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4,
   },
   bubbleOther: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     borderBottomLeftRadius: 4,
   },
   bubblePlaying: {
     borderWidth: 2,
-    borderColor: '#6B7FD7',
-    backgroundColor: '#EEF2FF',
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryBg,
   },
   bubblePressed: {
     opacity: 0.7,
@@ -163,14 +164,14 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   textUser: {
-    color: '#FFFFFF',
+    color: colors.white,
   },
   textOther: {
-    color: '#1F2937',
+    color: colors.gray800,
   },
   timestamp: {
     fontSize: 11,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     marginTop: 3,
   },
   timestampLeft: {

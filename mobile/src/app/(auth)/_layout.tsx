@@ -1,5 +1,6 @@
 import React from 'react';
 import { Stack } from 'expo-router';
+import { colors } from '@/theme';
 
 /**
  * Auth stack layout
@@ -10,7 +11,7 @@ export default function AuthLayout(): React.ReactElement {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#FFFFFF' },
+        contentStyle: { backgroundColor: colors.bgPage },
         animation: 'slide_from_right',
       }}
     >

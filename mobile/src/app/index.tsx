@@ -3,6 +3,7 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { usePartner } from '@/hooks/usePartner';
+import { colors } from '@/theme';
 
 /**
  * Root index component
@@ -22,7 +23,7 @@ export default function Index(): React.ReactElement {
   if (authLoading || partnerLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#4B5563" />
+        <ActivityIndicator size="large" color={colors.gray600} />
       </View>
     );
   }
@@ -57,6 +58,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
 });

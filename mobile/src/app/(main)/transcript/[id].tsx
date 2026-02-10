@@ -6,9 +6,11 @@
 import React, { useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { ArrowLeft } from 'lucide-react-native';
 import { TranscriptView } from '@/features/transcript/components/TranscriptView';
 import type { PostTranscriptAction } from '@/features/recording/types';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 export default function TranscriptDetailScreen(): React.ReactElement {
   const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
@@ -57,7 +59,7 @@ export default function TranscriptDetailScreen(): React.ReactElement {
       {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={handleGoBack} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color="#1F2937" />
+          <ArrowLeft size={24} color={colors.gray800} />
         </Pressable>
         <Text style={styles.headerTitle}>전사 결과</Text>
         <View style={styles.headerSpacer} />
@@ -75,7 +77,7 @@ export default function TranscriptDetailScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   header: {
     flexDirection: 'row',
@@ -84,17 +86,25 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingTop: 48,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-    backgroundColor: '#FFFFFF',
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   backButton: {
-    padding: 4,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     flex: 1,
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     textAlign: 'center',
   },
   headerSpacer: {
@@ -104,10 +114,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   errorText: {
     fontSize: 16,
-    color: '#EF4444',
+    color: colors.error,
   },
 });

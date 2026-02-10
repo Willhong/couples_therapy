@@ -11,7 +11,9 @@ import {
   Text,
   ActivityIndicator,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ArrowLeft, EllipsisVertical, StopCircle } from 'lucide-react-native';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 import { useChat } from '../hooks/useChat';
 import { SuggestionChips } from './SuggestionChips';
@@ -66,7 +68,7 @@ export function ChatScreen({
       <View style={styles.streamingFooter}>
         <AIThinkingIndicator statusMessage={statusMessage} />
         <TouchableOpacity style={styles.stopButton} onPress={stopStreaming}>
-          <Ionicons name="stop-circle" size={24} color="#EF4444" />
+          <StopCircle size={24} color={colors.error} />
           <Text style={styles.stopText}>중지</Text>
         </TouchableOpacity>
       </View>
@@ -76,13 +78,24 @@ export function ChatScreen({
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6B7FD7" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.headerButton}>
+          <ArrowLeft size={20} color={colors.textPrimary} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>함께 리프레이밍</Text>
+        <TouchableOpacity style={styles.headerButton}>
+          <EllipsisVertical size={20} color={colors.textPrimary} />
+        </TouchableOpacity>
+      </View>
+
       <MessageList
         messages={messages as ChatMessage[]}
         onOpenReframing={onOpenReframing}
@@ -108,7 +121,30 @@ export function ChatScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.bgPage,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.bgPage,
+  },
+  headerButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontFamily: headingFont,
+    color: colors.textPrimary,
   },
   loadingContainer: {
     flex: 1,
@@ -128,7 +164,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   stopText: {
-    color: '#EF4444',
+    color: colors.error,
     marginLeft: 4,
     fontSize: 14,
   },

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { ArrowRight } from 'lucide-react-native';
 import { api } from '@/lib/api';
+import { colors, alpha } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 interface WeeklySummary {
   total_conversations: number;
@@ -47,7 +49,7 @@ export function InsightsPreviewCard(): React.ReactElement | null {
         </View>
         <View style={styles.viewBtn}>
           <Text style={styles.viewBtnText}>자세히 보기</Text>
-          <Ionicons name="arrow-forward" size={16} color="#7C9082" />
+          <ArrowRight size={16} color={colors.accentSage} />
         </View>
       </Pressable>
     </View>
@@ -63,10 +65,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#2D2D2D',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
   },
   card: {
-    backgroundColor: '#7C9082',
+    backgroundColor: colors.accentSage,
     borderRadius: 20,
     padding: 20,
     gap: 16,
@@ -82,17 +85,17 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   statLabel: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: alpha(colors.white, 0.8),
   },
   viewBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -101,6 +104,6 @@ const styles = StyleSheet.create({
   viewBtnText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#7C9082',
+    color: colors.accentSage,
   },
 });

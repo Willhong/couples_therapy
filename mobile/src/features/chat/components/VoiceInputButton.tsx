@@ -4,7 +4,8 @@
  */
 import React from 'react';
 import { Pressable, Text, StyleSheet, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Mic } from 'lucide-react-native';
+import { colors } from '@/theme';
 
 export function VoiceInputButton(): React.ReactElement {
   const handlePress = () => {
@@ -13,7 +14,7 @@ export function VoiceInputButton(): React.ReactElement {
 
   return (
     <Pressable style={styles.button} onPress={handlePress}>
-      <Ionicons name="mic-outline" size={14} color="#5A5A5A" />
+      <Mic size={14} color={colors.textSecondary} />
       <Text style={styles.label}>음성</Text>
     </Pressable>
   );
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F3EF',
+    backgroundColor: colors.chipBg,
     borderRadius: 16,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -31,6 +32,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: '#5A5A5A',
+    color: colors.textSecondary,
   },
 });

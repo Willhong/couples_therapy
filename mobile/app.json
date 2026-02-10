@@ -20,7 +20,9 @@
       "infoPlist": {
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": ["couplesai"]
+            "CFBundleURLSchemes": [
+              "couplesai"
+            ]
           }
         ],
         "NSMicrophoneUsageDescription": "커플 대화를 녹음하기 위해 마이크 접근이 필요합니다.",
@@ -44,7 +46,10 @@
               "host": "invite"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -67,7 +72,8 @@
         {
           "microphonePermission": "커플 대화를 녹음하기 위해 마이크 접근이 필요합니다."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

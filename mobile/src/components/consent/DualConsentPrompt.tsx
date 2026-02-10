@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useRecordingConsent, ConsentStatus } from '@/hooks/useRecordingConsent';
 import { useAuth } from '@/hooks/useAuth';
+import { colors, alpha } from '@/theme';
 
 interface DualConsentPromptProps {
   visible: boolean;
@@ -298,13 +299,13 @@ export default function DualConsentPrompt({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: alpha(colors.black, 0.5),
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     width: '100%',
     maxWidth: 360,
@@ -316,12 +317,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
   },
   closeButton: {
     width: 32,
@@ -329,11 +330,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 16,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
   },
   closeButtonText: {
     fontSize: 24,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 28,
   },
   description: {
@@ -342,13 +343,13 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.gray700,
     textAlign: 'center',
     marginBottom: 4,
   },
   subText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     textAlign: 'center',
   },
   statusContainer: {
@@ -371,37 +372,37 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   waitingCircle: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
+    borderColor: colors.gray300,
   },
   consentedCircle: {
-    backgroundColor: '#10B981',
+    backgroundColor: colors.success,
     borderWidth: 0,
   },
   checkmark: {
     fontSize: 28,
-    color: '#FFFFFF',
+    color: colors.white,
     fontWeight: 'bold',
   },
   waitingDot: {
     fontSize: 32,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   statusLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 2,
   },
   statusText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   statusDivider: {
     width: 48,
     height: 2,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
     marginHorizontal: 16,
   },
   messageContainer: {
@@ -411,18 +412,18 @@ const styles = StyleSheet.create({
   },
   statusMessage: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   successMessage: {
-    color: '#10B981',
+    color: colors.success,
     fontWeight: '600',
   },
   errorMessage: {
-    color: '#EF4444',
+    color: colors.error,
   },
   warningMessage: {
-    color: '#F59E0B',
+    color: colors.warningAmber,
   },
   actions: {
     padding: 16,
@@ -436,26 +437,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primaryButton: {
-    backgroundColor: '#4B5563',
+    backgroundColor: colors.gray600,
   },
   primaryButtonText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: 16,
     fontWeight: '600',
   },
   secondaryButton: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
   },
   secondaryButtonText: {
-    color: '#374151',
+    color: colors.gray700,
     fontSize: 16,
     fontWeight: '600',
   },
   dangerButton: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.errorBg,
   },
   dangerButtonText: {
-    color: '#DC2626',
+    color: colors.dangerText,
     fontSize: 16,
     fontWeight: '600',
   },

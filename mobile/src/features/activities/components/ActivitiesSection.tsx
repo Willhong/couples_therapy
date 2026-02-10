@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ActivityCard } from './ActivityCard';
 import { getFeaturedActivities, startActivity, type Activity } from '../api';
+import { colors } from '@/theme';
 
 export function ActivitiesSection(): React.ReactElement | null {
   const router = useRouter();
@@ -74,11 +75,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#2D2D2D',
+    color: colors.textPrimary,
   },
   seeAll: {
     fontSize: 12,
-    color: '#7C9082',
+    color: colors.accentSage,
   },
   scrollContent: {
     paddingHorizontal: 16,

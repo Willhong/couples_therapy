@@ -4,7 +4,8 @@
  */
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Bookmark } from 'lucide-react-native';
+import { colors, alpha } from '@/theme';
 
 interface Props {
   onBookmark: () => void;
@@ -19,7 +20,7 @@ export function BookmarkButton({ onBookmark, disabled = false }: Props): React.R
       disabled={disabled}
       hitSlop={12}
     >
-      <Ionicons name="bookmark-outline" size={24} color={disabled ? '#6B7280' : '#FFFFFF'} />
+      <Bookmark size={24} color={disabled ? colors.textSecondary : colors.white} />
     </Pressable>
   );
 }
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: alpha(colors.white, 0.2),
     justifyContent: 'center',
     alignItems: 'center',
   },

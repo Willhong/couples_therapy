@@ -10,6 +10,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import { colors } from '@/theme';
 
 const SUGGESTIONS = [
   '오늘 이런 일이 있었어요',
@@ -48,9 +49,7 @@ export function SuggestionChips({ onSelect }: Props): React.ReactElement {
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    backgroundColor: '#fff',
+    backgroundColor: colors.bgPage,
   },
   scrollContent: {
     paddingHorizontal: 12,
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   chip: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.chipBg,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 16,
@@ -66,6 +65,6 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.textPrimary,
   },
 });

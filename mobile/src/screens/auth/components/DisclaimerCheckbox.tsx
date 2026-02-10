@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Checkbox from 'expo-checkbox';
+import { colors } from '@/theme';
 
 interface DisclaimerCheckboxProps {
   checked: boolean;
@@ -24,7 +25,7 @@ export function DisclaimerCheckbox({
       <Checkbox
         value={checked}
         onValueChange={onChange}
-        color={checked ? '#4B5563' : undefined}
+        color={checked ? colors.primary : undefined}
         style={styles.checkbox}
       />
       <View style={styles.textContainer}>
@@ -62,10 +63,10 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#374151',
+    color: colors.textSecondary,
   },
   link: {
-    color: '#2563EB',
+    color: colors.primary,
     textDecorationLine: 'underline',
   },
 });

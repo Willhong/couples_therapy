@@ -4,7 +4,9 @@
  */
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Lightbulb } from 'lucide-react-native';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 interface Props {
   suggestions: string[];
@@ -14,7 +16,7 @@ export function SuggestionList({ suggestions }: Props): React.ReactElement {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Ionicons name="bulb-outline" size={20} color="#6B7FD7" />
+        <Lightbulb size={20} color={colors.primary} />
         <Text style={styles.title}>다음에 시도해볼 것</Text>
       </View>
       {suggestions.map((suggestion, index) => (
@@ -31,7 +33,7 @@ export function SuggestionList({ suggestions }: Props): React.ReactElement {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -44,7 +46,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
     marginLeft: 8,
   },
   item: {
@@ -56,20 +58,20 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   number: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 14,
     fontWeight: '600',
   },
   text: {
     flex: 1,
     fontSize: 15,
-    color: '#374151',
+    color: colors.gray700,
     lineHeight: 22,
   },
 });

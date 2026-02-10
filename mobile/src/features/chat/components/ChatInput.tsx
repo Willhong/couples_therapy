@@ -11,7 +11,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Send } from 'lucide-react-native';
+import { colors } from '@/theme';
 import { VoiceInputButton } from './VoiceInputButton';
 import { TopicRecommendButton } from './TopicRecommendButton';
 
@@ -58,7 +59,7 @@ export function ChatInput({
             value={text}
             onChangeText={setText}
             placeholder={placeholder}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textTertiary}
             multiline
             maxLength={2000}
             editable={!disabled}
@@ -72,10 +73,9 @@ export function ChatInput({
             disabled={!canSend}
             activeOpacity={0.7}
           >
-            <Ionicons
-              name="send"
-              size={24}
-              color={canSend ? '#6B7FD7' : '#D1D5DB'}
+            <Send
+              size={20}
+              color={colors.white}
             />
           </TouchableOpacity>
         </View>
@@ -95,13 +95,18 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    backgroundColor: colors.bgPage,
   },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 24,
+    paddingVertical: 4,
+    paddingLeft: 16,
+    paddingRight: 4,
   },
   quickActions: {
     flexDirection: 'row',
@@ -112,25 +117,23 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 40,
     maxHeight: 120,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 20,
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
     paddingVertical: 10,
     fontSize: 16,
-    color: '#1F2937',
-    marginRight: 8,
+    color: colors.textPrimary,
   },
   inputDisabled: {
-    backgroundColor: '#F9FAFB',
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   sendButton: {
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.textPrimary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   sendButtonDisabled: {
-    opacity: 0.5,
+    opacity: 0.3,
   },
 });

@@ -5,6 +5,7 @@
  */
 import React, { useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
+import { colors } from '@/theme';
 
 const THINKING_MESSAGES = [
   '상대방 관점을 분석하고 있어요...',
@@ -70,7 +71,7 @@ const dotStyles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
   },
 });
 
@@ -100,7 +101,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   bubble: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -109,7 +112,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginLeft: 8,
   },
 });

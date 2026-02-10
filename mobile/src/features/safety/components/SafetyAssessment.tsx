@@ -13,6 +13,7 @@ import {
   Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { colors, alpha } from '@/theme';
 import { safetyApi } from '../services/safetyApi';
 import { SafetyAssessmentData, SafetyQuestion, CrisisResources } from '../types';
 import { getApiErrorMessage } from '@/lib/api';
@@ -268,7 +269,7 @@ export function SafetyAssessment() {
             disabled={!canProceed || submitting}
           >
             {submitting ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
+              <ActivityIndicator color={colors.white} size="small" />
             ) : (
               <Text style={styles.nextText}>완료</Text>
             )}
@@ -282,7 +283,7 @@ export function SafetyAssessment() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   content: {
     padding: 24,
@@ -291,23 +292,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 16,
     paddingBottom: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   progressBar: {
     height: 4,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
     borderRadius: 2,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
   },
   progressText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 8,
   },
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
     lineHeight: 30,
     marginBottom: 32,
   },
@@ -328,29 +329,29 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   scaleButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
   },
   scaleButtonActive: {
-    borderColor: '#6B7FD7',
-    backgroundColor: 'rgba(107, 127, 215, 0.05)',
+    borderColor: colors.primary,
+    backgroundColor: alpha(colors.primary, 0.05),
   },
   scaleButtonNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   scaleButtonNumberActive: {
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   scaleLabel: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   yesNoContainer: {
@@ -359,53 +360,53 @@ const styles = StyleSheet.create({
   },
   yesNoButton: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     borderRadius: 12,
     paddingVertical: 20,
     alignItems: 'center',
   },
   yesNoButtonActive: {
-    borderColor: '#6B7FD7',
-    backgroundColor: '#6B7FD7',
+    borderColor: colors.primary,
+    backgroundColor: colors.primary,
   },
   yesNoButtonText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   yesNoButtonTextActive: {
-    color: '#FFFFFF',
+    color: colors.white,
   },
   navigation: {
     flexDirection: 'row',
     paddingHorizontal: 24,
     paddingVertical: 16,
     paddingBottom: 24,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
     gap: 12,
   },
   backButton: {
     flex: 1,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   nextButton: {
     flex: 2,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -415,7 +416,7 @@ const styles = StyleSheet.create({
   nextText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   buttonDisabled: {
     opacity: 0.5,
@@ -426,13 +427,13 @@ const styles = StyleSheet.create({
   crisisTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 16,
   },
   crisisMessage: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.gray700,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 32,
@@ -443,15 +444,15 @@ const styles = StyleSheet.create({
   hotlinesTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
     marginBottom: 16,
   },
   hotlineCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -463,15 +464,15 @@ const styles = StyleSheet.create({
   hotlineName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
     marginBottom: 4,
   },
   hotlineDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   callButton: {
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
     borderRadius: 8,
     paddingVertical: 10,
     alignItems: 'center',
@@ -479,18 +480,18 @@ const styles = StyleSheet.create({
   callButtonText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   disclaimer: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 24,
     fontStyle: 'italic',
   },
   continueButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -498,6 +499,6 @@ const styles = StyleSheet.create({
   continueButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
 });

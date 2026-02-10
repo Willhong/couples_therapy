@@ -6,6 +6,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 import type { OnboardingFormData, PrimaryGoal, FocusArea } from '../types';
 
 interface GoalSelectionStepProps {
@@ -190,12 +192,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   description: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 24,
     lineHeight: 24,
   },
@@ -205,12 +208,12 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
     marginBottom: 16,
   },
   questionHint: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     marginBottom: 16,
     marginTop: -8,
   },
@@ -218,16 +221,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   goalCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 20,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     alignItems: 'center',
   },
   goalCardSelected: {
-    borderColor: '#6B7FD7',
-    backgroundColor: '#F5F6FF',
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
   },
   goalEmoji: {
     fontSize: 32,
@@ -236,15 +239,15 @@ const styles = StyleSheet.create({
   goalLabel: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 4,
   },
   goalLabelSelected: {
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   goalDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -257,32 +260,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 24,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   chipSelected: {
-    backgroundColor: '#6B7FD7',
-    borderColor: '#6B7FD7',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipDisabled: {
     opacity: 0.5,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
   },
   chipLabel: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.gray700,
   },
   chipLabelSelected: {
-    color: '#FFFFFF',
+    color: colors.white,
   },
   chipLabelDisabled: {
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   errorText: {
     fontSize: 14,
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 8,
   },
 });

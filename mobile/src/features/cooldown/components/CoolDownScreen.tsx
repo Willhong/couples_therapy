@@ -13,6 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useCoolDown } from '../hooks/useCoolDown';
 import { BreathingGuide } from './BreathingGuide';
+import { colors, alpha } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 const DURATION_OPTIONS = [
   { label: '5분', value: 300 },
@@ -229,7 +231,7 @@ export function CoolDownScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   container: {
     flex: 1,
@@ -240,18 +242,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
   },
   cancelText: {
     fontSize: 16,
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   descriptionContainer: {
     paddingHorizontal: 24,
@@ -261,13 +264,14 @@ const styles = StyleSheet.create({
   descriptionTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 12,
     textAlign: 'center',
   },
   descriptionText: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 24,
     textAlign: 'center',
   },
@@ -278,7 +282,7 @@ const styles = StyleSheet.create({
   selectorLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 12,
   },
   durationOptions: {
@@ -291,23 +295,23 @@ const styles = StyleSheet.create({
     minWidth: '45%',
     paddingVertical: 16,
     paddingHorizontal: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     borderRadius: 12,
     alignItems: 'center',
   },
   durationOptionSelected: {
-    borderColor: '#6B7FD7',
-    backgroundColor: 'rgba(107, 127, 215, 0.05)',
+    borderColor: colors.primary,
+    backgroundColor: alpha(colors.primary, 0.05),
   },
   durationOptionText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   durationOptionTextSelected: {
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   bottomContainer: {
     flex: 1,
@@ -316,7 +320,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   startButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -324,7 +328,7 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   timerContainer: {
     alignItems: 'center',
@@ -334,12 +338,12 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderWidth: 8,
-    borderColor: '#6B7FD7',
+    borderColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -348,7 +352,7 @@ const styles = StyleSheet.create({
   timerText: {
     fontSize: 56,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.gray800,
     fontVariant: ['tabular-nums'],
   },
   progressRing: {
@@ -356,12 +360,12 @@ const styles = StyleSheet.create({
     bottom: -10,
     width: 200,
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
     borderRadius: 4,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 4,
   },
   breathingSection: {
@@ -370,13 +374,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     textAlign: 'center',
     marginBottom: 8,
   },
   infoText: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: 24,
   },
@@ -393,13 +397,13 @@ const styles = StyleSheet.create({
   completionTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
     marginBottom: 12,
     textAlign: 'center',
   },
   completionSubtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 40,
     lineHeight: 24,
@@ -409,7 +413,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   primaryButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -417,19 +421,19 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   secondaryButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     paddingVertical: 16,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#6B7FD7',
+    borderColor: colors.primary,
     alignItems: 'center',
   },
   secondaryButtonText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#6B7FD7',
+    color: colors.primary,
   },
 });

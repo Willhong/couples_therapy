@@ -12,6 +12,7 @@ import {
   Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { colors, alpha } from '@/theme';
 import { promptsApi } from '../services/promptsApi';
 import { DailyPrompt, TopicLibraryResponse } from '../types';
 import { getApiErrorMessage } from '@/lib/api';
@@ -137,7 +138,7 @@ export function TopicLibrary() {
       {/* Topics list */}
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#6B7FD7" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : error ? (
         <View style={styles.errorContainer}>
@@ -189,12 +190,12 @@ export function TopicLibrary() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   categoryTabs: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   categoryTabsContent: {
     paddingHorizontal: 16,
@@ -205,18 +206,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
   },
   categoryTabActive: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
   },
   categoryTabText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   categoryTabTextActive: {
-    color: '#FFFFFF',
+    color: colors.white,
   },
   loadingContainer: {
     flex: 1,
@@ -231,20 +232,20 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: '#EF4444',
+    color: colors.error,
     textAlign: 'center',
     marginBottom: 16,
   },
   retryButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 8,
   },
   retryButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   topicsScroll: {
     flex: 1,
@@ -259,7 +260,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   categorySection: {
     marginBottom: 24,
@@ -267,15 +268,15 @@ const styles = StyleSheet.create({
   categorySectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
     marginBottom: 12,
   },
   topicCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -290,20 +291,20 @@ const styles = StyleSheet.create({
   categoryBadge: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6B7FD7',
-    backgroundColor: 'rgba(107, 127, 215, 0.1)',
+    color: colors.primary,
+    backgroundColor: alpha(colors.primary, 0.1),
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
   difficultyBadge: {
     fontSize: 12,
-    color: '#F59E0B',
+    color: colors.warningAmber,
   },
   topicText: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.gray700,
     lineHeight: 22,
   },
   modalOverlay: {
@@ -322,15 +323,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: alpha(colors.black, 0.5),
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 24,
     width: '100%',
     maxWidth: 400,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -345,21 +346,21 @@ const styles = StyleSheet.create({
   modalCategory: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   modalClose: {
     fontSize: 24,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   modalTopicText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
     lineHeight: 28,
     marginBottom: 24,
   },
   startButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -367,6 +368,6 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
 });

@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { api, getApiErrorMessage } from '@/lib/api';
+import { colors } from '@/theme';
 
 interface SharedReframing {
   id: string;
@@ -113,7 +114,7 @@ export default function SharedScreen(): React.ReactElement {
           <Text style={styles.headerTitle}>공유받은 내용</Text>
         </View>
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#6B7FD7" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </SafeAreaView>
     );
@@ -150,7 +151,7 @@ export default function SharedScreen(): React.ReactElement {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => loadSharedReframings(true)}
-              tintColor="#6B7FD7"
+              tintColor={colors.primary}
             />
           }
         />
@@ -162,18 +163,18 @@ export default function SharedScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   header: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textPrimary,
   },
   centerContainer: {
     flex: 1,
@@ -185,16 +186,16 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   itemCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     position: 'relative',
   },
   unreadCard: {
-    borderColor: '#6B7FD7',
+    borderColor: colors.primary,
     borderWidth: 2,
   },
   unreadIndicator: {
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
   },
   itemHeader: {
     flexDirection: 'row',
@@ -215,16 +216,16 @@ const styles = StyleSheet.create({
   senderEmail: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
     flex: 1,
   },
   date: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   privacyBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: colors.primaryBg,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -232,12 +233,12 @@ const styles = StyleSheet.create({
   },
   privacyText: {
     fontSize: 12,
-    color: '#6B7FD7',
+    color: colors.primary,
     fontWeight: '600',
   },
   responseIndicator: {
     fontSize: 13,
-    color: '#10B981',
+    color: colors.success,
     fontWeight: '600',
   },
   emptyIcon: {
@@ -247,22 +248,22 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   errorText: {
     fontSize: 16,
-    color: '#DC2626',
+    color: colors.dangerText,
     marginBottom: 16,
     textAlign: 'center',
   },
   retryButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -270,6 +271,6 @@ const styles = StyleSheet.create({
   retryButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
 });

@@ -10,7 +10,8 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Users, Square } from 'lucide-react-native';
+import { colors, alpha } from '@/theme';
 
 interface PartnerRecordingIndicatorProps {
   /** Partner's display name */
@@ -74,7 +75,7 @@ export function PartnerRecordingIndicator({
 
         {/* Info */}
         <View style={styles.infoSection}>
-          <Ionicons name="people" size={40} color="#FFFFFF" />
+          <Users size={40} color={colors.white} />
           <Text style={styles.partnerText}>
             {partnerName}님이 녹음하고 있습니다
           </Text>
@@ -83,7 +84,7 @@ export function PartnerRecordingIndicator({
 
         {/* Stop button */}
         <Pressable style={styles.stopButton} onPress={onStop}>
-          <Ionicons name="stop" size={28} color="#FFFFFF" />
+          <Square size={28} color={colors.white} />
           <Text style={styles.stopButtonText}>녹음 중지</Text>
         </Pressable>
 
@@ -98,7 +99,7 @@ export function PartnerRecordingIndicator({
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(127, 29, 29, 0.95)',
+    backgroundColor: alpha(colors.dangerTextDark, 0.95),
     zIndex: 100,
   },
   container: {
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.3)',
+    backgroundColor: alpha(colors.error, 0.3),
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -125,12 +126,12 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
   },
   recordingLabel: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#FCA5A5',
+    color: colors.errorBg,
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
@@ -141,20 +142,20 @@ const styles = StyleSheet.create({
   partnerText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
     textAlign: 'center',
   },
   timerText: {
     fontSize: 48,
     fontWeight: '300',
-    color: '#FFFFFF',
+    color: colors.white,
     fontVariant: ['tabular-nums'],
   },
   stopButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: '#DC2626',
+    backgroundColor: colors.error,
     paddingVertical: 16,
     paddingHorizontal: 40,
     borderRadius: 16,
@@ -163,11 +164,11 @@ const styles = StyleSheet.create({
   stopButtonText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   hintText: {
     fontSize: 13,
-    color: '#FCA5A5',
+    color: colors.errorBg,
     textAlign: 'center',
     marginTop: 8,
   },

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { MoodSelector } from './MoodSelector';
 import { getTodayCheckIn, submitCheckIn, type CheckIn } from '../api';
+import { colors } from '@/theme';
 
 interface Props {
   onCheckInComplete?: () => void;
@@ -62,7 +63,7 @@ export function CheckInSection({ onCheckInComplete }: Props): React.ReactElement
       <View style={styles.card}>
         <Text style={styles.question}>오늘 관계에 대해 어떻게 느끼시나요?</Text>
         {submitting ? (
-          <ActivityIndicator size="small" color="#7C9082" style={{ marginTop: 16 }} />
+          <ActivityIndicator size="small" color={colors.accentSage} style={{ marginTop: 16 }} />
         ) : (
           <MoodSelector
             selected={selectedMood}
@@ -89,38 +90,38 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#2D2D2D',
+    color: colors.textPrimary,
   },
   time: {
     fontSize: 12,
-    color: '#C4A092',
+    color: colors.accentWarm,
   },
   badge: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#7C9082',
-    backgroundColor: '#E8EFEA',
+    color: colors.accentSage,
+    backgroundColor: colors.successBg,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 20,
     padding: 20,
     gap: 16,
     borderWidth: 1,
-    borderColor: '#E8E4DF',
+    borderColor: colors.border,
   },
   question: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#2D2D2D',
+    color: colors.textPrimary,
     lineHeight: 21,
   },
   completedText: {
     fontSize: 15,
-    color: '#5A5A5A',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

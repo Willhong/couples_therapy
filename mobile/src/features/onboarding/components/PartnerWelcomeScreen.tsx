@@ -8,6 +8,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { usePartner } from '@/hooks/usePartner';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 /**
  * Welcome screen shown to partners who join via invite link
@@ -69,7 +71,7 @@ export default function PartnerWelcomeScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   content: {
     flex: 1,
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
@@ -93,38 +95,40 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 18,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 40,
     textAlign: 'center',
   },
   explanationCard: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
     borderRadius: 16,
     padding: 24,
     marginBottom: 32,
     width: '100%',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   explanationTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 12,
   },
   explanationText: {
     fontSize: 15,
-    color: '#4B5563',
+    color: colors.gray600,
     lineHeight: 24,
   },
   startButton: {
-    backgroundColor: '#4B5563',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 48,
@@ -133,13 +137,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   startButtonText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: 18,
     fontWeight: '600',
   },
   footerText: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     textAlign: 'center',
   },
 });

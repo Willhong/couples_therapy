@@ -6,7 +6,8 @@
  */
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MessageSquare, Mic, Radio } from 'lucide-react-native';
+import { colors } from '@/theme';
 import { ConversationEntry, ConversationType } from '../types';
 
 interface ConversationCardProps {
@@ -14,14 +15,14 @@ interface ConversationCardProps {
   onPress: (item: ConversationEntry) => void;
 }
 
-/** Map conversation type to Ionicons name and color. */
+/** Map conversation type to icon component and color. */
 const TYPE_CONFIG: Record<
   ConversationType,
-  { icon: keyof typeof Ionicons.glyphMap; color: string; bg: string }
+  { icon: React.ComponentType<{ size: number; color: string }>; color: string; bg: string }
 > = {
-  text: { icon: 'chatbubble', color: '#6B7FD7', bg: '#EEF0FB' },
-  narration: { icon: 'mic', color: '#F59E0B', bg: '#FEF3C7' },
-  live: { icon: 'radio', color: '#EF4444', bg: '#FEE2E2' },
+  text: { icon: MessageSquare, color: colors.primary, bg: colors.primaryLight },
+  narration: { icon: Mic, color: colors.warningAmber, bg: colors.warningBg },
+  live: { icon: Radio, color: colors.error, bg: colors.errorBg },
 };
 
 /** Simple relative time formatter. */
@@ -49,9 +50,9 @@ function formatRelativeDate(dateString: string): string {
 /** Emotion intensity to color dot. */
 function emotionColor(value: number | null): string | null {
   if (value === null) return null;
-  if (value >= 7) return '#EF4444'; // high
-  if (value >= 4) return '#F59E0B'; // medium
-  return '#10B981'; // low
+  if (value >= 7) return colors.error; // high
+  if (value >= 4) return colors.warningAmber; // medium
+  return colors.success; // low
 }
 
 export function ConversationCard({
@@ -66,11 +67,11 @@ export function ConversationCard({
     <Pressable
       style={styles.card}
       onPress={() => onPress(item)}
-      android_ripple={{ color: '#E5E7EB' }}
+      android_ripple={{ color: colors.border }}
     >
       {/* Icon */}
       <View style={[styles.iconContainer, { backgroundColor: config.bg }]}>
-        <Ionicons name={config.icon} size={20} color={config.color} />
+        <config.icon size={20} color={config.color} />
       </View>
 
       {/* Content */}
@@ -112,12 +113,12 @@ export function ConversationCard({
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   iconContainer: {
     width: 40,
@@ -140,12 +141,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
     marginRight: 8,
   },
   date: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
   middleRow: {
     flexDirection: 'row',
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
   },
   preview: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 18,
   },
 });

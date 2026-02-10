@@ -8,6 +8,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { LineChart, BarChart } from 'react-native-gifted-charts';
+import { colors, alpha } from '@/theme';
 import type { WeeklySession, WeeklyEscalation, CategoryStat } from '../types';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -39,16 +40,16 @@ export function ConflictFrequencyChart({ data }: ConflictFrequencyProps): React.
           data={lineData}
           width={CHART_WIDTH}
           height={160}
-          color="#6B7FD7"
+          color={colors.primary}
           thickness={2}
-          dataPointsColor="#6B7FD7"
+          dataPointsColor={colors.primary}
           dataPointsRadius={4}
           xAxisLabelTextStyle={styles.axisLabel}
           yAxisTextStyle={styles.axisLabel}
           curved
           areaChart
-          startFillColor="rgba(107, 127, 215, 0.3)"
-          endFillColor="rgba(107, 127, 215, 0.01)"
+          startFillColor={alpha(colors.primary, 0.3)}
+          endFillColor={alpha(colors.primary, 0.01)}
           noOfSections={4}
           spacing={CHART_WIDTH / Math.max(lineData.length, 1)}
           initialSpacing={20}
@@ -66,7 +67,7 @@ interface TopicDistributionProps {
   data: CategoryStat[];
 }
 
-const TOPIC_COLORS = ['#6B7FD7', '#F59E0B', '#10B981', '#EF4444', '#8B5CF6'];
+const TOPIC_COLORS = [colors.primary, colors.warningAmber, colors.success, colors.error, colors.primary];
 
 export function TopicDistributionChart({ data }: TopicDistributionProps): React.ReactElement {
   const barData = data.map((item, index) => ({
@@ -139,8 +140,8 @@ export function EscalationTrendChart({ data }: EscalationTrendProps): React.Reac
           yAxisTextStyle={styles.axisLabel}
           curved
           areaChart
-          startFillColor={trendColor === '#10B981' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}
-          endFillColor={trendColor === '#10B981' ? 'rgba(16, 185, 129, 0.01)' : 'rgba(239, 68, 68, 0.01)'}
+          startFillColor={trendColor === colors.success ? alpha(colors.success, 0.2) : alpha(colors.error, 0.2)}
+          endFillColor={trendColor === colors.success ? alpha(colors.success, 0.01) : alpha(colors.error, 0.01)}
           noOfSections={4}
           maxValue={10}
           spacing={CHART_WIDTH / Math.max(lineData.length, 1)}
@@ -163,12 +164,12 @@ function formatWeekLabel(weekStr: string): string {
 }
 
 function getTrendColor(data: WeeklyEscalation[]): string {
-  if (data.length < 2) return '#6B7280';
+  if (data.length < 2) return colors.textSecondary;
   const first = data[0].avg_score;
   const last = data[data.length - 1].avg_score;
-  if (last < first) return '#10B981'; // improving (green)
-  if (last > first) return '#EF4444'; // worsening (red)
-  return '#F59E0B'; // stable (amber)
+  if (last < first) return colors.success; // improving (green)
+  if (last > first) return colors.error; // worsening (red)
+  return colors.warningAmber; // stable (amber)
 }
 
 function EmptyChartMessage({ title }: { title: string }): React.ReactElement {
@@ -184,11 +185,11 @@ function EmptyChartMessage({ title }: { title: string }): React.ReactElement {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -197,12 +198,12 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.gray800,
     marginBottom: 2,
   },
   cardSubtitle: {
     fontSize: 13,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     marginBottom: 16,
   },
   chartContainer: {
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   axisLabel: {
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontSize: 11,
   },
   emptyChart: {
@@ -220,6 +221,6 @@ const styles = StyleSheet.create({
   },
   emptyChartText: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
   },
 });

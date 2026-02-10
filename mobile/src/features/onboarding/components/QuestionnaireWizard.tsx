@@ -19,6 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { colors } from '@/theme';
 
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { AttachmentStyleStep } from './AttachmentStyleStep';
@@ -209,7 +210,7 @@ export function QuestionnaireWizard(): React.ReactElement {
               activeOpacity={0.7}
             >
               {submitting ? (
-                <ActivityIndicator color="#FFFFFF" size="small" />
+                <ActivityIndicator color={colors.white} size="small" />
               ) : (
                 <Text style={styles.nextText}>완료</Text>
               )}
@@ -224,7 +225,7 @@ export function QuestionnaireWizard(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.bgPage,
   },
   keyboardView: {
     flex: 1,
@@ -233,13 +234,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 16,
     paddingBottom: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   stepIndicator: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 12,
   },
@@ -254,14 +255,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     marginTop: 16,
     padding: 16,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorBg,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: colors.errorBg,
   },
   errorText: {
     fontSize: 14,
-    color: '#DC2626',
+    color: colors.error,
     textAlign: 'center',
   },
   navigation: {
@@ -269,29 +270,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     paddingBottom: 24,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
     gap: 12,
   },
   backButton: {
     flex: 1,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   nextButton: {
     flex: 2,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -301,9 +302,9 @@ const styles = StyleSheet.create({
   nextText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   buttonDisabled: {
-    backgroundColor: '#9CA3AF',
+    backgroundColor: colors.textTertiary,
   },
 });

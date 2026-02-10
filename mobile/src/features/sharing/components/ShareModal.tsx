@@ -12,7 +12,15 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { X, FileText, List, Lock, CheckCircle } from 'lucide-react-native';
+import { colors, alpha } from '@/theme';
+import { headingFont } from '@/theme/typography';
+
+const ICON_MAP: Record<string, React.ComponentType<{ size: number; color: string }>> = {
+  'document-text': FileText,
+  'list': List,
+  'lock-closed': Lock,
+};
 
 export type PrivacyLevel = 'full' | 'summary' | 'none';
 
@@ -27,7 +35,7 @@ interface PrivacyOption {
   level: PrivacyLevel;
   title: string;
   description: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: string;
 }
 
 const PRIVACY_OPTIONS: PrivacyOption[] = [
@@ -75,7 +83,7 @@ export function ShareModal({
           <View style={styles.header}>
             <Text style={styles.title}>파트너와 공유</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color="#6B7280" />
+              <X size={24} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -94,11 +102,10 @@ export function ShareModal({
                 onPress={() => setSelected(option.level)}
               >
                 <View style={styles.optionIcon}>
-                  <Ionicons
-                    name={option.icon}
-                    size={24}
-                    color={selected === option.level ? '#6B7FD7' : '#9CA3AF'}
-                  />
+                  {(() => {
+                    const IconComp = ICON_MAP[option.icon] || FileText;
+                    return <IconComp size={24} color={selected === option.level ? colors.primary : colors.textTertiary} />;
+                  })()}
                 </View>
                 <View style={styles.optionContent}>
                   <Text
@@ -114,7 +121,7 @@ export function ShareModal({
                   </Text>
                 </View>
                 {selected === option.level && (
-                  <Ionicons name="checkmark-circle" size={24} color="#6B7FD7" />
+                  <CheckCircle size={24} color={colors.primary} />
                 )}
               </TouchableOpacity>
             ))}
@@ -126,7 +133,7 @@ export function ShareModal({
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.white} />
             ) : (
               <Text style={styles.shareButtonText}>
                 {selected === 'none' ? '닫기' : '공유하기'}
@@ -142,11 +149,11 @@ export function ShareModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: alpha(colors.black, 0.5),
     justifyContent: 'flex-end',
   },
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
@@ -160,14 +167,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
   },
   closeButton: {
     padding: 4,
   },
   description: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 20,
   },
   options: {
@@ -179,18 +187,18 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     marginBottom: 12,
   },
   optionSelected: {
-    borderColor: '#6B7FD7',
-    backgroundColor: '#F0F4FF',
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
   },
   optionIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -201,18 +209,18 @@ const styles = StyleSheet.create({
   optionTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 2,
   },
   optionTitleSelected: {
-    color: '#6B7FD7',
+    color: colors.primary,
   },
   optionDescription: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   shareButton: {
-    backgroundColor: '#6B7FD7',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
@@ -221,7 +229,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   shareButtonText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 16,
     fontWeight: '600',
   },

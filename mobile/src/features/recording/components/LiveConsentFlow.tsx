@@ -15,7 +15,9 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Users, AlertTriangle, Mic, CheckCircle, XCircle } from 'lucide-react-native';
+import { colors, alpha } from '@/theme';
+import { headingFont } from '@/theme/typography';
 import { useLiveRecording, LivePhase } from '../hooks/useLiveRecording';
 import { useWaveform } from '../hooks/useWaveform';
 import { uploadAudio, pollTranscriptionStatus } from '../services/audioApi';
@@ -128,7 +130,7 @@ export function LiveConsentFlow({
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#6B7FD7" />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.statusTitle}>
             {uploadPhase === 'uploading' ? '업로드 중...' : '음성 처리 중...'}
           </Text>
@@ -147,7 +149,7 @@ export function LiveConsentFlow({
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContainer}>
-          <Ionicons name="people-outline" size={48} color="#6B7FD7" />
+          <Users size={48} color={colors.primary} />
           <Text style={styles.statusTitle}>함께 녹음하기</Text>
           <Text style={styles.statusDesc}>
             파트너에게 녹음 동의를 요청합니다.{'\n'}
@@ -156,7 +158,7 @@ export function LiveConsentFlow({
 
           {!partnerOnline && (
             <View style={styles.warningBadge}>
-              <Ionicons name="warning-outline" size={16} color="#92400E" />
+              <AlertTriangle size={16} color={colors.warning} />
               <Text style={styles.warningText}>파트너가 오프라인입니다</Text>
             </View>
           )}
@@ -187,7 +189,7 @@ export function LiveConsentFlow({
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#6B7FD7" />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.statusTitle}>동의 대기 중</Text>
           <Text style={styles.statusDesc}>
             파트너의 동의를 기다리고 있습니다...
@@ -207,7 +209,7 @@ export function LiveConsentFlow({
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContainer}>
-          <Ionicons name="mic-outline" size={48} color="#6B7FD7" />
+          <Mic size={48} color={colors.primary} />
           <Text style={styles.statusTitle}>녹음 동의 요청</Text>
           <Text style={styles.statusDesc}>
             파트너가 함께 녹음하기를 요청했습니다.{'\n'}
@@ -244,7 +246,7 @@ export function LiveConsentFlow({
       return (
         <SafeAreaView style={styles.container}>
           <View style={styles.centerContainer}>
-            <Ionicons name="checkmark-circle" size={48} color="#10B981" />
+            <CheckCircle size={48} color={colors.success} />
             <Text style={styles.statusTitle}>동의 완료</Text>
             <Text style={styles.statusDesc}>
               녹음을 시작합니다...
@@ -270,7 +272,7 @@ export function LiveConsentFlow({
       return (
         <SafeAreaView style={styles.container}>
           <View style={styles.centerContainer}>
-            <Ionicons name="checkmark-circle" size={48} color="#10B981" />
+            <CheckCircle size={48} color={colors.success} />
             <Text style={styles.statusTitle}>동의 완료</Text>
             <Text style={styles.statusDesc}>
               파트너가 녹음을 시작하면{'\n'}알림이 표시됩니다.
@@ -291,7 +293,7 @@ export function LiveConsentFlow({
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.centerContainer}>
-          <Ionicons name="close-circle" size={48} color="#EF4444" />
+          <XCircle size={48} color={colors.error} />
           <Text style={styles.statusTitle}>동의 거절됨</Text>
           <Text style={styles.statusDesc}>
             파트너가 녹음을 거절했거나 시간이 만료되었습니다.{'\n'}
@@ -363,7 +365,7 @@ export function LiveConsentFlow({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#6B7FD7" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     </SafeAreaView>
   );
@@ -372,7 +374,7 @@ export function LiveConsentFlow({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
   },
   centerContainer: {
     flex: 1,
@@ -384,19 +386,20 @@ const styles = StyleSheet.create({
   statusTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     textAlign: 'center',
   },
   statusDesc: {
     fontSize: 15,
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },
   warningBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFBEB',
+    backgroundColor: colors.warningBg,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -404,12 +407,12 @@ const styles = StyleSheet.create({
   },
   warningText: {
     fontSize: 13,
-    color: '#92400E',
+    color: colors.warning,
     fontWeight: '500',
   },
   errorText: {
     fontSize: 14,
-    color: '#DC2626',
+    color: colors.error,
     textAlign: 'center',
   },
   buttonGroup: {
@@ -418,7 +421,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   primaryButton: {
-    backgroundColor: '#4B5563',
+    backgroundColor: colors.primary,
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
@@ -426,12 +429,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primaryButtonText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: 16,
     fontWeight: '600',
   },
   secondaryButton: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.bgAiMessage,
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: 'center',
@@ -439,7 +442,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   secondaryButtonText: {
-    color: '#374151',
+    color: colors.gray700,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -451,7 +454,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.errorBg,
     paddingVertical: 8,
     gap: 8,
   },
@@ -459,12 +462,12 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error,
   },
   recordingIndicatorText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#991B1B',
+    color: colors.dangerText,
   },
   recordingContainer: {
     flex: 1,
@@ -476,7 +479,7 @@ const styles = StyleSheet.create({
   errorContainer: {
     marginHorizontal: 24,
     padding: 16,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorBg,
     borderRadius: 12,
     alignItems: 'center',
   },

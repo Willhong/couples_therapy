@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { colors, alpha } from '@/theme';
 import type { WeeklySummaryData } from '../types';
 
 interface Props {
@@ -12,9 +13,9 @@ interface Props {
 }
 
 const TREND_CONFIG = {
-  improving: { label: '개선 중', color: '#10B981', icon: '\u2193' },
-  stable: { label: '유지 중', color: '#F59E0B', icon: '\u2192' },
-  worsening: { label: '주의 필요', color: '#EF4444', icon: '\u2191' },
+  improving: { label: '개선 중', color: colors.success, icon: '\u2193' },
+  stable: { label: '유지 중', color: colors.warningAmber, icon: '\u2192' },
+  worsening: { label: '주의 필요', color: colors.error, icon: '\u2191' },
 } as const;
 
 function formatDateRange(start: string, end: string): string {
@@ -83,11 +84,11 @@ export function WeeklySummaryCard({ summary }: Props): React.ReactElement {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -102,11 +103,11 @@ const styles = StyleSheet.create({
   dateRange: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.gray800,
   },
   sessionCount: {
     fontSize: 13,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   trendBadge: {
@@ -128,18 +129,18 @@ const styles = StyleSheet.create({
   trendText: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#374151',
+    color: colors.gray700,
     marginBottom: 12,
   },
   triggersSection: {
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
+    borderTopColor: colors.bgAiMessage,
     paddingTop: 12,
   },
   triggersSectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   triggersList: {
@@ -148,14 +149,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   triggerChip: {
-    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+    backgroundColor: alpha(colors.warningAmber, 0.1),
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
   },
   triggerChipText: {
     fontSize: 13,
-    color: '#C2410C',
+    color: colors.warning,
     fontWeight: '500',
   },
 });

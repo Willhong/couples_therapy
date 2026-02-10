@@ -7,6 +7,8 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import Slider from '@react-native-community/slider';
+import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 import type { OnboardingFormData, AttachmentScale } from '../types';
 
 interface AttachmentStyleStepProps {
@@ -58,9 +60,9 @@ export function AttachmentStyleStep({
                 step={1}
                 value={value || 3}
                 onValueChange={(val) => onChange(val as AttachmentScale)}
-                minimumTrackTintColor="#6B7FD7"
-                maximumTrackTintColor="#E5E7EB"
-                thumbTintColor="#6B7FD7"
+                minimumTrackTintColor={colors.primary}
+                maximumTrackTintColor={colors.border}
+                thumbTintColor={colors.primary}
               />
               <View style={styles.labelRow}>
                 {SCALE_LABELS.map((label, i) => (
@@ -108,9 +110,9 @@ export function AttachmentStyleStep({
                 step={1}
                 value={value || 3}
                 onValueChange={(val) => onChange(val as AttachmentScale)}
-                minimumTrackTintColor="#6B7FD7"
-                maximumTrackTintColor="#E5E7EB"
-                thumbTintColor="#6B7FD7"
+                minimumTrackTintColor={colors.primary}
+                maximumTrackTintColor={colors.border}
+                thumbTintColor={colors.primary}
               />
               <View style={styles.labelRow}>
                 {SCALE_LABELS.map((label, i) => (
@@ -149,21 +151,22 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1F2937',
+    fontFamily: headingFont,
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   description: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 32,
     lineHeight: 24,
   },
   questionBlock: {
     marginBottom: 40,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -172,13 +175,13 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.gray800,
     marginBottom: 8,
     lineHeight: 26,
   },
   questionHint: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     marginBottom: 20,
   },
   sliderContainer: {
@@ -196,24 +199,24 @@ const styles = StyleSheet.create({
   },
   scaleLabel: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.textTertiary,
     textAlign: 'center',
     flex: 1,
   },
   scaleLabelActive: {
-    color: '#6B7FD7',
+    color: colors.primary,
     fontWeight: '600',
   },
   currentValue: {
     fontSize: 14,
-    color: '#6B7FD7',
+    color: colors.primary,
     textAlign: 'center',
     marginTop: 12,
     fontWeight: '500',
   },
   errorText: {
     fontSize: 14,
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 8,
   },
 });
