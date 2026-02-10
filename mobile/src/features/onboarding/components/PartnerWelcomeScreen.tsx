@@ -71,7 +71,7 @@ export default function PartnerWelcomeScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.bgPage,
   },
   content: {
     flex: 1,
@@ -84,32 +84,33 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: colors.bgAiMessage,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
   },
   icon: {
-    fontSize: 50,
+    fontSize: 48,
+    color: colors.primary,
   },
   title: {
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: colors.textSecondary,
     marginBottom: 40,
     textAlign: 'center',
   },
   explanationCard: {
-    backgroundColor: colors.bgPage,
+    backgroundColor: colors.white,
     borderRadius: 16,
-    padding: 24,
+    padding: 20,
     marginBottom: 32,
     width: '100%',
     borderWidth: 1,
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
   },
   startButton: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
+    borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 48,
     width: '100%',

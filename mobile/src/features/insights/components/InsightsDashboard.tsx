@@ -11,7 +11,10 @@ import {
   ActivityIndicator,
   RefreshControl,
   StyleSheet,
+  Pressable,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ChevronDown, ChevronRight } from 'lucide-react-native';
 import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
 import { useDashboard, useWeeklySummaries } from '../hooks/useInsights';
@@ -37,32 +40,32 @@ export function InsightsDashboard(): React.ReactElement {
   // Loading state
   if (loading && !dashboard) {
     return (
-      <View style={styles.centerContainer}>
+      <SafeAreaView style={styles.centerContainer} edges={['top', 'left', 'right']}>
         <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>인사이트를 불러오는 중...</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   // Error state
   if (error && !dashboard) {
     return (
-      <View style={styles.centerContainer}>
+      <SafeAreaView style={styles.centerContainer} edges={['top', 'left', 'right']}>
         <Text style={styles.errorText}>{error}</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   // Empty state
   if (!dashboard || dashboard.total_sessions === 0) {
     return (
-      <View style={styles.centerContainer}>
+      <SafeAreaView style={styles.centerContainer} edges={['top', 'left', 'right']}>
         <Text style={styles.emptyIcon}>📊</Text>
         <Text style={styles.emptyTitle}>아직 분석할 데이터가 없어요</Text>
         <Text style={styles.emptyDescription}>
           대화나 녹음을 시작하면 패턴 분석 결과가 여기에 표시됩니다
         </Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -70,28 +73,43 @@ export function InsightsDashboard(): React.ReactElement {
   const allTriggerPhrases = dashboard.top_triggers.map((t) => t.phrase);
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-      }
-    >
-      {/* Header */}
-      <Text style={styles.header}>인사이트</Text>
-      <Text style={styles.headerSubtitle}>대화 패턴을 관찰적으로 정리했어요</Text>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+      >
+        {/* Header */}
+        <View style={styles.headerRow}>
+          <Text style={styles.header}>인사이트</Text>
+          <Pressable style={styles.periodButton}>
+            <Text style={styles.periodButtonText}>이번 주</Text>
+            <ChevronDown size={16} color={colors.textSecondary} />
+          </Pressable>
+        </View>
 
-      {/* Stats Row */}
-      <View style={styles.statsRow}>
-        <StatCard label="총 세션" value={String(dashboard.total_sessions)} />
-        <StatCard label="트리거 표현" value={String(dashboard.trigger_phrase_count)} />
-        <StatCard
-          label="평균 강도"
-          value={String(dashboard.avg_escalation)}
-          suffix="/10"
-        />
-      </View>
+        {/* Summary Card */}
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryTitle}>주간 요약</Text>
+          <View style={styles.summaryStatsRow}>
+            <View style={styles.summaryStat}>
+              <Text style={styles.summaryStatValue}>{dashboard.total_sessions}</Text>
+              <Text style={styles.summaryStatLabel}>대화</Text>
+            </View>
+            <View style={styles.summaryStat}>
+              <Text style={styles.summaryStatValue}>{dashboard.trigger_phrase_count}</Text>
+              <Text style={styles.summaryStatLabel}>리프레이밍</Text>
+            </View>
+            <View style={styles.summaryStat}>
+              <Text style={styles.summaryStatValue}>{Math.round((1 - dashboard.avg_escalation / 10) * 100)}%</Text>
+              <Text style={styles.summaryStatLabel}>긍정적</Text>
+            </View>
+          </View>
+          <ChevronRight size={20} color="rgba(255,255,255,0.6)" style={{ position: 'absolute', right: 20, top: '50%' }} />
+        </View>
 
       {/* Weekly Summary (latest) */}
       {latestWeekly && (
@@ -142,9 +160,8 @@ export function InsightsDashboard(): React.ReactElement {
         </View>
       )}
 
-      {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -173,9 +190,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bgPage,
   },
+  scrollView: {
+    flex: 1,
+  },
   contentContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingHorizontal: 24,
+    paddingBottom: 100,
   },
   centerContainer: {
     flex: 1,
@@ -210,50 +230,64 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
-  header: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: colors.gray800,
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    marginBottom: 20,
-  },
-  // Stats row
-  statsRow: {
+  headerRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.white,
-    borderRadius: 14,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
+    paddingVertical: 12,
+    marginBottom: 16,
   },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: colors.primary,
+  header: {
+    fontFamily: headingFont,
+    fontSize: 28,
+    fontWeight: '500',
+    color: '#2D2D2D',
   },
-  statSuffix: {
+  periodButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderColor: '#E8E4DF',
+    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: '#FFFFFF',
+  },
+  periodButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.textTertiary,
+    color: '#2D2D2D',
   },
-  statLabel: {
+  // Summary card
+  summaryCard: {
+    backgroundColor: '#7C9082',
+    borderRadius: 20,
+    padding: 20,
+    gap: 16,
+    marginBottom: 24,
+  },
+  summaryTitle: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  summaryStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  summaryStat: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  summaryStatValue: {
+    color: '#FFFFFF',
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  summaryStatLabel: {
+    color: 'rgba(255,255,255,0.7)',
     fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 4,
   },
   // Sections
   section: {
@@ -307,8 +341,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.primary,
-  },
-  bottomSpacer: {
-    height: 32,
   },
 });

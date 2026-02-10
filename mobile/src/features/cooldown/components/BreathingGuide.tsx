@@ -27,7 +27,18 @@ export function BreathingGuide(): React.ReactElement {
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.circle, animatedStyle]} />
+      {/* Outer circle */}
+      <View style={styles.outerCircle} />
+
+      {/* Middle circle */}
+      <View style={styles.middleCircle} />
+
+      {/* Inner animated circle with icon */}
+      <Animated.View style={[styles.innerCircle, animatedStyle]}>
+        <Text style={styles.leafIcon}>🍃</Text>
+      </Animated.View>
+
+      {/* Instruction text below */}
       <View style={styles.instructionContainer}>
         <Text style={styles.instruction}>{instruction}</Text>
         <Text style={styles.subtitle}>4초</Text>
@@ -42,26 +53,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 40,
   },
-  circle: {
+  outerCircle: {
+    position: 'absolute',
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: alpha(colors.primary, 0.2),
-    borderWidth: 3,
-    borderColor: colors.primary,
+    backgroundColor: alpha(colors.primary, 0.25),
+  },
+  middleCircle: {
+    position: 'absolute',
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: alpha(colors.primary, 0.5),
+  },
+  innerCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  leafIcon: {
+    fontSize: 40,
+    color: colors.white,
   },
   instructionContainer: {
     position: 'absolute',
+    bottom: -80,
     alignItems: 'center',
   },
   instruction: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: colors.gray800,
+    fontSize: 28,
+    fontWeight: '500',
+    fontFamily: 'Fraunces_500Medium',
+    color: colors.white,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: alpha(colors.white, 0.5),
   },
 });

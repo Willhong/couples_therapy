@@ -114,6 +114,18 @@ export default function MainLayout(): React.ReactElement {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="conversations"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="prompt-history"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

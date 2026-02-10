@@ -34,11 +34,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.successBg,
+    backgroundColor: colors.primaryLight,
     borderRadius: 16,
     padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 12,
   },
   left: {
     flexDirection: 'row',

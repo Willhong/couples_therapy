@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { MoodSelector } from './MoodSelector';
 import { getTodayCheckIn, submitCheckIn, type CheckIn } from '../api';
 import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 interface Props {
   onCheckInComplete?: () => void;
@@ -78,8 +79,6 @@ export function CheckInSection({ onCheckInComplete }: Props): React.ReactElement
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
-    marginBottom: 12,
     gap: 12,
   },
   header: {
@@ -90,6 +89,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: headingFont,
     color: colors.textPrimary,
   },
   time: {

@@ -107,9 +107,9 @@ export function SignInScreen(): React.ReactElement {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>로그인</Text>
+          <Text style={styles.title}>다시 오셨군요</Text>
           <Text style={styles.subtitle}>
-            다시 돌아오셨군요! 계속 진행하세요.
+            함께하는 여정을 계속하려면 로그인하세요
           </Text>
         </View>
 
@@ -221,16 +221,17 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.textSecondary,
-    lineHeight: 24,
+    lineHeight: 20,
+    textAlign: 'center',
   },
   form: {
     flex: 1,
@@ -250,8 +251,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '500',
     color: colors.textPrimary,
     marginBottom: 8,
   },
@@ -263,13 +264,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: colors.white,
     paddingHorizontal: 16,
+    height: 52,
   },
   inputIcon: {
     marginRight: 12,
   },
   input: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 0,
     fontSize: 16,
     color: colors.textPrimary,
   },
@@ -282,12 +284,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   forgotText: {
-    fontSize: 14,
-    color: colors.textSecondary,
+    fontSize: 13,
+    color: colors.primary,
   },
   button: {
-    backgroundColor: colors.primary,
-    borderRadius: 16,
+    backgroundColor: colors.textPrimary,
+    borderRadius: 28,
     height: 56,
     alignItems: 'center',
     justifyContent: 'center',

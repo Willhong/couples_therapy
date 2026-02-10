@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { ActivityCard } from './ActivityCard';
 import { getFeaturedActivities, startActivity, type Activity } from '../api';
 import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 export function ActivitiesSection(): React.ReactElement | null {
   const router = useRouter();
@@ -63,23 +64,23 @@ export function ActivitiesSection(): React.ReactElement | null {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 12,
     gap: 12,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: headingFont,
     color: colors.textPrimary,
   },
   seeAll: {
-    fontSize: 12,
-    color: colors.accentSage,
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.primary,
   },
   scrollContent: {
     paddingHorizontal: 16,

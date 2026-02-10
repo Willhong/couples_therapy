@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ArrowRight } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { api } from '@/lib/api';
-import { colors, alpha } from '@/theme';
+import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
 
 interface WeeklySummary {
@@ -24,86 +24,51 @@ export function InsightsPreviewCard(): React.ReactElement | null {
 
   if (!summary) return null;
 
+  // Generate insight message based on data
+  const mainText = '소통이 개선되었어요';
+  const subText = `이번 주 의미있는 대화가 ${summary.total_conversations}회 있었어요!`;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionTitle}>주간 인사이트</Text>
-      <Pressable
-        style={styles.card}
-        onPress={() => router.push('/(main)/insights' as any)}
-      >
-        <View style={styles.statsRow}>
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>{summary.total_conversations}</Text>
-            <Text style={styles.statLabel}>대화</Text>
-          </View>
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>{summary.total_reframings}</Text>
-            <Text style={styles.statLabel}>리프레이밍</Text>
-          </View>
-          {summary.avg_mood != null && (
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>{summary.avg_mood.toFixed(1)}</Text>
-              <Text style={styles.statLabel}>평균 기분</Text>
-            </View>
-          )}
+    <Pressable
+      style={styles.card}
+      onPress={() => router.push('/(main)/insights' as any)}
+    >
+      <View style={styles.content}>
+        <View style={styles.textGroup}>
+          <Text style={styles.mainText}>{mainText}</Text>
+          <Text style={styles.subText}>{subText}</Text>
         </View>
-        <View style={styles.viewBtn}>
-          <Text style={styles.viewBtnText}>자세히 보기</Text>
-          <ArrowRight size={16} color={colors.accentSage} />
-        </View>
-      </Pressable>
-    </View>
+        <ChevronRight size={24} color={colors.white} />
+      </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    gap: 12,
+  card: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 20,
   },
-  sectionTitle: {
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  textGroup: {
+    flex: 1,
+    gap: 4,
+  },
+  mainText: {
     fontSize: 18,
     fontWeight: '600',
     fontFamily: headingFont,
-    color: colors.textPrimary,
-  },
-  card: {
-    backgroundColor: colors.accentSage,
-    borderRadius: 20,
-    padding: 20,
-    gap: 16,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  stat: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '700',
     color: colors.white,
   },
-  statLabel: {
-    fontSize: 12,
-    color: alpha(colors.white, 0.8),
-  },
-  viewBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.white,
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    gap: 8,
-  },
-  viewBtnText: {
+  subText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: colors.accentSage,
+    fontWeight: '400',
+    color: colors.white,
+    opacity: 0.9,
   },
 });

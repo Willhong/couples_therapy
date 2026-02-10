@@ -236,7 +236,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
         {/* Header */}
         <View style={styles.header}>
           <ProgressBar currentStep={2} totalSteps={3} />
-          <Text style={styles.title}>파트너 연결</Text>
+          <Text style={styles.title}>파트너와 연결하기</Text>
           <Text style={styles.subtitle}>
             파트너와 연결하면 함께 기록을 공유할 수 있습니다
           </Text>
@@ -408,7 +408,7 @@ export default function PartnerLinkScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.bgPage,
   },
   scrollContent: {
     flexGrow: 1,
@@ -418,62 +418,57 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 32,
-    backgroundColor: colors.white,
+    backgroundColor: colors.bgPage,
   },
   header: {
     marginBottom: 32,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
     marginTop: 24,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.textSecondary,
-    lineHeight: 24,
+    lineHeight: 21,
+    textAlign: 'center',
   },
   card: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 20,
+    backgroundColor: '#F5F3EF',
+    borderWidth: 0,
+    borderRadius: 20,
+    padding: 24,
     marginBottom: 16,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    fontFamily: headingFont,
-    color: colors.textPrimary,
+    fontSize: 13,
+    fontWeight: '400',
+    color: colors.textSecondary,
     marginBottom: 16,
   },
   codeContainer: {
     alignItems: 'center',
   },
   codeDisplay: {
-    backgroundColor: colors.bgPage,
-    borderRadius: 8,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+    paddingVertical: 8,
+    paddingHorizontal: 0,
     marginBottom: 16,
     width: '100%',
     alignItems: 'center',
   },
   codeText: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 22,
+    fontWeight: '600',
     fontFamily: 'monospace',
     color: colors.textPrimary,
-    letterSpacing: 4,
+    letterSpacing: 3,
   },
   codeActions: {
     flexDirection: 'row',
@@ -492,28 +487,31 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   inputLabel: {
-    fontSize: 14,
-    color: colors.textSecondary,
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   codeInput: {
     borderWidth: 1,
-    borderColor: colors.gray300,
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderColor: colors.border,
+    borderRadius: 16,
+    height: 52,
     paddingHorizontal: 16,
-    fontSize: 24,
+    fontSize: 16,
     fontFamily: 'monospace',
     textAlign: 'center',
-    letterSpacing: 8,
+    letterSpacing: 2,
     marginBottom: 16,
     color: colors.textPrimary,
+    backgroundColor: colors.white,
   },
   primaryButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    paddingVertical: 14,
+    backgroundColor: colors.textPrimary,
+    borderRadius: 28,
+    height: 56,
     alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
   },
   primaryButtonText: {
@@ -523,13 +521,15 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     flex: 1,
-    backgroundColor: colors.bgAiMessage,
-    borderRadius: 8,
-    paddingVertical: 12,
+    backgroundColor: colors.primary,
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   secondaryButtonText: {
-    color: colors.gray600,
+    color: colors.white,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
   skipButtonText: {
     color: colors.textSecondary,
     fontSize: 14,
-    textDecorationLine: 'underline',
+    textAlign: 'center',
   },
   successContainer: {
     flex: 1,

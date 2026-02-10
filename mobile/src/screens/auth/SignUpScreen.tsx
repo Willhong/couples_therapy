@@ -107,9 +107,9 @@ export function SignUpScreen(): React.ReactElement {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.title}>회원가입</Text>
+          <Text style={styles.title}>계정 만들기</Text>
           <Text style={styles.subtitle}>
-            CouplesAI와 함께 더 나은 대화를 시작하세요
+            더 강한 관계를 위한 여정을 시작하세요
           </Text>
         </View>
 
@@ -248,16 +248,16 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.textSecondary,
-    lineHeight: 24,
+    lineHeight: 20,
   },
   form: {
     flex: 1,
@@ -266,8 +266,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '500',
     color: colors.textPrimary,
     marginBottom: 8,
   },
@@ -279,13 +279,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: colors.white,
     paddingHorizontal: 16,
+    height: 52,
   },
   inputIcon: {
     marginRight: 12,
   },
   input: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 0,
     fontSize: 16,
     color: colors.textPrimary,
   },
@@ -302,8 +303,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   button: {
-    backgroundColor: colors.primary,
-    borderRadius: 16,
+    backgroundColor: colors.textPrimary,
+    borderRadius: 28,
     height: 56,
     alignItems: 'center',
     justifyContent: 'center',

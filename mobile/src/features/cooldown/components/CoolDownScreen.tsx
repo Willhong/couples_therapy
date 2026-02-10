@@ -91,46 +91,25 @@ export function CoolDownScreen(): React.ReactElement {
     await startCooldown(selectedDuration);
   };
 
-  // If timer is running, show timer + breathing guide
+  // If timer is running, show dark-themed breathing guide
   if (cooldown && !showCompletion) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>쿨다운</Text>
-            <Pressable onPress={handleCancel}>
-              <Text style={styles.cancelText}>취소</Text>
-            </Pressable>
-          </View>
-
-          {/* Countdown Timer */}
-          <View style={styles.timerContainer}>
-            <View style={styles.timerCircle}>
-              <Text style={styles.timerText}>{formatTime(remainingSeconds)}</Text>
-            </View>
-            <View style={styles.progressRing}>
-              <View
-                style={[
-                  styles.progressFill,
-                  {
-                    width: `${(remainingSeconds / cooldown.duration_seconds) * 100}%`,
-                  },
-                ]}
-              />
-            </View>
-          </View>
+      <SafeAreaView style={styles.darkSafeArea}>
+        <View style={styles.darkContainer}>
+          {/* Close Button */}
+          <Pressable onPress={handleCancel} style={styles.closeButton}>
+            <Text style={styles.closeIcon}>✕</Text>
+          </Pressable>
 
           {/* Breathing Guide */}
           <View style={styles.breathingSection}>
-            <Text style={styles.sectionTitle}>호흡 가이드</Text>
             <BreathingGuide />
           </View>
 
-          {/* Info */}
-          <Text style={styles.infoText}>
-            차분히 호흡하며 잠시 쉬어가세요
-          </Text>
+          {/* Skip Button */}
+          <Pressable style={styles.skipButton} onPress={handleCancel}>
+            <Text style={styles.skipButtonText}>건너뛰고 계속하기</Text>
+          </Pressable>
         </View>
       </SafeAreaView>
     );
@@ -235,6 +214,46 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  darkSafeArea: {
+    flex: 1,
+    backgroundColor: colors.textPrimary,
+  },
+  darkContainer: {
+    flex: 1,
+    backgroundColor: colors.textPrimary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: alpha(colors.white, 0.125),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeIcon: {
+    fontSize: 20,
+    color: colors.white,
+    fontWeight: '400',
+  },
+  skipButton: {
+    position: 'absolute',
+    bottom: 40,
+    backgroundColor: alpha(colors.white, 0.08),
+    borderRadius: 24,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  skipButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.white,
   },
   header: {
     flexDirection: 'row',

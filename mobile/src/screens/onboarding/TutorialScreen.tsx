@@ -211,27 +211,29 @@ export default function TutorialScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.bgPage,
   },
   titleContainer: {
     padding: 24,
     paddingTop: 48,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 28,
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
     color: colors.textSecondary,
     lineHeight: 24,
+    textAlign: 'center',
   },
   mockLayout: {
     flex: 1,
-    backgroundColor: colors.bgPage,
+    backgroundColor: colors.white,
   },
   header: {
     flexDirection: 'row',
@@ -287,7 +289,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: colors.textPrimary,
     marginBottom: 4,
@@ -295,7 +297,7 @@ const styles = StyleSheet.create({
   cardDescription: {
     fontSize: 14,
     color: colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 21,
   },
   tooltip: {
     borderRadius: 12,
