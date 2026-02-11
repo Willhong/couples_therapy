@@ -43,6 +43,13 @@ export function BreathingGuide(): React.ReactElement {
         <Text style={styles.instruction}>{instruction}</Text>
         <Text style={styles.subtitle}>4초</Text>
       </View>
+
+      {/* Progress dots */}
+      <View style={styles.progressDots}>
+        <View style={[styles.dot, phase === 'inhale' && styles.dotActive]} />
+        <View style={[styles.dot, phase === 'hold' && styles.dotActive]} />
+        <View style={[styles.dot, phase === 'exhale' && styles.dotActive]} />
+      </View>
     </View>
   );
 }
@@ -94,5 +101,20 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: alpha(colors.white, 0.5),
+  },
+  progressDots: {
+    position: 'absolute',
+    bottom: -120,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: alpha(colors.white, 0.25),
+  },
+  dotActive: {
+    backgroundColor: colors.white,
   },
 });

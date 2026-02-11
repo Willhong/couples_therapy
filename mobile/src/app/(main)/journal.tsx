@@ -4,7 +4,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, Plus, Sparkles } from 'lucide-react-native';
+import { Search, Plus, Lightbulb } from 'lucide-react-native';
 import { colors, headingFont } from '@/theme';
 
 interface JournalEntry {
@@ -59,7 +59,7 @@ export default function JournalRoute(): React.ReactElement {
       >
         {/* Daily Prompt Card */}
         <View style={styles.promptCard}>
-          <Sparkles size={20} color={colors.primary} />
+          <Lightbulb size={20} color={colors.primary} />
           <View style={styles.promptContent}>
             <Text style={styles.promptLabel}>오늘의 주제</Text>
             <Text style={styles.promptText}>이번 주 함께 웃었던 순간은?</Text>
@@ -68,7 +68,7 @@ export default function JournalRoute(): React.ReactElement {
 
         {/* Journal Entries Section */}
         <View style={styles.entriesSection}>
-          <Text style={styles.sectionLabel}>내 기록</Text>
+          <Text style={styles.sectionLabel}>이번 주</Text>
 
           {MOCK_ENTRIES.map((entry) => (
             <Pressable key={entry.id} style={styles.entryCard}>
@@ -159,12 +159,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   promptLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
     color: colors.primary,
   },
   promptText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '500',
     color: colors.textPrimary,
   },
@@ -179,9 +179,9 @@ const styles = StyleSheet.create({
   },
   entryCard: {
     backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 16,
-    gap: 10,
+    borderRadius: 20,
+    padding: 20,
+    gap: 12,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -190,13 +190,14 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   entryTitle: {
-    fontSize: 16,
+    fontFamily: headingFont,
+    fontSize: 18,
     fontWeight: '600',
     color: colors.textPrimary,
   },
   entryContent: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: '#5A5A5A',
     lineHeight: 20,
   },
   entryTag: {
