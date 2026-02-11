@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
 
@@ -24,6 +24,12 @@ export default function PrivacyPolicyScreen(): React.ReactElement {
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+        {/* Privacy Highlight Box */}
+        <View style={styles.privacyHighlight}>
+          <ShieldCheck size={20} color={colors.primary} />
+          <Text style={styles.privacyHighlightText}>개인정보는 안전하게 보호됩니다</Text>
+        </View>
+
         <Section title="1. 수집하는 개인정보 항목">
           <Text style={styles.text}>
             CouplesAI는 다음과 같은 개인정보를 수집합니다:{'\n\n'}
@@ -151,6 +157,21 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 20,
     paddingVertical: 24,
+  },
+  privacyHighlight: {
+    backgroundColor: '#E8EFEA',
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 24,
+  },
+  privacyHighlightText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textPrimary,
+    flex: 1,
   },
   section: {
     marginBottom: 32,

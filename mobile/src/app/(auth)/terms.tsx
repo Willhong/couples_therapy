@@ -18,7 +18,7 @@ export default function TermsScreen(): React.ReactElement {
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <ArrowLeft size={20} color={colors.textPrimary} />
           </Pressable>
-          <Text style={styles.title}>이용약관</Text>
+          <Text style={styles.title}>서비스 이용약관</Text>
         </View>
       </View>
 
@@ -147,8 +147,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
   },
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: colors.textPrimary,
     marginBottom: 12,
