@@ -125,6 +125,20 @@ class CoupleViewSet(viewsets.ViewSet):
         serializer = CoupleSerializer(couple, context={'request': request})
         return Response({'couple': serializer.data})
 
+    @action(detail=False, methods=['get'])
+    def status(self, request):
+        """Get couple connection status."""
+        couple = Couple.objects.filter(
+            models.Q(user1=request.user) | models.Q(user2=request.user),
+            status=Couple.Status.ACTIVE
+        ).first()
+
+        if not couple:
+            return Response({'connected': False, 'couple': None})
+
+        serializer = CoupleSerializer(couple, context={'request': request})
+        return Response({'connected': True, 'couple': serializer.data})
+
     @action(detail=False, methods=['post'])
     def disconnect(self, request):
         """Disconnect from partner."""

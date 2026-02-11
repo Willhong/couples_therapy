@@ -16,6 +16,7 @@ class DailyCheckInSerializer(serializers.ModelSerializer):
             'mood',
             'mood_display',
             'note',
+            'answers',
             'date',
             'created_at',
         ]
@@ -42,4 +43,13 @@ class CheckInCreateSerializer(serializers.Serializer):
         allow_blank=True,
         max_length=500,
         trim_whitespace=True,
+    )
+
+
+class DetailedCheckInCreateSerializer(serializers.Serializer):
+    """Serializer for creating a detailed check-in."""
+    answers = serializers.ListField(
+        child=serializers.CharField(max_length=1000),
+        min_length=1,
+        max_length=20,
     )

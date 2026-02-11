@@ -36,6 +36,12 @@ class DailyCheckIn(models.Model):
         default='',
         verbose_name='메모'
     )
+    answers = models.JSONField(
+        blank=True,
+        null=True,
+        default=None,
+        verbose_name='상세 답변'
+    )
     date = models.DateField(verbose_name='날짜')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
 
