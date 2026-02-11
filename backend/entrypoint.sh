@@ -17,13 +17,20 @@ if [ -n "$DATABASE_URL" ]; then
     echo "PostgreSQL is ready!"
 fi
 
-# Run migrations
-echo "Running migrations..."
-python manage.py migrate --noinput
+# Only the main backend (daphne) should run migrations and collectstatic
+# to avoid race conditions when multiple services start simultaneously.
+if echo "$@" | grep -q "daphne"; then
+    echo "Running migrations..."
+    python manage.py migrate --noinput
 
-# Collect static files
-echo "Collecting static files..."
-python manage.py collectstatic --noinput
+    # Collect static files (non-fatal in dev)
+    echo "Collecting static files..."
+    python manage.py collectstatic --noinput || echo "WARNING: collectstatic failed, continuing..."
+else
+    echo "Skipping migrations (handled by backend service)..."
+    # Wait a bit for backend to finish migrations
+    sleep 5
+fi
 
 # Execute the main command (daphne, celery worker, or celery beat)
 echo "Starting: $@"
