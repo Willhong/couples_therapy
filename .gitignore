@@ -46,3 +46,4 @@ Thumbs.db
 # OMC tooling
 .omc/
 .planning/agent-history.json
+mobile/ios/
