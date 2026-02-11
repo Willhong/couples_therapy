@@ -20,6 +20,7 @@ import { z } from 'zod';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/theme';
+import { headingFont } from '@/theme/typography';
 
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { AttachmentStyleStep } from './AttachmentStyleStep';

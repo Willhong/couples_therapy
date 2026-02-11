@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { HeartHandshake } from 'lucide-react-native';
 import { usePartner } from '@/hooks/usePartner';
 import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
@@ -33,7 +34,7 @@ export default function PartnerWelcomeScreen(): React.ReactElement {
       <View style={styles.content}>
         {/* Welcome Icon */}
         <View style={styles.iconContainer}>
-          <Text style={styles.icon}>🎉</Text>
+          <HeartHandshake size={48} color={colors.primary} />
         </View>
 
         {/* Welcome Message */}
@@ -89,10 +90,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  icon: {
-    fontSize: 48,
-    color: colors.primary,
-  },
   title: {
     fontSize: 32,
     fontWeight: '500',
@@ -103,7 +100,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: '#5A5A5A',
     marginBottom: 40,
     textAlign: 'center',
   },
