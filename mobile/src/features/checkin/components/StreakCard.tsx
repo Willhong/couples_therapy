@@ -20,8 +20,8 @@ export function StreakCard(): React.ReactElement | null {
       <View style={styles.left}>
         <Flame size={24} color={colors.accentSage} />
         <View>
-          <Text style={styles.count}>{streak.current_streak}일 연속</Text>
-          <Text style={styles.label}>최고 기록: {streak.longest_streak}일</Text>
+          <Text style={styles.label}>연결 연속기록</Text>
+          <Text style={styles.count}>함께한 {streak.current_streak}일</Text>
         </View>
       </View>
       <Heart size={20} color={colors.accentWarm} />
@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   count: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '500',
     color: colors.textPrimary,
   },
   label: {

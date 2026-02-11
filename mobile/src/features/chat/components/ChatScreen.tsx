@@ -11,6 +11,7 @@ import {
   Text,
   ActivityIndicator,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { ArrowLeft, EllipsisVertical, StopCircle } from 'lucide-react-native';
 import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
@@ -33,6 +34,7 @@ export function ChatScreen({
   onOpenReframing,
   onSendMessageReady,
 }: Props): React.ReactElement {
+  const router = useRouter();
   const [inputText, setInputText] = useState('');
   const { messages, loading, isTyping, statusMessage, sendMessage, stopStreaming } =
     useChat(conversationId || null);
@@ -58,6 +60,21 @@ export function ChatScreen({
 
   const handleSuggestionSelect = useCallback((text: string) => {
     setInputText((prev) => prev + text);
+  }, []);
+
+  const handleVoicePress = useCallback(() => {
+    router.push('/(main)/record' as any);
+  }, [router]);
+
+  const handleTopicRecommendPress = useCallback(() => {
+    const topics = [
+      '오늘 있었던 좋은 일 나누기',
+      '서로에게 고마운 점 이야기하기',
+      '이번 주 함께 하고 싶은 활동',
+      '최근 스트레스 받는 일 공유하기',
+    ];
+    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+    setInputText(randomTopic);
   }, []);
 
   // Render typing indicator as list header (appears at bottom due to inverted list)
@@ -102,15 +119,19 @@ export function ChatScreen({
         ListHeaderComponent={renderTypingIndicator()}
       />
 
-      {/* Suggestion chips above input when not typing */}
+      {/* Quick action chips above input when not typing */}
       {!isTyping && (
-        <SuggestionChips onSelect={handleSuggestionSelect} />
+        <SuggestionChips
+          onSelect={handleSuggestionSelect}
+          onVoicePress={handleVoicePress}
+          onTopicRecommendPress={handleTopicRecommendPress}
+        />
       )}
 
       <ChatInput
         onSend={handleSend}
         disabled={isTyping}
-        placeholder="갈등 상황을 설명해주세요..."
+        placeholder="생각을 적어보세요..."
         value={inputText}
         onChangeText={handleInputChange}
       />

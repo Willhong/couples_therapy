@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import { MoodSelector } from './MoodSelector';
 import { getTodayCheckIn, submitCheckIn, type CheckIn } from '../api';
 import { colors } from '@/theme';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function CheckInSection({ onCheckInComplete }: Props): React.ReactElement | null {
+  const router = useRouter();
   const [todayCheckIn, setTodayCheckIn] = useState<CheckIn | null | undefined>(undefined);
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -72,6 +74,12 @@ export function CheckInSection({ onCheckInComplete }: Props): React.ReactElement
             disabled={submitting}
           />
         )}
+        <Pressable
+          style={styles.detailedButton}
+          onPress={() => router.push('/(main)/checkin-flow')}
+        >
+          <Text style={styles.detailedButtonText}>자세히 체크인하기</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -87,8 +95,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
   },
@@ -123,5 +131,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  detailedButton: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  detailedButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.accentSage,
   },
 });

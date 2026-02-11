@@ -1,48 +1,43 @@
 /**
  * Suggestion chips component
- * Displays tappable Korean suggestions for starting conversations
+ * Displays quick action buttons for voice input and topic recommendations
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Mic, Lightbulb } from 'lucide-react-native';
 import { colors } from '@/theme';
-
-const SUGGESTIONS = [
-  '오늘 이런 일이 있었어요',
-  '파트너가 이렇게 말했는데',
-  '제가 이렇게 반응했어요',
-  '속상한 감정이 들었어요',
-  '어떻게 말해야 할지 모르겠어요',
-];
 
 interface Props {
   onSelect: (text: string) => void;
+  onVoicePress?: () => void;
+  onTopicRecommendPress?: () => void;
 }
 
-export function SuggestionChips({ onSelect }: Props): React.ReactElement {
+export function SuggestionChips({
+  onSelect,
+  onVoicePress,
+  onTopicRecommendPress,
+}: Props): React.ReactElement {
   return (
     <View style={styles.container}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {SUGGESTIONS.map((suggestion, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.chip}
-            onPress={() => onSelect(suggestion + ' ')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.chipText}>{suggestion}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <View style={styles.row}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={onVoicePress}
+          activeOpacity={0.7}
+        >
+          <Mic size={14} color="#5A5A5A" />
+          <Text style={styles.actionText}>음성</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={onTopicRecommendPress}
+          activeOpacity={0.7}
+        >
+          <Lightbulb size={14} color="#5A5A5A" />
+          <Text style={styles.actionText}>주제 추천</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -50,21 +45,24 @@ export function SuggestionChips({ onSelect }: Props): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.bgPage,
-  },
-  scrollContent: {
     paddingHorizontal: 12,
     paddingVertical: 8,
+  },
+  row: {
+    flexDirection: 'row',
     gap: 8,
   },
-  chip: {
-    backgroundColor: colors.chipBg,
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F3EF',
+    borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 16,
-    marginRight: 8,
+    gap: 6,
   },
-  chipText: {
-    fontSize: 14,
-    color: colors.textPrimary,
+  actionText: {
+    fontSize: 12,
+    color: '#5A5A5A',
   },
 });

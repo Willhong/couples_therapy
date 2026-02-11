@@ -2,42 +2,27 @@
  * Activities route - displays activities and exercises for the couple
  */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { SlidersHorizontal, Clock, ChevronRight, Heart, Star, MessageCircle } from 'lucide-react-native';
-import { colors, headingFont, alpha } from '@/theme';
-import { getFeaturedActivities, type Activity } from '@/features/activities/api';
+import { SlidersHorizontal } from 'lucide-react-native';
+import { colors, headingFont } from '@/theme';
+import { getFeaturedActivities, getActivitiesByCategory, startActivity, type Activity } from '@/features/activities/api';
+import { FeaturedActivityCard } from '@/features/activities/components/FeaturedActivityCard';
+import { ActivityListItem } from '@/features/activities/components/ActivityListItem';
 
 type TabType = '추천' | '소통' | '친밀감';
 
-const MOCK_ACTIVITIES = [
-  {
-    id: 1,
-    title: '감사 의식',
-    description: '서로에게 감사한 점 3가지 나누기',
-    estimated_minutes: 10,
-    icon: 'heart' as const,
-  },
-  {
-    id: 2,
-    title: '꿈의 데이트 계획',
-    description: '함께 꿈꾸며 데이트 계획하기',
-    estimated_minutes: 15,
-    icon: 'star' as const,
-  },
-  {
-    id: 3,
-    title: '가치관 탐구',
-    description: '서로의 핵심 가치관 대화하기',
-    estimated_minutes: 20,
-    icon: 'message' as const,
-  },
-];
+const TAB_CATEGORY_MAP: Record<TabType, string | undefined> = {
+  '추천': undefined,
+  '소통': 'conversation',
+  '친밀감': 'date',
+};
 
 const FEATURED_ACTIVITY = {
   title: '사랑에 빠지는 36가지 질문',
   description: '친밀감을 깊게 하기 위해 연구 기반으로 설계된 대화 게임',
   estimated_minutes: 45,
+  category: 'conversation',
 };
 
 export default function ActivitiesRoute(): React.ReactElement {
@@ -47,25 +32,43 @@ export default function ActivitiesRoute(): React.ReactElement {
 
   useEffect(() => {
     loadActivities();
-  }, []);
+  }, [activeTab]);
 
   async function loadActivities() {
+    setLoading(true);
     try {
-      const data = await getFeaturedActivities();
+      const category = TAB_CATEGORY_MAP[activeTab];
+      const data = category
+        ? await getActivitiesByCategory(category)
+        : await getFeaturedActivities();
       setActivities(data);
-    } catch (error) {
-      console.error('Failed to load activities:', error);
+    } catch {
+      // Falls back to empty list when no active couple
     } finally {
       setLoading(false);
     }
   }
 
-  const renderIcon = (iconType: 'heart' | 'star' | 'message') => {
-    const IconComponent = iconType === 'heart' ? Heart : iconType === 'star' ? Star : MessageCircle;
-    return <IconComponent size={20} color={colors.primary} strokeWidth={2} />;
+  const handleActivityPress = async (activity: Activity) => {
+    Alert.alert(
+      activity.title,
+      activity.description,
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '시작하기',
+          onPress: async () => {
+            try {
+              await startActivity(activity.id);
+              Alert.alert('시작!', `"${activity.title}" 활동을 시작했습니다.`);
+            } catch {
+              Alert.alert('오류', '활동을 시작할 수 없습니다.');
+            }
+          },
+        },
+      ]
+    );
   };
-
-  const displayActivities = activities.length > 0 ? activities : MOCK_ACTIVITIES;
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -101,47 +104,18 @@ export default function ActivitiesRoute(): React.ReactElement {
         showsVerticalScrollIndicator={false}
       >
         {/* Featured Activity Card */}
-        <View style={styles.featuredCard}>
-          <View style={styles.featuredBadge}>
-            <Text style={styles.featuredBadgeText}>✨ 추천</Text>
-          </View>
-          <Text style={styles.featuredTitle}>{FEATURED_ACTIVITY.title}</Text>
-          <Text style={styles.featuredDescription}>{FEATURED_ACTIVITY.description}</Text>
-          <View style={styles.featuredDuration}>
-            <Clock size={16} color={colors.white} strokeWidth={2} />
-            <Text style={styles.featuredDurationText}>{FEATURED_ACTIVITY.estimated_minutes}분</Text>
-          </View>
-        </View>
+        <FeaturedActivityCard activity={FEATURED_ACTIVITY} />
 
         {/* Activity List */}
         <View style={styles.activityList}>
-          {displayActivities.map((activity, index) => {
-            const mockActivity = MOCK_ACTIVITIES[index % MOCK_ACTIVITIES.length];
-            const iconType = mockActivity?.icon || 'heart';
-            const displayTitle = 'title' in activity ? activity.title : mockActivity.title;
-            const displayDescription = 'description' in activity ? activity.description : mockActivity.description;
-            const displayMinutes = 'estimated_minutes' in activity ? activity.estimated_minutes : mockActivity.estimated_minutes;
-
-            return (
-              <TouchableOpacity
-                key={activity.id}
-                style={styles.activityCard}
-                activeOpacity={0.7}
-              >
-                <View style={styles.activityIcon}>
-                  {renderIcon(iconType)}
-                </View>
-                <View style={styles.activityContent}>
-                  <Text style={styles.activityTitle}>{displayTitle}</Text>
-                  <Text style={styles.activityDescription}>{displayDescription}</Text>
-                </View>
-                <View style={styles.activityDuration}>
-                  <Text style={styles.activityDurationText}>{displayMinutes}분</Text>
-                </View>
-                <ChevronRight size={20} color={colors.textSecondary} strokeWidth={2} />
-              </TouchableOpacity>
-            );
-          })}
+          {activities.map((activity, index) => (
+            <ActivityListItem
+              key={activity.id}
+              activity={activity}
+              index={index}
+              onPress={handleActivityPress}
+            />
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -187,13 +161,13 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   tabText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '400',
     color: colors.textSecondary,
   },
   tabTextActive: {
-    fontWeight: '700',
-    color: colors.primary,
+    fontWeight: '500',
+    color: colors.textPrimary,
   },
   tabIndicator: {
     position: 'absolute',
@@ -201,7 +175,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2,
-    backgroundColor: colors.primary,
+    backgroundColor: '#7C9082',
   },
   scrollView: {
     flex: 1,
@@ -210,93 +184,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 16,
     paddingBottom: 100,
-  },
-  featuredCard: {
-    backgroundColor: colors.accentWarm,
-    borderRadius: 24,
-    padding: 24,
-    marginBottom: 24,
-  },
-  featuredBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: alpha(colors.white, 0.3),
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  featuredBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.white,
-  },
-  featuredTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.white,
-    marginBottom: 8,
-  },
-  featuredDescription: {
-    fontSize: 14,
-    color: colors.white,
-    opacity: 0.8,
-    lineHeight: 20,
-    marginBottom: 16,
-  },
-  featuredDuration: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  featuredDurationText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.white,
+    gap: 24,
   },
   activityList: {
     gap: 12,
-  },
-  activityCard: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  activityIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: 2,
-  },
-  activityDescription: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    lineHeight: 18,
-  },
-  activityDuration: {
-    backgroundColor: colors.bgPage,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  activityDurationText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.textSecondary,
   },
 });

@@ -8,20 +8,22 @@ import React, { memo, useCallback } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   Pressable,
   StyleSheet,
   Alert,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import { Leaf, ChevronRight } from 'lucide-react-native';
+import { Sparkles } from 'lucide-react-native';
 import { colors } from '@/theme';
 import type { ChatMessage, ReframingData } from '../types';
 import { CrisisResponseCard } from '@/features/safety';
+import { InlineReframingCard } from './InlineReframingCard';
 
 interface Props {
   message: ChatMessage;
   onOpenReframing?: (reframingData: ReframingData, messageId: string) => void;
+  onShareWithPartner?: () => void;
+  onSaveToJournal?: () => void;
 }
 
 function formatTime(date: Date): string {
@@ -31,7 +33,7 @@ function formatTime(date: Date): string {
   });
 }
 
-function MessageBubbleComponent({ message, onOpenReframing }: Props): React.ReactElement {
+function MessageBubbleComponent({ message, onOpenReframing, onShareWithPartner, onSaveToJournal }: Props): React.ReactElement {
   const isUser = message.user._id === 'user';
   const isSystem = message.user._id === 'system';
   const isCrisis = message.mode === 'crisis';
@@ -65,7 +67,7 @@ function MessageBubbleComponent({ message, onOpenReframing }: Props): React.Reac
       {!isUser && !isSystem && (
         <View style={styles.aiHeader}>
           <View style={styles.aiAvatar}>
-            <Leaf size={16} color={colors.white} />
+            <Sparkles size={16} color={colors.white} />
           </View>
           <Text style={styles.senderName}>{message.user.name || 'AI 코치'}</Text>
         </View>
@@ -96,15 +98,13 @@ function MessageBubbleComponent({ message, onOpenReframing }: Props): React.Reac
         {formatTime(message.createdAt)}
       </Text>
 
-      {/* Reframing button for AI messages with reframing data */}
-      {hasReframing && onOpenReframing && (
-        <TouchableOpacity
-          style={styles.viewReframingButton}
-          onPress={() => onOpenReframing(message.reframingData!, message._id)}
-        >
-          <Text style={styles.viewReframingText}>관점 분석 보기</Text>
-          <ChevronRight size={16} color={colors.primary} />
-        </TouchableOpacity>
+      {/* Inline reframing card for AI messages with reframing data */}
+      {hasReframing && message.reframingData && (
+        <InlineReframingCard
+          reframingData={message.reframingData}
+          onShareWithPartner={onShareWithPartner}
+          onSaveToJournal={onSaveToJournal}
+        />
       )}
     </View>
   );
@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   messageText: {
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 20,
   },
   textUser: {
     color: colors.white,
@@ -190,17 +190,6 @@ const styles = StyleSheet.create({
   timestampRight: {
     textAlign: 'right',
     marginRight: 4,
-  },
-  viewReframingButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    marginLeft: 4,
-  },
-  viewReframingText: {
-    fontSize: 13,
-    color: colors.primary,
-    fontWeight: '500',
   },
 });
 

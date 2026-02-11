@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ActivityCard } from './ActivityCard';
 import { getFeaturedActivities, startActivity, type Activity } from '../api';
@@ -37,13 +37,19 @@ export function ActivitiesSection(): React.ReactElement | null {
     );
   };
 
+  const handleSeeAll = () => {
+    router.push('/(main)/activities');
+  };
+
   if (activities.length === 0) return null;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>커플 활동</Text>
-        <Text style={styles.seeAll}>전체보기</Text>
+        <TouchableOpacity onPress={handleSeeAll} activeOpacity={0.7}>
+          <Text style={styles.seeAll}>전체보기</Text>
+        </TouchableOpacity>
       </View>
       <ScrollView
         horizontal
@@ -72,13 +78,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
   },
   seeAll: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
     color: colors.primary,
   },

@@ -1,21 +1,24 @@
 /**
  * Main app layout with tab navigation.
- * 4 tabs: Home, Activities, Diary, Insights
+ * 4 tabs: Home, Activities, Journal, Insights
  */
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { House, CalendarHeart, MessageSquareHeart, BarChart3 } from 'lucide-react-native';
-import { colors } from '@/theme';
 
 export default function MainLayout(): React.ReactElement {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.primary,
+        tabBarActiveTintColor: '#7C9082',
         tabBarInactiveTintColor: '#ADADAD',
+        tabBarLabelStyle: {
+          fontSize: 10,
+        },
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
           borderTopColor: '#E8E4DF',
+          borderTopWidth: 1,
           height: 84,
           paddingTop: 12,
           paddingBottom: 28,
@@ -61,13 +64,19 @@ export default function MainLayout(): React.ReactElement {
         }}
       />
       <Tabs.Screen
-        name="chat"
+        name="record"
         options={{
           href: null,
         }}
       />
       <Tabs.Screen
-        name="record"
+        name="checkin-flow"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
         options={{
           href: null,
         }}
@@ -122,6 +131,12 @@ export default function MainLayout(): React.ReactElement {
       />
       <Tabs.Screen
         name="prompt-history"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="recording-preview"
         options={{
           href: null,
         }}

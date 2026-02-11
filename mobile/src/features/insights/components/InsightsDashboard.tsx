@@ -14,7 +14,7 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronDown, ChevronRight } from 'lucide-react-native';
+import { ChevronDown, ChevronRight, TrendingUp } from 'lucide-react-native';
 import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
 import { useDashboard, useWeeklySummaries } from '../hooks/useInsights';
@@ -25,6 +25,22 @@ import {
   EscalationTrendChart,
 } from './PatternChart';
 import { TriggerHighlight } from './TriggerHighlight';
+
+const TRIGGER_EMOJI_MAP: Record<string, string> = {
+  '직업': '💼', '일': '💼', '업무': '💼', '회사': '💼',
+  '시간': '⏰', '늦': '⏰', '약속': '⏰',
+  '가사': '🏠', '집안일': '🏠', '청소': '🏠', '설거지': '🏠', '빨래': '🏠',
+  '소통': '💬', '대화': '💬', '말': '💬', '얘기': '💬',
+  '돈': '💰', '재정': '💰', '비용': '💰', '지출': '💰',
+};
+
+function getTriggerEmoji(phrase: string): string {
+  const lower = phrase.toLowerCase();
+  for (const [keyword, emoji] of Object.entries(TRIGGER_EMOJI_MAP)) {
+    if (lower.includes(keyword)) return emoji;
+  }
+  return '⚡';
+}
 
 export function InsightsDashboard(): React.ReactElement {
   const { data: dashboard, loading, error, refetch } = useDashboard();
@@ -93,7 +109,10 @@ export function InsightsDashboard(): React.ReactElement {
 
         {/* Summary Card */}
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>주간 요약</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <TrendingUp size={16} color="rgba(255,255,255,0.8)" />
+            <Text style={styles.summaryTitle}>주간 요약</Text>
+          </View>
           <View style={styles.summaryStatsRow}>
             <View style={styles.summaryStat}>
               <Text style={styles.summaryStatValue}>{dashboard.total_sessions}</Text>
@@ -121,6 +140,7 @@ export function InsightsDashboard(): React.ReactElement {
 
       {/* Charts */}
       <View style={styles.section}>
+        <Text style={styles.sectionTitle}>소통 패턴</Text>
         <ConflictFrequencyChart data={dashboard.sessions_by_week} />
         <TopicDistributionChart data={dashboard.top_categories} />
         <EscalationTrendChart data={dashboard.escalation_by_week} />
@@ -133,12 +153,13 @@ export function InsightsDashboard(): React.ReactElement {
           <View style={styles.listCard}>
             {dashboard.top_triggers.map((trigger) => (
               <View key={trigger.phrase} style={styles.listItem}>
+                <Text style={styles.triggerEmoji}>{getTriggerEmoji(trigger.phrase)}</Text>
                 <TriggerHighlight
                   text={trigger.phrase}
                   triggerPhrases={[trigger.phrase]}
                   textStyle={styles.triggerText}
                 />
-                <Text style={styles.triggerCount}>{trigger.count}회</Text>
+                <Text style={styles.triggerCount}>{trigger.count}회 언급</Text>
               </View>
             ))}
           </View>
@@ -165,25 +186,6 @@ export function InsightsDashboard(): React.ReactElement {
   );
 }
 
-// --- Stats Card ---
-
-interface StatCardProps {
-  label: string;
-  value: string;
-  suffix?: string;
-}
-
-function StatCard({ label, value, suffix }: StatCardProps): React.ReactElement {
-  return (
-    <View style={styles.statCard}>
-      <Text style={styles.statValue}>
-        {value}
-        {suffix && <Text style={styles.statSuffix}>{suffix}</Text>}
-      </Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -255,7 +257,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   periodButtonText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: '#2D2D2D',
   },
@@ -294,8 +296,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '500',
     fontFamily: headingFont,
     color: colors.textPrimary,
     marginBottom: 12,
@@ -319,6 +321,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: colors.bgAiMessage,
+  },
+  triggerEmoji: {
+    fontSize: 18,
+    marginRight: 8,
   },
   triggerText: {
     fontSize: 15,

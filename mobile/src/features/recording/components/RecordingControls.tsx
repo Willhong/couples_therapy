@@ -48,6 +48,9 @@ export function RecordingControls({
       <Text style={[styles.timer, isRecording && styles.timerActive, isPaused && styles.timerPaused]}>
         {formatDuration(duration)}
       </Text>
+      {isRecording && (
+        <Text style={styles.recordingSubtitle}>대화를 녹음하고 있습니다</Text>
+      )}
 
       {/* Button row */}
       <View style={styles.buttonRow}>
@@ -103,9 +106,23 @@ export function RecordingControls({
         )}
       </View>
 
+      {/* Speaker labels */}
+      {isRecording && (
+        <View style={styles.speakerLabels}>
+          <View style={styles.speakerLabel}>
+            <View style={[styles.speakerDot, { backgroundColor: '#7C9082' }]} />
+            <Text style={styles.speakerName}>사라</Text>
+          </View>
+          <View style={styles.speakerLabel}>
+            <View style={[styles.speakerDot, { backgroundColor: '#C4A092' }]} />
+            <Text style={styles.speakerName}>마이클</Text>
+          </View>
+        </View>
+      )}
+
       {/* Hint text */}
       <Text style={styles.hint}>
-        {isPaused ? '일시정지 중' : isRecording ? '탭하여 녹음 중지' : '탭하여 녹음 시작'}
+        {isPaused ? '일시정지 중' : isRecording ? '탭하여 중지 및 처리' : '탭하여 녹음 시작'}
       </Text>
     </View>
   );
@@ -117,17 +134,17 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   timer: {
-    fontSize: 48,
+    fontSize: 56,
     fontWeight: '300',
-    color: colors.textTertiary,
+    color: colors.white,
     fontVariant: ['tabular-nums'],
     marginBottom: 32,
   },
   timerActive: {
-    color: colors.gray800,
+    color: colors.white,
   },
   timerPaused: {
-    color: colors.accentWarm,
+    color: '#C4A092',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -168,7 +185,7 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 36,
     borderWidth: 4,
-    borderColor: colors.error,
+    borderColor: '#C4A092',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -176,7 +193,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 4,
-    backgroundColor: colors.error,
+    backgroundColor: '#C4A092',
   },
   sideButton: {
     width: 48,
@@ -203,8 +220,33 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.white,
   },
+  recordingSubtitle: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.6)',
+    marginBottom: 16,
+  },
+  speakerLabels: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 24,
+    marginBottom: 16,
+  },
+  speakerLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  speakerDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  speakerName: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.7)',
+  },
   hint: {
     fontSize: 14,
-    color: colors.textTertiary,
+    color: colors.white,
   },
 });

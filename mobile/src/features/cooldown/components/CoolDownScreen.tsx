@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { X } from 'lucide-react-native';
 import { useCoolDown } from '../hooks/useCoolDown';
 import { BreathingGuide } from './BreathingGuide';
 import { colors, alpha } from '@/theme';
@@ -98,12 +99,19 @@ export function CoolDownScreen(): React.ReactElement {
         <View style={styles.darkContainer}>
           {/* Close Button */}
           <Pressable onPress={handleCancel} style={styles.closeButton}>
-            <Text style={styles.closeIcon}>✕</Text>
+            <X size={20} color={colors.white} />
           </Pressable>
 
           {/* Breathing Guide */}
           <View style={styles.breathingSection}>
             <BreathingGuide />
+          </View>
+
+          {/* Progress Dots */}
+          <View style={styles.progressDots}>
+            <View style={[styles.dot, styles.dotActive]} />
+            <View style={styles.dot} />
+            <View style={styles.dot} />
           </View>
 
           {/* Skip Button */}
@@ -229,18 +237,13 @@ const styles = StyleSheet.create({
   closeButton: {
     position: 'absolute',
     top: 20,
-    right: 20,
+    left: 20,
     width: 40,
     height: 40,
     borderRadius: 20,
     backgroundColor: alpha(colors.white, 0.125),
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  closeIcon: {
-    fontSize: 20,
-    color: colors.white,
-    fontWeight: '400',
   },
   skipButton: {
     position: 'absolute',
@@ -389,6 +392,22 @@ const styles = StyleSheet.create({
   },
   breathingSection: {
     paddingVertical: 20,
+  },
+  progressDots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 24,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: alpha(colors.white, 0.3),
+  },
+  dotActive: {
+    backgroundColor: colors.white,
   },
   sectionTitle: {
     fontSize: 18,

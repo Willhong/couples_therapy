@@ -12,7 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
+import { Mail, Lock, Eye, EyeOff, Heart } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 import { colors } from '@/theme';
@@ -107,6 +107,19 @@ export function SignInScreen(): React.ReactElement {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logo}>
+              <Heart size={36} color="#FFFFFF" fill="#FFFFFF" />
+            </View>
+          </View>
+
+          {/* App Name */}
+          <Text style={styles.appName}>투게더</Text>
+
+          {/* Tagline */}
+          <Text style={styles.tagline}>함께 더 깊은 연결을</Text>
+
           <Text style={styles.title}>다시 오셨군요</Text>
           <Text style={styles.subtitle}>
             함께하는 여정을 계속하려면 로그인하세요
@@ -214,11 +227,35 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 60,
+    paddingTop: 40,
     paddingBottom: 40,
   },
   header: {
     marginBottom: 32,
+    alignItems: 'center',
+  },
+  logoContainer: {
+    marginBottom: 16,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+    backgroundColor: '#7C9082',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  appName: {
+    fontSize: 28,
+    fontWeight: '700',
+    fontFamily: headingFont,
+    color: '#2D2D2D',
+    marginBottom: 4,
+  },
+  tagline: {
+    fontSize: 15,
+    color: '#8A8A8A',
+    marginBottom: 24,
   },
   title: {
     fontSize: 26,

@@ -34,3 +34,7 @@ export async function submitCheckIn(mood: number, note?: string): Promise<CheckI
   const response = await api.post<CheckIn>('/checkins/', { mood, note: note || '' });
   return response.data;
 }
+
+export async function submitDetailedCheckIn(answers: string[]): Promise<void> {
+  await api.post('/checkins/detailed/', { answers });
+}

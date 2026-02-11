@@ -6,7 +6,7 @@ export const headingFontBold = 'Fraunces_600SemiBold' as const;
 export const typography = {
   headingLg: {
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: '500',
     fontFamily: headingFont,
     lineHeight: 34,
   } as TextStyle,

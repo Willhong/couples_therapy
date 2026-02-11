@@ -111,7 +111,11 @@ export default function Home(): React.ReactElement {
           </View>
           <View>
             <Text style={styles.greeting}>좋은 아침이에요</Text>
-            <Text style={styles.name}>{displayName}</Text>
+            <Text style={styles.name}>
+              {hasPartner
+                ? `${displayName} & ${couple?.partner?.email?.split('@')[0] || '파트너'}`
+                : displayName}
+            </Text>
           </View>
         </View>
         <Pressable style={styles.bellButton}>

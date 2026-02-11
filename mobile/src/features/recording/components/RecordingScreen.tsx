@@ -14,9 +14,9 @@ import {
   Switch,
   SafeAreaView,
 } from 'react-native';
-import { ArrowLeft, Mic, Users } from 'lucide-react-native';
+import { ArrowLeft, Mic, Users, X, Settings } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { colors } from '@/theme';
+import { colors, alpha } from '@/theme';
 import { headingFont } from '@/theme/typography';
 import { useAudioRecording } from '../hooks/useAudioRecording';
 import { useWaveform } from '../hooks/useWaveform';
@@ -241,13 +241,20 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
 
   // ----- RENDER -----
 
-  // Red recording indicator bar
-  const renderRecordingIndicator = (): React.ReactElement | null => {
-    if (!isRecording) return null;
+  // Recording header with inline badge
+  const renderRecordingHeader = (): React.ReactElement => {
     return (
-      <View style={styles.recordingIndicator}>
-        <View style={styles.redDot} />
-        <Text style={styles.recordingIndicatorText}>녹음 중</Text>
+      <View style={styles.recordingHeader}>
+        <Pressable onPress={handleCancelRecording} style={styles.headerIconButton}>
+          <X size={24} color={colors.white} />
+        </Pressable>
+        <View style={styles.recordingBadge}>
+          <View style={styles.recordingBadgeDot} />
+          <Text style={styles.recordingBadgeText}>녹음 중</Text>
+        </View>
+        <Pressable style={styles.headerIconButton}>
+          <Settings size={24} color={colors.white} />
+        </Pressable>
       </View>
     );
   };
@@ -258,7 +265,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Pressable onPress={handleGoBack} style={styles.backButton}>
-            <ArrowLeft size={24} color={colors.gray700} />
+            <ArrowLeft size={24} color={colors.white} />
           </Pressable>
           <Text style={styles.headerTitle}>음성 기록</Text>
           <View style={styles.headerSpacer} />
@@ -316,11 +323,11 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
     return (
       <SafeAreaView style={styles.container}>
         {isRecording ? (
-          renderRecordingIndicator()
+          renderRecordingHeader()
         ) : (
           <View style={styles.header}>
             <Pressable onPress={handleCancelRecording} style={styles.backButton}>
-              <ArrowLeft size={24} color={colors.gray700} />
+              <ArrowLeft size={24} color={colors.white} />
             </Pressable>
             <Text style={styles.headerTitle}>녹음 준비</Text>
             <View style={styles.headerSpacer} />
@@ -437,7 +444,7 @@ export function RecordingScreen({ onTranscriptionComplete }: RecordingScreenProp
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: '#2D2D2D',
   },
   // Header with back button
   header: {
@@ -447,15 +454,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: alpha(colors.white, 0.15),
   },
   backButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.white,
+    backgroundColor: alpha(colors.white, 0.15),
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: alpha(colors.white, 0.25),
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -463,30 +470,46 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     fontFamily: headingFont,
-    color: colors.textPrimary,
+    color: colors.white,
   },
   headerSpacer: {
     width: 32,
   },
-  // Recording indicator
-  recordingIndicator: {
+  // Recording header (during recording)
+  recordingHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.errorBg,
-    paddingVertical: 8,
-    gap: 8,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  redDot: {
+  headerIconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  recordingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(196,64,146,0.31)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    gap: 6,
+  },
+  recordingBadgeDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: colors.error,
   },
-  recordingIndicatorText: {
+  recordingBadgeText: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.dangerText,
+    color: colors.white,
   },
   // Mode selection
   modeSelectContainer: {
@@ -566,7 +589,7 @@ const styles = StyleSheet.create({
   },
   guidedToggleLabel: {
     fontSize: 15,
-    color: colors.gray700,
+    color: colors.white,
     fontWeight: '500',
   },
   waveformSection: {

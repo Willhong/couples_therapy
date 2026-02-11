@@ -17,6 +17,13 @@ export async function getFeaturedActivities(): Promise<Activity[]> {
   return response.data;
 }
 
+export async function getActivitiesByCategory(category: string): Promise<Activity[]> {
+  const response = await api.get<Activity[]>('/activities/featured/', {
+    params: { category },
+  });
+  return response.data;
+}
+
 export async function startActivity(activityId: number): Promise<void> {
   await api.post(`/activities/${activityId}/start/`);
 }
