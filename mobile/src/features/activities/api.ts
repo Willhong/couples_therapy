@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import type { Recommendation, EffectivenessItem } from './types';
 
 export interface Activity {
   id: number;
@@ -24,6 +25,32 @@ export async function getActivitiesByCategory(category: string): Promise<Activit
   return response.data;
 }
 
-export async function startActivity(activityId: number): Promise<void> {
-  await api.post(`/activities/${activityId}/start/`);
+export interface CoupleActivity {
+  id: number;
+  activity: Activity;
+  couple: number;
+  status: 'in_progress' | 'completed';
+  started_at: string;
+  completed_at: string | null;
+  rating: number | null;
+}
+
+export async function startActivity(activityId: number): Promise<CoupleActivity> {
+  const response = await api.post<CoupleActivity>(`/activities/${activityId}/start/`);
+  return response.data;
+}
+
+export async function completeActivity(activityId: number, rating?: number): Promise<CoupleActivity> {
+  const response = await api.post<CoupleActivity>(`/activities/${activityId}/complete/`, { rating });
+  return response.data;
+}
+
+export async function getRecommendations(): Promise<Recommendation[]> {
+  const response = await api.get<Recommendation[]>('/activities/recommendations/');
+  return response.data;
+}
+
+export async function getEffectiveness(days: number = 30): Promise<EffectivenessItem[]> {
+  const response = await api.get<EffectivenessItem[]>('/activities/effectiveness/', { params: { days } });
+  return response.data;
 }

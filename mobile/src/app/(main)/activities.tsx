@@ -6,9 +6,15 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SlidersHorizontal } from 'lucide-react-native';
 import { colors, headingFont } from '@/theme';
-import { getFeaturedActivities, getActivitiesByCategory, startActivity, type Activity } from '@/features/activities/api';
+import { getFeaturedActivities, getActivitiesByCategory, startActivity, completeActivity, getEffectiveness, type Activity, type CoupleActivity } from '@/features/activities/api';
 import { FeaturedActivityCard } from '@/features/activities/components/FeaturedActivityCard';
 import { ActivityListItem } from '@/features/activities/components/ActivityListItem';
+import { ActivityRatingModal } from '@/features/activities/components/ActivityRatingModal';
+import { RecommendationCard } from '@/features/activities/components/RecommendationCard';
+import { EffectivenessChart } from '@/features/activities/components/EffectivenessChart';
+import { useRecommendations } from '@/features/activities/hooks/useRecommendations';
+import type { Recommendation } from '@/features/activities/types';
+import type { EffectivenessItem } from '@/features/activities/types';
 
 type TabType = '추천' | '소통' | '친밀감';
 
@@ -29,10 +35,28 @@ export default function ActivitiesRoute(): React.ReactElement {
   const [activeTab, setActiveTab] = useState<TabType>('추천');
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [inProgressActivities, setInProgressActivities] = useState<CoupleActivity[]>([]);
+  const [ratingModalVisible, setRatingModalVisible] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<CoupleActivity | null>(null);
+  const [effectiveness, setEffectiveness] = useState<EffectivenessItem[]>([]);
+  const { data: recommendations } = useRecommendations();
 
   useEffect(() => {
     loadActivities();
   }, [activeTab]);
+
+  useEffect(() => {
+    loadEffectiveness();
+  }, []);
+
+  async function loadEffectiveness() {
+    try {
+      const data = await getEffectiveness();
+      setEffectiveness(data);
+    } catch {
+      // Falls back to empty list
+    }
+  }
 
   async function loadActivities() {
     setLoading(true);
@@ -50,6 +74,13 @@ export default function ActivitiesRoute(): React.ReactElement {
   }
 
   const handleActivityPress = async (activity: Activity) => {
+    const inProgress = inProgressActivities.find((ca) => ca.activity.id === activity.id);
+    if (inProgress) {
+      setSelectedActivity(inProgress);
+      setRatingModalVisible(true);
+      return;
+    }
+
     Alert.alert(
       activity.title,
       activity.description,
@@ -59,7 +90,8 @@ export default function ActivitiesRoute(): React.ReactElement {
           text: '시작하기',
           onPress: async () => {
             try {
-              await startActivity(activity.id);
+              const coupleActivity = await startActivity(activity.id);
+              setInProgressActivities((prev) => [...prev, coupleActivity]);
               Alert.alert('시작!', `"${activity.title}" 활동을 시작했습니다.`);
             } catch {
               Alert.alert('오류', '활동을 시작할 수 없습니다.');
@@ -68,6 +100,54 @@ export default function ActivitiesRoute(): React.ReactElement {
         },
       ]
     );
+  };
+
+  const handleRatingSubmit = async (rating: number) => {
+    if (!selectedActivity) return;
+    try {
+      await completeActivity(selectedActivity.id, rating);
+      setInProgressActivities((prev) => prev.filter((ca) => ca.id !== selectedActivity.id));
+      setRatingModalVisible(false);
+      setSelectedActivity(null);
+      Alert.alert('완료!', '활동을 완료했습니다. 평가해 주셔서 감사합니다!');
+    } catch {
+      Alert.alert('오류', '활동을 완료할 수 없습니다.');
+    }
+  };
+
+  const handleRecommendationPress = (recommendation: Recommendation) => {
+    Alert.alert(
+      recommendation.title,
+      recommendation.reason,
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '시작하기',
+          onPress: async () => {
+            try {
+              const coupleActivity = await startActivity(recommendation.item_id);
+              setInProgressActivities((prev) => [...prev, coupleActivity]);
+              Alert.alert('시작!', `"${recommendation.title}" 활동을 시작했습니다.`);
+            } catch {
+              Alert.alert('오류', '활동을 시작할 수 없습니다.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleRatingSkip = async () => {
+    if (!selectedActivity) return;
+    try {
+      await completeActivity(selectedActivity.id);
+      setInProgressActivities((prev) => prev.filter((ca) => ca.id !== selectedActivity.id));
+      setRatingModalVisible(false);
+      setSelectedActivity(null);
+      Alert.alert('완료!', '활동을 완료했습니다.');
+    } catch {
+      Alert.alert('오류', '활동을 완료할 수 없습니다.');
+    }
   };
 
   return (
@@ -103,8 +183,20 @@ export default function ActivitiesRoute(): React.ReactElement {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Featured Activity Card */}
-        <FeaturedActivityCard activity={FEATURED_ACTIVITY} />
+        {/* Recommendations (추천 tab) or Featured */}
+        {activeTab === '추천' && recommendations.length > 0 ? (
+          <View style={styles.activityList}>
+            {recommendations.map((rec) => (
+              <RecommendationCard
+                key={`${rec.type}-${rec.item_id}`}
+                recommendation={rec}
+                onPress={handleRecommendationPress}
+              />
+            ))}
+          </View>
+        ) : (
+          <FeaturedActivityCard activity={FEATURED_ACTIVITY} />
+        )}
 
         {/* Activity List */}
         <View style={styles.activityList}>
@@ -117,7 +209,17 @@ export default function ActivitiesRoute(): React.ReactElement {
             />
           ))}
         </View>
+
+        {/* Effectiveness Chart */}
+        <EffectivenessChart data={effectiveness} />
       </ScrollView>
+
+      <ActivityRatingModal
+        visible={ratingModalVisible}
+        activityTitle={selectedActivity?.activity.title ?? ''}
+        onSubmit={handleRatingSubmit}
+        onSkip={handleRatingSkip}
+      />
     </SafeAreaView>
   );
 }

@@ -25,6 +25,8 @@ import {
   EscalationTrendChart,
 } from './PatternChart';
 import { TriggerHighlight } from './TriggerHighlight';
+import { HealthScoreCard } from './HealthScoreCard';
+import { HealthScoreChart } from './HealthScoreChart';
 
 const TRIGGER_EMOJI_MAP: Record<string, string> = {
   '직업': '💼', '일': '💼', '업무': '💼', '회사': '💼',
@@ -106,6 +108,10 @@ export function InsightsDashboard(): React.ReactElement {
             <ChevronDown size={16} color={colors.textSecondary} />
           </Pressable>
         </View>
+
+        {/* Health Score */}
+        <HealthScoreCard />
+        <HealthScoreChart />
 
         {/* Summary Card */}
         <View style={styles.summaryCard}>

@@ -49,7 +49,7 @@ class CheckInCreateSerializer(serializers.Serializer):
 class DetailedCheckInCreateSerializer(serializers.Serializer):
     """Serializer for creating a detailed check-in."""
     answers = serializers.ListField(
-        child=serializers.CharField(max_length=1000),
+        child=serializers.CharField(max_length=1000, allow_blank=True),
         min_length=1,
         max_length=20,
     )

@@ -29,8 +29,16 @@ export function CheckInSection({ onCheckInComplete }: Props): React.ReactElement
       const result = await submitCheckIn(mood);
       setTodayCheckIn(result);
       onCheckInComplete?.();
-    } catch {
-      // Reset on failure
+    } catch (err: any) {
+      if (err?.response?.status === 400) {
+        // Already checked in today - refresh state
+        const existing = await getTodayCheckIn();
+        if (existing) {
+          setTodayCheckIn(existing);
+          onCheckInComplete?.();
+          return;
+        }
+      }
       setSelectedMood(null);
     } finally {
       setSubmitting(false);

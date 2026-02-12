@@ -141,6 +141,18 @@ export default function MainLayout(): React.ReactElement {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="reports"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="report/[id]"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

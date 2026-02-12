@@ -8,6 +8,8 @@ import type {
   WeeklySummaryData,
   SessionInsight,
   PaginatedResponse,
+  HealthScoreData,
+  HealthScoreHistoryResponse,
 } from '../types';
 
 /**
@@ -93,6 +95,65 @@ export function useSessionInsight(conversationId: string | null) {
       setLoading(false);
     }
   }, [conversationId]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+  return { data, loading, error, refetch: fetch };
+}
+
+/**
+ * Fetch health score for the couple.
+ */
+export function useHealthScore(coupleId?: number) {
+  const [data, setData] = useState<HealthScoreData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get<HealthScoreData>('/patterns/health-score/');
+      setData(response.data);
+    } catch (err: unknown) {
+      setError('건강 점수를 불러오지 못했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+  return { data, loading, error, refetch: fetch };
+}
+
+/**
+ * Fetch health score history.
+ */
+export function useHealthScoreHistory(days: number = 30) {
+  const [data, setData] = useState<HealthScoreHistoryResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get<HealthScoreHistoryResponse>(
+        '/patterns/health-score/history/',
+        { params: { days } },
+      );
+      setData(response.data);
+    } catch (err: unknown) {
+      setError('건강 점수 기록을 불러오지 못했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, [days]);
 
   useEffect(() => {
     fetch();

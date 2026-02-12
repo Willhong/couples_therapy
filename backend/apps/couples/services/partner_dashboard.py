@@ -71,7 +71,7 @@ class PartnerDashboardService:
     def _get_user_stats(cls, user_id: int) -> dict:
         """Full stats for the requesting user."""
         from apps.checkins.models import DailyCheckIn, Streak
-        from apps.conversations.models import Conversation
+        from apps.chat.models import Conversation
 
         fourteen_days_ago = timezone.now().date() - timedelta(days=14)
 
@@ -100,7 +100,7 @@ class PartnerDashboardService:
     def _get_partner_stats(cls, partner) -> dict:
         """Limited stats for partner - privacy-respecting."""
         from apps.checkins.models import DailyCheckIn, Streak
-        from apps.conversations.models import Conversation
+        from apps.chat.models import Conversation
 
         fourteen_days_ago = timezone.now().date() - timedelta(days=14)
 

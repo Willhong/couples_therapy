@@ -15,9 +15,11 @@ import { usePartner } from '@/hooks/usePartner';
 import { LiveConsentFlow } from '@/features/recording/components/LiveConsentFlow';
 import { ConversationList } from '@/features/conversations';
 import { DailyPromptCard } from '@/features/prompts';
-import { StreakCard, CheckInSection } from '@/features/checkin';
+import { StreakCard, CheckInSection, MoodInsightsCard } from '@/features/checkin';
 import { ActivitiesSection } from '@/features/activities';
 import { InsightsPreviewCard } from '@/features/insights/components/InsightsPreviewCard';
+import { PartnerDashboardCard } from '@/features/couples';
+import { useUnreadCount as useReportUnreadCount } from '@/features/intelligence';
 import { api } from '@/lib/api';
 import type { RecordingMode, TranscriptResult } from '@/features/recording/types';
 import { colors, alpha } from '@/theme';
@@ -33,6 +35,7 @@ export default function Home(): React.ReactElement {
   const [showLiveConsent, setShowLiveConsent] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [streakKey, setStreakKey] = useState(0);
+  const { count: reportUnreadCount } = useReportUnreadCount();
 
   // Get display name from email
   const displayName = user?.email?.split('@')[0] || '사용자';
@@ -134,6 +137,9 @@ export default function Home(): React.ReactElement {
         {/* Daily Check-in */}
         <CheckInSection onCheckInComplete={() => setStreakKey((k) => k + 1)} />
 
+        {/* Mood Insights */}
+        <MoodInsightsCard />
+
         {/* Couple Activities */}
         {hasPartner && <ActivitiesSection />}
 
@@ -158,15 +164,7 @@ export default function Home(): React.ReactElement {
             <Text style={styles.partnerInviteArrow}>›</Text>
           </Pressable>
         ) : (
-          <View style={styles.partnerConnectedCard}>
-            <View style={styles.partnerConnectedIndicator} />
-            <View style={styles.partnerConnectedContent}>
-              <Text style={styles.partnerConnectedLabel}>연결됨</Text>
-              <Text style={styles.partnerConnectedEmail}>
-                {couple?.partner?.email || '파트너'}
-              </Text>
-            </View>
-          </View>
+          <PartnerDashboardCard />
         )}
 
         {/* Shared content notification */}
@@ -186,6 +184,27 @@ export default function Home(): React.ReactElement {
             </View>
             <View style={styles.sharedBadge}>
               <Text style={styles.sharedBadgeText}>{unreadCount}</Text>
+            </View>
+          </Pressable>
+        )}
+
+        {/* Unread report notification */}
+        {hasPartner && reportUnreadCount > 0 && (
+          <Pressable
+            style={styles.sharedNotificationCard}
+            onPress={() => router.push('/(main)/reports' as any)}
+          >
+            <View style={styles.sharedNotificationContent}>
+              <Text style={styles.sharedNotificationIcon}>📋</Text>
+              <View style={styles.sharedNotificationText}>
+                <Text style={styles.sharedNotificationTitle}>
+                  새로운 분석 리포트 {reportUnreadCount}개
+                </Text>
+                <Text style={styles.sharedNotificationSubtitle}>탭하여 확인하기</Text>
+              </View>
+            </View>
+            <View style={styles.sharedBadge}>
+              <Text style={styles.sharedBadgeText}>{reportUnreadCount}</Text>
             </View>
           </Pressable>
         )}
@@ -331,35 +350,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.warning,
     marginLeft: 8,
-  },
-  partnerConnectedCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.successBg,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.successBg,
-  },
-  partnerConnectedIndicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: colors.success,
-    marginRight: 12,
-  },
-  partnerConnectedContent: {
-    flex: 1,
-  },
-  partnerConnectedLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.success,
-    marginBottom: 2,
-  },
-  partnerConnectedEmail: {
-    fontSize: 14,
-    color: colors.success,
   },
   sharedNotificationCard: {
     flexDirection: 'row',

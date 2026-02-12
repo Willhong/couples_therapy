@@ -18,7 +18,7 @@ import { ArrowLeft, X, ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
-import { submitDetailedCheckIn } from '../api';
+import { submitDetailedCheckIn, getTodayCheckIn } from '../api';
 
 const QUESTIONS = [
   '이번 주 파트너가 사랑받는다고\n느끼게 해준 일이 있나요?',
@@ -35,6 +35,17 @@ export function CheckInFlow(): React.ReactElement {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>(Array(TOTAL_STEPS).fill(''));
   const [submitting, setSubmitting] = useState(false);
+
+  // Redirect if already checked in today
+  React.useEffect(() => {
+    getTodayCheckIn().then((checkin) => {
+      if (checkin) {
+        Alert.alert('알림', '오늘 이미 체크인을 완료했습니다.', [
+          { text: '확인', onPress: () => router.back() },
+        ]);
+      }
+    }).catch(() => {});
+  }, [router]);
 
   const currentAnswer = answers[currentStep];
 
@@ -68,8 +79,15 @@ export function CheckInFlow(): React.ReactElement {
       try {
         await submitDetailedCheckIn(answers);
         router.back();
-      } catch {
-        Alert.alert('오류', '체크인을 저장하지 못했습니다. 다시 시도해 주세요.');
+      } catch (err: any) {
+        const detail = err?.response?.data?.detail;
+        if (err?.response?.status === 400 && detail?.includes('이미')) {
+          Alert.alert('알림', '오늘 이미 체크인을 완료했습니다.', [
+            { text: '확인', onPress: () => router.back() },
+          ]);
+        } else {
+          Alert.alert('오류', '체크인을 저장하지 못했습니다. 다시 시도해 주세요.');
+        }
       } finally {
         setSubmitting(false);
       }

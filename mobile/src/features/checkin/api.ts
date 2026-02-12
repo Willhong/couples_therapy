@@ -38,3 +38,18 @@ export async function submitCheckIn(mood: number, note?: string): Promise<CheckI
 export async function submitDetailedCheckIn(answers: string[]): Promise<void> {
   await api.post('/checkins/detailed/', { answers });
 }
+
+export interface MoodInsightsData {
+  days: number;
+  count: number;
+  avg_mood: number;
+  week_avg_mood: number;
+  trend: 'improving' | 'stable' | 'declining';
+  daily_moods: Array<{ date: string; avg_mood: number }>;
+  insights: string[];
+}
+
+export async function getMoodInsights(days: number = 30): Promise<MoodInsightsData> {
+  const response = await api.get<MoodInsightsData>('/checkins/mood-insights/', { params: { days } });
+  return response.data;
+}

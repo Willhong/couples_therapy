@@ -60,6 +60,32 @@ export interface SessionInsight {
   created_at: string;
 }
 
+/** Health score from /api/v1/patterns/health-score/ */
+export interface HealthScoreData {
+  score: number; // 0-100
+  grade: 'excellent' | 'good' | 'fair' | 'poor' | 'critical';
+  components: {
+    mood: number;
+    escalation: number;
+    engagement: number;
+    pattern_severity: number;
+    cooldown: number;
+  };
+  trend: 'improving' | 'stable' | 'declining';
+  insights: string[];
+}
+
+export interface HealthScoreHistoryItem {
+  date: string;
+  score: number;
+  grade: string;
+}
+
+export interface HealthScoreHistoryResponse {
+  days: number;
+  history: HealthScoreHistoryItem[];
+}
+
 /** Paginated response wrapper */
 export interface PaginatedResponse<T> {
   count: number;
