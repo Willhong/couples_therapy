@@ -341,3 +341,34 @@ class AudioMalformedInputEdgeCaseTest(TestCase):
         self.assertNotEqual(response.status_code, 500,
                             "Server returned 500 for empty upload body")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class QuickTranscribeTest(TestCase):
+    """Test quick-transcribe endpoint for voice input."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='transcribe@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.url = '/api/v1/audio/quick-transcribe/'
+
+    def test_no_audio_file_returns_400(self):
+        """POST without audio file should return 400."""
+        response = self.client.post(self.url, {}, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('detail', response.data)
+
+    def test_unauthenticated_returns_401(self):
+        """Unauthenticated request should return 401."""
+        self.client.force_authenticate(user=None)
+        audio = SimpleUploadedFile('test.m4a', b'fake audio content', content_type='audio/m4a')
+        response = self.client.post(self.url, {'audio': audio}, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_method_returns_405(self):
+        """GET should return 405 Method Not Allowed."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

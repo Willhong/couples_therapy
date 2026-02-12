@@ -153,6 +153,24 @@ export default function MainLayout(): React.ReactElement {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="partner-settings"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="privacy-settings"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="notification-settings"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

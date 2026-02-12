@@ -52,3 +52,18 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class NotificationPreferences(models.Model):
+    """User notification preferences."""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='notification_preferences')
+    push_enabled = models.BooleanField(default=True)
+    daily_prompt_enabled = models.BooleanField(default=True)
+    partner_activity_enabled = models.BooleanField(default=True)
+    weekly_insights_enabled = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'notification_preferences'
+
+    def __str__(self):
+        return f"NotificationPreferences for {self.user.email}"

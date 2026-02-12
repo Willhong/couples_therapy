@@ -99,19 +99,19 @@ export default function SettingsScreen(): React.ReactElement {
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>계정</Text>
           <View style={styles.card}>
-            <Pressable style={styles.listItem}>
+            <Pressable style={styles.listItem} onPress={() => router.push('/(main)/partner-settings' as any)}>
               <Users size={20} color={colors.textPrimary} />
               <Text style={styles.listItemText}>파트너 연결</Text>
               <ChevronRight size={20} color={colors.textTertiary} />
             </Pressable>
             <View style={styles.separator} />
-            <Pressable style={styles.listItem}>
+            <Pressable style={styles.listItem} onPress={() => router.push('/(main)/notification-settings' as any)}>
               <Bell size={20} color={colors.textPrimary} />
               <Text style={styles.listItemText}>알림</Text>
               <ChevronRight size={20} color={colors.textTertiary} />
             </Pressable>
             <View style={styles.separator} />
-            <Pressable style={styles.listItem}>
+            <Pressable style={styles.listItem} onPress={() => router.push('/(main)/privacy-settings' as any)}>
               <Lock size={20} color={colors.textPrimary} />
               <Text style={styles.listItemText}>개인정보 및 보안</Text>
               <ChevronRight size={20} color={colors.textTertiary} />

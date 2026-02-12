@@ -704,3 +704,94 @@ class PushTokenEdgeCaseTest(ThrottleMixin, TestCase):
         self.assertNotEqual(response.status_code, 500,
                             "Server returned 500 for unregister when no token")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class NotificationPreferencesTest(ThrottleMixin, TestCase):
+    """Test notification preferences CRUD (auto-create pattern)."""
+
+    def setUp(self):
+        super().setUp()
+        self.user = User.objects.create_user(
+            email='notif@example.com',
+            password='TestPass123!'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.url = '/api/v1/users/me/notification-preferences/'
+
+    def test_get_creates_defaults(self):
+        """GET auto-creates preferences with all defaults True."""
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['push_enabled'])
+        self.assertTrue(response.data['daily_prompt_enabled'])
+        self.assertTrue(response.data['partner_activity_enabled'])
+        self.assertTrue(response.data['weekly_insights_enabled'])
+
+    def test_get_returns_existing(self):
+        """GET returns existing preferences without resetting them."""
+        from apps.users.models import NotificationPreferences
+        NotificationPreferences.objects.create(
+            user=self.user,
+            push_enabled=False,
+            daily_prompt_enabled=True,
+            partner_activity_enabled=False,
+            weekly_insights_enabled=True,
+        )
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['push_enabled'])
+        self.assertFalse(response.data['partner_activity_enabled'])
+
+    def test_patch_updates_single_field(self):
+        """PATCH updates only the specified field."""
+        # First GET to create defaults
+        self.client.get(self.url)
+
+        response = self.client.patch(self.url, {'push_enabled': False}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['push_enabled'])
+        # Other fields unchanged
+        self.assertTrue(response.data['daily_prompt_enabled'])
+        self.assertTrue(response.data['partner_activity_enabled'])
+        self.assertTrue(response.data['weekly_insights_enabled'])
+
+    def test_patch_updates_multiple_fields(self):
+        """PATCH can update multiple fields at once."""
+        self.client.get(self.url)
+
+        response = self.client.patch(self.url, {
+            'daily_prompt_enabled': False,
+            'weekly_insights_enabled': False,
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['daily_prompt_enabled'])
+        self.assertFalse(response.data['weekly_insights_enabled'])
+        self.assertTrue(response.data['push_enabled'])
+
+    def test_patch_invalid_field_type(self):
+        """PATCH with non-boolean value should return 400."""
+        self.client.get(self.url)
+
+        response = self.client.patch(self.url, {'push_enabled': 'not-a-bool'}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_unauthenticated_get(self):
+        """Unauthenticated GET should return 401."""
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_unauthenticated_patch(self):
+        """Unauthenticated PATCH should return 401."""
+        self.client.force_authenticate(user=None)
+        response = self.client.patch(self.url, {'push_enabled': False}, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

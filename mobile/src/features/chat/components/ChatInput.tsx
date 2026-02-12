@@ -80,7 +80,11 @@ export function ChatInput({
           </TouchableOpacity>
         </View>
         <View style={styles.quickActions}>
-          <VoiceInputButton />
+          <VoiceInputButton onTranscript={(transcribedText) => {
+            const current = text;
+            const newText = current ? current + ' ' + transcribedText : transcribedText;
+            setText(newText);
+          }} />
           <TopicRecommendButton />
         </View>
       </View>

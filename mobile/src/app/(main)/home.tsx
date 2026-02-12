@@ -121,7 +121,7 @@ export default function Home(): React.ReactElement {
             </Text>
           </View>
         </View>
-        <Pressable style={styles.bellButton}>
+        <Pressable style={styles.bellButton} onPress={() => router.push('/(main)/notification-settings' as any)}>
           <Bell size={20} color={colors.textPrimary} />
         </Pressable>
       </View>

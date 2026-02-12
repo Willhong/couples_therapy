@@ -2,57 +2,22 @@
  * Prompt History route - displays history of daily prompts and responses
  */
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { colors, headingFont } from '@/theme';
-
-interface Response {
-  username: string;
-  text: string;
-}
-
-interface HistoryItem {
-  id: string;
-  date: string;
-  prompt: string;
-  responses: Response[];
-}
-
-const MOCK_HISTORY: HistoryItem[] = [
-  {
-    id: '1',
-    date: '2025년 1월 14일',
-    prompt: '오늘 파트너에게 가장 감사한 점은 무엇인가요?',
-    responses: [
-      {
-        username: 'hong',
-        text: '오늘 피곤한 나를 위해 저녁을 준비해줘서 감사해요.',
-      },
-      {
-        username: 'partner',
-        text: '항상 내 이야기를 끝까지 들어줘서 감사해요.',
-      },
-    ],
-  },
-  {
-    id: '2',
-    date: '2025년 1월 13일',
-    prompt: '최근 파트너와의 대화에서 가장 기억에 남는 순간은?',
-    responses: [
-      {
-        username: 'hong',
-        text: '산책하면서 미래 계획에 대해 이야기한 것이 좋았어요.',
-      },
-      {
-        username: 'partner',
-        text: '같이 요리하면서 자연스럽게 대화한 시간이 좋았어요.',
-      },
-    ],
-  },
-];
+import { usePromptHistory } from '@/features/prompts/hooks/usePromptHistory';
 
 export default function PromptHistoryRoute(): React.ReactElement {
+  const { history, loading, error, refetch } = usePromptHistory();
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const handleRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
   return (
     <>
       <Stack.Screen
@@ -71,29 +36,51 @@ export default function PromptHistoryRoute(): React.ReactElement {
         }}
       />
       <SafeAreaView style={styles.container} edges={['left', 'right']}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* History Items */}
-          <View style={styles.historyList}>
-            {MOCK_HISTORY.map((item) => (
-              <View key={item.id} style={styles.historyCard}>
-                <Text style={styles.date}>{item.date}</Text>
-                <Text style={styles.prompt}>{item.prompt}</Text>
-                <View style={styles.responsesContainer}>
-                  {item.responses.map((response, index) => (
-                    <View key={index} style={styles.responseCard}>
-                      <Text style={styles.username}>{response.username}</Text>
-                      <Text style={styles.responseText}>{response.text}</Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            ))}
+        {loading && !history.length ? (
+          <View style={styles.centerContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
-        </ScrollView>
+        ) : error && !history.length ? (
+          <View style={styles.centerContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : history.length === 0 ? (
+          <View style={styles.centerContainer}>
+            <Text style={styles.emptyIcon}>💬</Text>
+            <Text style={styles.emptyTitle}>아직 교환된 대화가 없어요</Text>
+            <Text style={styles.emptyDescription}>
+              매일 새로운 질문에 파트너와 함께 답해보세요
+            </Text>
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            }
+          >
+            <View style={styles.historyList}>
+              {history.map((item) => (
+                <View key={item.id} style={styles.historyCard}>
+                  <Text style={styles.date}>{item.assigned_date}</Text>
+                  <Text style={styles.prompt}>{item.prompt.text_ko}</Text>
+                  <View style={styles.responsesContainer}>
+                    {item.responses.map((response, index) => (
+                      <View key={index} style={styles.responseCard}>
+                        <Text style={styles.username}>
+                          {response.user_email.split('@')[0]}
+                        </Text>
+                        <Text style={styles.responseText}>{response.response_text}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        )}
       </SafeAreaView>
     </>
   );
@@ -103,6 +90,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bgPage,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
   },
   scrollView: {
     flex: 1,
@@ -152,5 +145,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#374151',
     lineHeight: 18,
+  },
+  errorText: {
+    fontSize: 16,
+    color: colors.error || '#E57373',
+    textAlign: 'center',
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 8,
+  },
+  emptyDescription: {
+    fontSize: 15,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });

@@ -44,8 +44,17 @@ function getTriggerEmoji(phrase: string): string {
   return '⚡';
 }
 
+const PERIOD_OPTIONS = [
+  { label: '이번 주', days: 7 },
+  { label: '2주', days: 14 },
+  { label: '4주', days: 28 },
+  { label: '이번 달', days: 30 },
+];
+
 export function InsightsDashboard(): React.ReactElement {
-  const { data: dashboard, loading, error, refetch } = useDashboard();
+  const [selectedDays, setSelectedDays] = React.useState(28);
+  const [showPeriodPicker, setShowPeriodPicker] = React.useState(false);
+  const { data: dashboard, loading, error, refetch } = useDashboard(selectedDays);
   const { data: weeklySummaries } = useWeeklySummaries();
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -103,11 +112,41 @@ export function InsightsDashboard(): React.ReactElement {
         {/* Header */}
         <View style={styles.headerRow}>
           <Text style={styles.header}>인사이트</Text>
-          <Pressable style={styles.periodButton}>
-            <Text style={styles.periodButtonText}>이번 주</Text>
+          <Pressable style={styles.periodButton} onPress={() => setShowPeriodPicker(!showPeriodPicker)}>
+            <Text style={styles.periodButtonText}>
+              {PERIOD_OPTIONS.find(o => o.days === selectedDays)?.label || '4주'}
+            </Text>
             <ChevronDown size={16} color={colors.textSecondary} />
           </Pressable>
         </View>
+
+        {/* Period Picker */}
+        {showPeriodPicker && (
+          <View style={styles.periodPicker}>
+            {PERIOD_OPTIONS.map((option) => (
+              <Pressable
+                key={option.days}
+                style={[
+                  styles.periodOption,
+                  selectedDays === option.days && styles.periodOptionActive,
+                ]}
+                onPress={() => {
+                  setSelectedDays(option.days);
+                  setShowPeriodPicker(false);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.periodOptionText,
+                    selectedDays === option.days && styles.periodOptionTextActive,
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
 
         {/* Health Score */}
         <HealthScoreCard />
@@ -266,6 +305,32 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: '#2D2D2D',
+  },
+  periodPicker: {
+    flexDirection: 'row',
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  periodOption: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  periodOptionActive: {
+    backgroundColor: colors.primary,
+  },
+  periodOptionText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  periodOptionTextActive: {
+    color: colors.white,
   },
   // Summary card
   summaryCard: {

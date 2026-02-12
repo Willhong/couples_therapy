@@ -15,7 +15,7 @@ import type {
 /**
  * Fetch aggregated dashboard data.
  */
-export function useDashboard() {
+export function useDashboard(days: number = 28) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,14 +24,14 @@ export function useDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get<DashboardData>('/patterns/dashboard/');
+      const response = await api.get<DashboardData>('/patterns/dashboard/', { params: { days } });
       setData(response.data);
     } catch (err: unknown) {
       setError('인사이트 데이터를 불러오지 못했습니다.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [days]);
 
   useEffect(() => {
     fetch();

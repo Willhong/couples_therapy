@@ -39,6 +39,7 @@ export default function ActivitiesRoute(): React.ReactElement {
   const [ratingModalVisible, setRatingModalVisible] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<CoupleActivity | null>(null);
   const [effectiveness, setEffectiveness] = useState<EffectivenessItem[]>([]);
+  const [sortByNew, setSortByNew] = useState(true);
   const { data: recommendations } = useRecommendations();
 
   useEffect(() => {
@@ -155,7 +156,21 @@ export default function ActivitiesRoute(): React.ReactElement {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>활동</Text>
-        <TouchableOpacity style={styles.filterButton} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={[styles.filterButton, !sortByNew && styles.filterButtonActive]}
+          activeOpacity={0.7}
+          onPress={() => {
+            Alert.alert(
+              '정렬',
+              '활동 정렬 방식을 선택하세요',
+              [
+                { text: '최신순', onPress: () => setSortByNew(true) },
+                { text: '인기순', onPress: () => setSortByNew(false) },
+                { text: '취소', style: 'cancel' },
+              ]
+            );
+          }}
+        >
           <SlidersHorizontal size={20} color={colors.textPrimary} strokeWidth={2} />
         </TouchableOpacity>
       </View>
@@ -200,14 +215,19 @@ export default function ActivitiesRoute(): React.ReactElement {
 
         {/* Activity List */}
         <View style={styles.activityList}>
-          {activities.map((activity, index) => (
-            <ActivityListItem
-              key={activity.id}
-              activity={activity}
-              index={index}
-              onPress={handleActivityPress}
-            />
-          ))}
+          {(() => {
+            const sortedActivities = sortByNew
+              ? activities
+              : [...activities].reverse();
+            return sortedActivities.map((activity, index) => (
+              <ActivityListItem
+                key={activity.id}
+                activity={activity}
+                index={index}
+                onPress={handleActivityPress}
+              />
+            ));
+          })()}
         </View>
 
         {/* Effectiveness Chart */}
@@ -251,6 +271,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  filterButtonActive: {
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primary,
   },
   tabBar: {
     flexDirection: 'row',

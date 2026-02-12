@@ -130,7 +130,11 @@ def insights_dashboard(request):
     """
     user = request.user
     now = timezone.now()
-    four_weeks_ago = now - timedelta(weeks=4)
+    try:
+        days = min(max(int(request.query_params.get('days', 28)), 1), 90)
+    except (ValueError, TypeError):
+        days = 28
+    cutoff = now - timedelta(days=days)
 
     # Total sessions analyzed
     total_sessions = InsightSummary.objects.filter(user=user).count()
@@ -177,7 +181,7 @@ def insights_dashboard(request):
     weekly_escalation = (
         InsightSummary.objects.filter(
             user=user,
-            created_at__gte=four_weeks_ago,
+            created_at__gte=cutoff,
         )
         .annotate(week=TruncWeek('created_at'))
         .values('week')
@@ -198,7 +202,7 @@ def insights_dashboard(request):
     weekly_sessions = (
         InsightSummary.objects.filter(
             user=user,
-            created_at__gte=four_weeks_ago,
+            created_at__gte=cutoff,
         )
         .annotate(week=TruncWeek('created_at'))
         .values('week')

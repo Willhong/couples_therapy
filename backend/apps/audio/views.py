@@ -2,6 +2,8 @@
 
 import asyncio
 import logging
+import tempfile
+import os
 
 from django.db import models
 from django.utils import timezone
@@ -453,3 +455,46 @@ def set_post_action(request, recording_id):
     # action == 'keep': just save the action, no AI call
 
     return Response(response_data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def quick_transcribe(request):
+    """Lightweight transcription endpoint for voice input.
+
+    Accepts audio file, transcribes via OpenAI, returns text directly.
+    Does NOT create AudioRecording records or run diarization.
+    """
+    audio_file = request.FILES.get('audio')
+    if not audio_file:
+        return Response(
+            {'detail': '오디오 파일이 필요합니다.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        # Save to temp file
+        suffix = os.path.splitext(audio_file.name)[1] if audio_file.name else '.m4a'
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            for chunk in audio_file.chunks():
+                tmp.write(chunk)
+            tmp_path = tmp.name
+
+        # Transcribe using existing service
+        from apps.audio.services.transcription import transcribe_narration
+        result = transcribe_narration(tmp_path)
+
+        return Response({'text': result['text']})
+    except Exception as e:
+        logger.exception(f"Quick transcribe failed: {e}")
+        return Response(
+            {'detail': '음성 변환에 실패했습니다.'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    finally:
+        # Clean up temp file
+        if 'tmp_path' in locals():
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass

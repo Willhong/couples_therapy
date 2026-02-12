@@ -10,10 +10,12 @@ from .views import (
     assign_speakers,
     delete_recording,
     set_post_action,
+    quick_transcribe,
 )
 
 urlpatterns = [
     path('upload/', upload_audio, name='audio-upload'),
+    path('quick-transcribe/', quick_transcribe, name='audio-quick-transcribe'),
     path('<uuid:recording_id>/status/', recording_status, name='audio-status'),
     path('<uuid:recording_id>/transcript/', transcript_detail, name='audio-transcript'),
     path('<uuid:recording_id>/segments/<uuid:segment_id>/', update_segment, name='audio-segment-update'),

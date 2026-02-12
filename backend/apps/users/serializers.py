@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.utils import timezone
 
-from .models import User
+from .models import User, NotificationPreferences
 
 
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -121,3 +121,9 @@ class UserSerializer(serializers.ModelSerializer):
             'disclaimer_version',
             'date_joined',
         ]
+
+
+class NotificationPreferencesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotificationPreferences
+        fields = ['push_enabled', 'daily_prompt_enabled', 'partner_activity_enabled', 'weekly_insights_enabled']

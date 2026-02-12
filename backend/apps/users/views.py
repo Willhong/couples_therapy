@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db import transaction
 
-from .models import User
-from .serializers import UserSerializer
+from .models import User, NotificationPreferences
+from .serializers import UserSerializer, NotificationPreferencesSerializer
 
 
 @api_view(['GET'])
@@ -135,3 +135,20 @@ def unregister_push_token(request):
     request.user.save(update_fields=['expo_push_token'])
 
     return Response({'status': 'success'})
+
+
+@api_view(['GET', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def notification_preferences(request):
+    """Get or update notification preferences. Auto-creates with defaults."""
+    prefs, _ = NotificationPreferences.objects.get_or_create(user=request.user)
+
+    if request.method == 'GET':
+        serializer = NotificationPreferencesSerializer(prefs)
+        return Response(serializer.data)
+
+    serializer = NotificationPreferencesSerializer(prefs, data=request.data, partial=True)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.save()
+    return Response(serializer.data)
