@@ -31,5 +31,21 @@ app.conf.beat_schedule = {
         ),
         'options': {'timezone': 'Asia/Seoul'},
     },
+    'daily-health-scores': {
+        'task': 'apps.patterns.tasks.compute_daily_health_scores',
+        'schedule': crontab(
+            hour=15,  # 15 UTC = 0 KST (midnight)
+            minute=0,
+        ),
+        'options': {'timezone': 'Asia/Seoul'},
+    },
+    'daily-analysis-trigger': {
+        'task': 'apps.intelligence.tasks.evaluate_analysis_triggers',
+        'schedule': crontab(
+            hour=15,  # 15 UTC = 0 KST (midnight)
+            minute=30,  # 30 min after health scores to use fresh data
+        ),
+        'options': {'timezone': 'Asia/Seoul'},
+    },
 }
 app.conf.timezone = 'Asia/Seoul'

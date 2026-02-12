@@ -57,11 +57,11 @@ CHANNEL_LAYERS = {
 # Celery (async, not eager)
 CELERY_TASK_ALWAYS_EAGER = False
 
-# Cache
+# Cache Configuration (Redis for production)
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': env('CACHE_REDIS_URL', default='redis://localhost:6379/2'),
+        'LOCATION': env('REDIS_URL', default='redis://localhost:6379/2'),
     }
 }
 

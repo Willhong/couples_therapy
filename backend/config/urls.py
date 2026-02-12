@@ -46,4 +46,5 @@ urlpatterns = [
     path('api/v1/safety/', include('apps.safety.urls')),
     path('api/v1/checkins/', include('apps.checkins.urls')),
     path('api/v1/activities/', include('apps.activities.urls')),
+    path('api/v1/intelligence/', include('apps.intelligence.urls')),
 ]

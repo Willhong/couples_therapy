@@ -23,6 +23,7 @@ from ..prompts.system_prompts import (
     COMFORT_MODE_PROMPT,
     SAFETY_RESPONSE_TEMPLATE,
     SAFETY_KEYWORDS,
+    build_personalized_prompt,
 )
 from .llm_service import get_chat_model
 
@@ -133,6 +134,7 @@ def _build_readable_response(parsed: dict) -> str:
 async def run_reframing_pipeline(
     user_message: str,
     conversation_context: str = "",
+    user_context: dict | None = None,
 ) -> dict:
     """Run the two-mode reframing pipeline on a user message.
 
@@ -142,6 +144,7 @@ async def run_reframing_pipeline(
     Args:
         user_message: The user's message describing a conflict
         conversation_context: Summary/history of prior conversation
+        user_context: Optional user intelligence context (for personalization)
 
     Returns:
         dict with:
@@ -152,6 +155,18 @@ async def run_reframing_pipeline(
             - is_abuse_detected: Whether abuse was detected
             - safety_response: Safety template (abuse cases only)
     """
+    # Feature flag: route to new chat agent when enabled
+    from django.conf import settings as django_settings
+
+    if getattr(django_settings, 'ACCUMULATIVE_THERAPY_ENABLED', False):
+        from .chat_agent.chat_graph import run_chat_agent_pipeline
+
+        return await run_chat_agent_pipeline(
+            user_message=user_message,
+            conversation_context=conversation_context,
+            user_context=user_context,
+        )
+
     # Step 1: Safety pre-filter (no LLM call)
     safety_result = check_safety(user_message)
 
@@ -167,8 +182,11 @@ async def run_reframing_pipeline(
         }
 
     # Step 2: Build messages for LLM
+    system_prompt = build_personalized_prompt(
+        TWO_MODE_SYSTEM_PROMPT, user_context, mode='reframing',
+    )
     messages = [
-        SystemMessage(content=TWO_MODE_SYSTEM_PROMPT),
+        SystemMessage(content=system_prompt),
     ]
 
     # Build human message with context
@@ -224,6 +242,7 @@ async def run_reframing_pipeline(
 async def run_comfort_pipeline(
     user_message: str,
     conversation_context: str = "",
+    user_context: dict | None = None,
 ) -> dict:
     """Run the comfort mode pipeline - empathetic response without reframing.
 
@@ -252,8 +271,11 @@ async def run_comfort_pipeline(
         }
 
     # Build messages for LLM
+    system_prompt = build_personalized_prompt(
+        COMFORT_MODE_PROMPT, user_context, mode='comfort',
+    )
     messages = [
-        SystemMessage(content=COMFORT_MODE_PROMPT),
+        SystemMessage(content=system_prompt),
     ]
 
     human_parts = []

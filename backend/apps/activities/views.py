@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from apps.couples.models import Couple
 from .models import Activity, CoupleActivity
 from .serializers import ActivitySerializer, CoupleActivitySerializer
+from .services.recommendations import RecommendationService
 
 
 @api_view(['GET'])
@@ -154,4 +155,53 @@ def complete_activity(request, activity_id):
     couple_activity.save()
 
     serializer = CoupleActivitySerializer(couple_activity)
+
+    # Invalidate recommendations cache on activity completion
+    RecommendationService.invalidate_cache(request.user.id)
+
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def recommendations(request):
+    """Get personalized activity and prompt recommendations.
+
+    Cached for 6 hours per user. Invalidated on check-in or activity completion.
+    """
+    user = request.user
+
+    # Get user's couple (optional for solo users)
+    couple = Couple.objects.filter(
+        Q(user1=user) | Q(user2=user),
+        status=Couple.Status.ACTIVE
+    ).first()
+
+    couple_id = couple.id if couple else None
+    recs = RecommendationService.get_recommendations(user.id, couple_id=couple_id)
+    return Response({'recommendations': recs})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def effectiveness(request):
+    """Get activity effectiveness metrics by category."""
+    user = request.user
+
+    couple = Couple.objects.filter(
+        Q(user1=user) | Q(user2=user),
+        status=Couple.Status.ACTIVE
+    ).first()
+
+    if not couple:
+        return Response(
+            {'detail': '활성화된 커플이 없습니다.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    days = int(request.query_params.get('days', 30))
+    days = min(max(days, 7), 90)  # Clamp 7-90
+
+    from .services.effectiveness import ActivityEffectivenessService
+    data = ActivityEffectivenessService.get_effectiveness(couple.id, days)
+    return Response(data)

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import submit_checkin, today_checkin, streak_info, checkin_history, submit_detailed_checkin
+from .views import submit_checkin, today_checkin, streak_info, checkin_history, submit_detailed_checkin, mood_insights
 
 urlpatterns = [
     path('', submit_checkin, name='checkins-submit'),
@@ -7,4 +7,5 @@ urlpatterns = [
     path('today/', today_checkin, name='checkins-today'),
     path('streak/', streak_info, name='checkins-streak'),
     path('history/', checkin_history, name='checkins-history'),
+    path('mood-insights/', mood_insights, name='checkins-mood-insights'),
 ]

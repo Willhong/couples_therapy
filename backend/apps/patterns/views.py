@@ -12,12 +12,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Pattern, InsightSummary, WeeklySummary
+from .models import Pattern, InsightSummary, WeeklySummary, DailyHealthScore
 from .serializers import (
     PatternSerializer,
     InsightSummarySerializer,
     WeeklySummarySerializer,
 )
+from .services.health_score import HealthScoreService
 
 logger = logging.getLogger(__name__)
 
@@ -275,3 +276,53 @@ def latest_weekly_summary(request):
 
     serializer = WeeklySummarySerializer(summary)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def health_score(request):
+    """Get current health score for the authenticated user.
+
+    Query params:
+        couple_id: optional couple UUID for couple-level score
+    """
+    user = request.user
+    couple_id = request.query_params.get('couple_id')
+
+    service = HealthScoreService()
+    result = service.compute(user.id, couple_id=couple_id)
+    return Response(result)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def health_score_history(request):
+    """Get health score history for the authenticated user.
+
+    Query params:
+        days: number of days to look back (default 30, max 90)
+    """
+    user = request.user
+
+    try:
+        days = min(int(request.query_params.get('days', 30)), 90)
+    except (ValueError, TypeError):
+        days = 30
+
+    cutoff = timezone.now().date() - timedelta(days=days)
+    scores = DailyHealthScore.objects.filter(
+        user=user,
+        date__gte=cutoff,
+    ).order_by('date').values('date', 'score', 'components')
+
+    return Response({
+        'days': days,
+        'results': [
+            {
+                'date': s['date'].isoformat(),
+                'score': s['score'],
+                'components': s['components'],
+            }
+            for s in scores
+        ],
+    })

@@ -10,4 +10,6 @@ urlpatterns = [
     path('dashboard/', views.insights_dashboard, name='insights-dashboard'),
     path('weekly/', views.weekly_summaries, name='weekly-summaries'),
     path('weekly/latest/', views.latest_weekly_summary, name='latest-weekly-summary'),
+    path('health-score/', views.health_score, name='health-score'),
+    path('health-score/history/', views.health_score_history, name='health-score-history'),
 ]

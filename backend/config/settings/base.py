@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'apps.safety',
     'apps.checkins',
     'apps.activities',
+    'apps.intelligence',
 ]
 
 SITE_ID = 1  # Required for django-allauth
@@ -245,6 +246,18 @@ CHANNEL_LAYERS = {
 }
 
 
+# Cache Configuration (used by UserIntelligenceService)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# Accumulative Therapy System feature flag
+ACCUMULATIVE_THERAPY_ENABLED = env.bool('ACCUMULATIVE_THERAPY_ENABLED', default=False)
+
+
 # LLM Configuration (LangChain + LangGraph)
 # Supported providers: "openai", "anthropic", "google", "openrouter"
 LLM_PROVIDER = env('LLM_PROVIDER', default='openai')
@@ -301,3 +314,25 @@ MAX_AUDIO_FILE_SIZE = 25 * 1024 * 1024  # 25MB
 # Django upload size limits (must exceed MAX_AUDIO_FILE_SIZE)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 30 * 1024 * 1024  # 30MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 30 * 1024 * 1024  # 30MB
+
+
+# Analysis Trigger Configuration (accumulative therapy system)
+ANALYSIS_TRIGGER_CONFIG = {
+    'min_conversations': 3,
+    'min_messages_per_conversation': 5,
+    'min_checkin_days': 3,
+    'escalation_threshold': 7,
+    'mood_decline_days': 3,
+    'weekly_analysis_day': 0,  # Monday
+    'cooldown_hours': 48,
+}
+
+# Analysis Agent Configuration (per-agent model/temperature)
+ANALYSIS_AGENT_CONFIG = {
+    'pattern_analyst': {'model_tier': 'chat', 'temperature': 0.3, 'max_tokens': 1024},
+    'emotion_interpreter': {'model_tier': 'chat', 'temperature': 0.5, 'max_tokens': 1024},
+    'balance_mediator': {'model_tier': 'chat', 'temperature': 0.4, 'max_tokens': 1024},
+    'resolution_strategist': {'model_tier': 'chat', 'temperature': 0.6, 'max_tokens': 1024},
+    'ethics_guardian': {'model_tier': 'chat', 'temperature': 0.1, 'max_tokens': 512},
+    'report_synthesizer': {'model_tier': 'chat', 'temperature': 0.5, 'max_tokens': 2048},
+}

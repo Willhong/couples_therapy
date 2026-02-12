@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import InviteCode, Couple
 from .serializers import InviteCodeSerializer, CoupleSerializer
+from .services.partner_dashboard import PartnerDashboardService
 from apps.core.notifications import send_push_notification
 
 logger = logging.getLogger(__name__)
@@ -172,3 +173,26 @@ class CoupleViewSet(viewsets.ViewSet):
             logger.warning(f"Failed to send partner disconnected notification: {e}")
 
         return Response({'message': '파트너 연결이 해제되었습니다.'})
+
+    @action(detail=False, methods=['get'])
+    def dashboard(self, request):
+        """Get partner dashboard with privacy-respecting stats."""
+        couple = Couple.objects.filter(
+            models.Q(user1=request.user) | models.Q(user2=request.user),
+            status=Couple.Status.ACTIVE
+        ).first()
+
+        if not couple:
+            return Response(
+                {'detail': '활성화된 커플이 없습니다.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        result = PartnerDashboardService.get_dashboard(request.user.id, couple.id)
+        if result is None:
+            return Response(
+                {'detail': '대시보드를 사용할 수 없습니다.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        return Response(result)

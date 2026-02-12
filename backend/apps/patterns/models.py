@@ -160,3 +160,35 @@ class WeeklySummary(models.Model):
 
     def __str__(self):
         return f"WeeklySummary {self.period_start} ~ {self.period_end} for {self.user_id}"
+
+
+class DailyHealthScore(models.Model):
+    """Daily computed relationship health score."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='health_scores',
+    )
+    couple = models.ForeignKey(
+        'couples.Couple',
+        on_delete=models.CASCADE,
+        related_name='health_scores',
+        null=True, blank=True,
+    )
+    date = models.DateField()
+    score = models.IntegerField(help_text='Overall health score 0-100')
+    components = models.JSONField(
+        default=dict,
+        help_text='Breakdown: {mood, escalation, engagement, pattern_severity, cooldown}',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'daily_health_scores'
+        unique_together = ['user', 'date']
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"HealthScore {self.user_id} {self.date}: {self.score}"

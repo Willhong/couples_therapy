@@ -321,11 +321,20 @@ def reframe_message(request):
             'message_id': str(ai_msg.id),
         })
 
+    # Fetch user intelligence context for personalization
+    user_context = None
+    try:
+        from apps.core.services.user_intelligence import UserIntelligenceService
+        user_context = UserIntelligenceService.get_ai_context(request.user.id)
+    except Exception as e:
+        logger.warning(f"Failed to fetch user context: {e}")
+
     # Run two-mode reframing pipeline
     try:
         result = asyncio.run(run_reframing_pipeline(
             user_message=user_message,
             conversation_context=conversation_context,
+            user_context=user_context,
         ))
     except LLMConfigurationError as e:
         logger.error(f"LLM configuration error: {e}")
@@ -601,11 +610,20 @@ def comfort_message(request):
             'message_id': str(ai_msg.id),
         })
 
+    # Fetch user intelligence context for personalization
+    user_context = None
+    try:
+        from apps.core.services.user_intelligence import UserIntelligenceService
+        user_context = UserIntelligenceService.get_ai_context(request.user.id)
+    except Exception as e:
+        logger.warning(f"Failed to fetch user context: {e}")
+
     # Run comfort pipeline
     try:
         result = asyncio.run(run_comfort_pipeline(
             user_message=user_message,
             conversation_context=conversation_context,
+            user_context=user_context,
         ))
     except LLMConfigurationError as e:
         logger.error(f"LLM configuration error: {e}")

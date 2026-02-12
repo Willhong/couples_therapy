@@ -75,3 +75,70 @@ def generate_weekly_summary_task(couple_id: str = None):
                 )
 
     logger.info(f"Weekly summary generation complete: {generated} summaries created")
+
+
+@shared_task
+def compute_daily_health_scores():
+    """Compute daily health scores for all active users.
+
+    Called by Celery Beat daily at midnight KST.
+    """
+    from django.utils import timezone as tz
+
+    from apps.couples.models import Couple
+    from apps.patterns.models import DailyHealthScore
+    from apps.patterns.services.health_score import HealthScoreService
+
+    service = HealthScoreService()
+    today = tz.now().date()
+
+    # Process coupled users
+    couples = Couple.objects.filter(status=Couple.Status.ACTIVE)
+    computed = 0
+
+    for couple in couples:
+        for uid in [couple.user1_id, couple.user2_id]:
+            if uid is None:
+                continue
+            try:
+                result = service.compute(uid, couple_id=couple.id)
+                DailyHealthScore.objects.update_or_create(
+                    user_id=uid,
+                    date=today,
+                    defaults={
+                        'couple_id': couple.id,
+                        'score': result['score'],
+                        'components': result['components'],
+                    },
+                )
+                computed += 1
+            except Exception as e:
+                logger.exception(f"Health score computation failed for user {uid}: {e}")
+
+    # Process solo users
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    coupled_ids = set()
+    for couple in Couple.objects.filter(status=Couple.Status.ACTIVE):
+        if couple.user1_id:
+            coupled_ids.add(couple.user1_id)
+        if couple.user2_id:
+            coupled_ids.add(couple.user2_id)
+
+    solo_users = User.objects.filter(is_active=True).exclude(id__in=coupled_ids)
+    for user in solo_users:
+        try:
+            result = service.compute(user.id)
+            DailyHealthScore.objects.update_or_create(
+                user_id=user.id,
+                date=today,
+                defaults={
+                    'score': result['score'],
+                    'components': result['components'],
+                },
+            )
+            computed += 1
+        except Exception as e:
+            logger.exception(f"Health score computation failed for solo user {user.id}: {e}")
+
+    logger.info(f"Daily health score computation complete: {computed} scores computed")
