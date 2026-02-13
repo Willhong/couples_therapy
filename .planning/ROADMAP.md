@@ -78,11 +78,13 @@ Plans:
   3. Backend runs under ASGI/Daphne without asyncio event loop crashes
   4. Importing chat_graph.py does not raise compilation errors (lazy compilation works)
   5. End-to-end test passes: trigger fires -> analysis graph runs -> InsightReport saved to database
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md -- Fix 6 analysis agent signatures + 4 integration bugs (FNDX-01)
+- [ ] 05-02-PLAN.md -- Wire event triggers, replace asyncio.run, lazy compile chat_graph (FNDX-02/03/04)
+- [ ] 05-03-PLAN.md -- Upgrade backend dependencies, verify mobile compatibility (STAK-01/02)
+- [ ] 05-04-PLAN.md -- End-to-end pipeline test (FNDX-05)
 
 ### Phase 6: Infrastructure
 **Goal**: Production database and push notification delivery are operational
