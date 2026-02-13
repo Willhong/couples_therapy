@@ -1,10 +1,10 @@
 """Views for audio recording and transcription API."""
 
-import asyncio
 import logging
 import tempfile
 import os
 
+from asgiref.sync import async_to_sync
 from django.db import models
 from django.utils import timezone
 from rest_framework import status
@@ -377,9 +377,9 @@ def set_post_action(request, recording_id):
             )
 
             # Run reframing pipeline
-            result = asyncio.run(run_reframing_pipeline(
+            result = async_to_sync(run_reframing_pipeline)(
                 user_message=recording.full_text,
-            ))
+            )
 
             # Save AI response
             is_reframing = result.get('mode') == 'reframing'
@@ -431,9 +431,9 @@ def set_post_action(request, recording_id):
             )
 
             # Run comfort pipeline
-            result = asyncio.run(run_comfort_pipeline(
+            result = async_to_sync(run_comfort_pipeline)(
                 user_message=recording.full_text,
-            ))
+            )
 
             ai_msg = Message.objects.create(
                 conversation=conversation,

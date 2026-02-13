@@ -247,8 +247,16 @@ def _build_graph() -> StateGraph:
     return graph
 
 
-# Compile graph once at module level
-_compiled_graph = _build_graph().compile()
+# Lazy compilation (avoid import-time side effects)
+_compiled_graph = None
+
+
+def _get_compiled_graph():
+    """Compile and cache the graph on first use."""
+    global _compiled_graph
+    if _compiled_graph is None:
+        _compiled_graph = _build_graph().compile()
+    return _compiled_graph
 
 
 async def run_chat_agent_pipeline(
@@ -301,7 +309,7 @@ async def run_chat_agent_pipeline(
     }
 
     # Run the graph
-    result_state = await _compiled_graph.ainvoke(initial_state)
+    result_state = await _get_compiled_graph().ainvoke(initial_state)
 
     return result_state.get("final_result", {
         "mode": "chat",

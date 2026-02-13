@@ -1,9 +1,9 @@
 """Views for chat API."""
 
-import asyncio
 import logging
 
 from django.core.exceptions import ValidationError
+from asgiref.sync import async_to_sync
 from django.db import models
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
@@ -215,6 +215,35 @@ class SharedReframingViewSet(viewsets.ModelViewSet):
         return Response({'count': count})
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def end_conversation(request, conversation_id):
+    """Mark conversation as ended and trigger analysis evaluation."""
+    try:
+        conversation = Conversation.objects.get(
+            pk=conversation_id,
+            user=request.user,
+        )
+    except (Conversation.DoesNotExist, ValueError):
+        return Response(
+            {'detail': 'conversation not found'},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    from django.conf import settings as django_settings
+    if getattr(django_settings, 'ACCUMULATIVE_THERAPY_ENABLED', False):
+        try:
+            from apps.intelligence.tasks import on_conversation_ended
+            on_conversation_ended.delay(str(conversation.id), str(request.user.id))
+        except Exception as e:
+            logger.warning("Failed to queue conversation end trigger: %s", e)
+
+    return Response(
+        {'detail': 'Conversation ended'},
+        status=status.HTTP_200_OK,
+    )
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def llm_info(request):
@@ -331,11 +360,11 @@ def reframe_message(request):
 
     # Run two-mode reframing pipeline
     try:
-        result = asyncio.run(run_reframing_pipeline(
+        result = async_to_sync(run_reframing_pipeline)(
             user_message=user_message,
             conversation_context=conversation_context,
             user_context=user_context,
-        ))
+        )
     except LLMConfigurationError as e:
         logger.error(f"LLM configuration error: {e}")
         return Response(
@@ -620,11 +649,11 @@ def comfort_message(request):
 
     # Run comfort pipeline
     try:
-        result = asyncio.run(run_comfort_pipeline(
+        result = async_to_sync(run_comfort_pipeline)(
             user_message=user_message,
             conversation_context=conversation_context,
             user_context=user_context,
-        ))
+        )
     except LLMConfigurationError as e:
         logger.error(f"LLM configuration error: {e}")
         return Response(

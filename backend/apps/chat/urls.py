@@ -13,6 +13,7 @@ from .views import (
     save_reframing,
     share_reframing,
     comfort_message,
+    end_conversation,
 )
 
 # Main router for top-level resources
@@ -28,6 +29,7 @@ urlpatterns = [
     # LLM/Reframing endpoints
     path('llm-info/', llm_info, name='llm-info'),
     path('reframe/', reframe_message, name='reframe-message'),
+    path('conversations/<uuid:conversation_id>/end/', end_conversation, name='end_conversation'),
     path('save-reframing/', save_reframing, name='save-reframing'),
     path('share/', share_reframing, name='share-reframing'),
     path('comfort/', comfort_message, name='comfort-message'),

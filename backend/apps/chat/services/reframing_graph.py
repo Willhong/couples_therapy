@@ -10,11 +10,11 @@ Safety is handled via keyword pre-filter before the LLM call (0 LLM calls for se
 Normal messages use exactly 1 LLM call.
 """
 
-import asyncio
 import copy
 import json
 import logging
 import re
+from asgiref.sync import async_to_sync
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -309,7 +309,7 @@ def run_reframing_pipeline_sync(
     Returns:
         dict: Same as run_reframing_pipeline
     """
-    return asyncio.run(run_reframing_pipeline(
+    return async_to_sync(run_reframing_pipeline)(
         user_message=user_message,
         conversation_context=conversation_context,
-    ))
+    )

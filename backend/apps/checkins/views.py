@@ -1,5 +1,6 @@
 """Views for checkins API."""
 
+import logging
 from datetime import date, timedelta
 from django.db.models import Q
 from rest_framework import status
@@ -17,6 +18,8 @@ from .serializers import (
     CheckInCreateSerializer,
     DetailedCheckInCreateSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(['POST'])
@@ -62,6 +65,13 @@ def submit_checkin(request):
         note=serializer.validated_data.get('note', ''),
         date=today
     )
+    from django.conf import settings as django_settings
+    if getattr(django_settings, 'ACCUMULATIVE_THERAPY_ENABLED', False):
+        try:
+            from apps.intelligence.tasks import on_checkin_submitted
+            on_checkin_submitted.delay(str(user.id))
+        except Exception as e:
+            logger.warning("Failed to queue checkin trigger: %s", e)
 
     # Update streak
     streak, created = Streak.objects.get_or_create(
@@ -210,6 +220,13 @@ def submit_detailed_checkin(request):
         answers=serializer.validated_data['answers'],
         date=today
     )
+    from django.conf import settings as django_settings
+    if getattr(django_settings, 'ACCUMULATIVE_THERAPY_ENABLED', False):
+        try:
+            from apps.intelligence.tasks import on_checkin_submitted
+            on_checkin_submitted.delay(str(user.id))
+        except Exception as e:
+            logger.warning("Failed to queue checkin trigger: %s", e)
 
     # Update streak
     streak, created = Streak.objects.get_or_create(
