@@ -3,78 +3,11 @@
     "name": "CouplesAI",
     "slug": "couples-ai",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "scheme": "couplesai",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.couplesai.app",
-      "buildNumber": "1",
-      "infoPlist": {
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLSchemes": [
-              "couplesai"
-            ]
-          }
-        ],
-        "NSMicrophoneUsageDescription": "커플 대화를 녹음하기 위해 마이크 접근이 필요합니다.",
-        "NSCameraUsageDescription": "프로필 사진을 위해 카메라 접근이 필요합니다."
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.couplesai.app",
-      "versionCode": 1,
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "autoVerify": true,
-          "data": [
-            {
-              "scheme": "couplesai",
-              "host": "invite"
-            }
-          ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
-        }
-      ]
-    },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": [
-      "expo-router",
-      "expo-secure-store",
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/icon.png",
-          "color": "#6366F1"
-        }
-      ],
-      [
-        "expo-av",
-        {
-          "microphonePermission": "커플 대화를 녹음하기 위해 마이크 접근이 필요합니다."
-        }
-      ],
-      "expo-font"
-    ],
     "experiments": {
       "typedRoutes": true
     }
