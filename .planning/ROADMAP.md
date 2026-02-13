@@ -1,149 +1,179 @@
 # Roadmap: CouplesAI
 
-## Overview
+## Milestones
 
-CouplesAI delivers AI-powered couples therapy through four phases: establishing legal/ethical foundation with secure authentication, proving core reframing value with text-based interactions, adding audio recording and transcription capabilities, and finally implementing partner collaboration and engagement features. The journey prioritizes safety and privacy first (sensitive relationship data), validates the core value proposition (perspective reframing) second, then builds complexity.
+- v1.0 MVP - Phases 1-4 + Post-4 (shipped 2026-02-08)
+- v1.1 Intelligence & Launch - Phases 5-9 (in progress)
 
 ## Phases
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3, 4): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
-
-- [x] **Phase 1: Foundation & Safety** - Secure auth, partner linking, abuse screening, data encryption
-- [x] **Phase 2: Core Reframing** - Text-based conflict logging with AI perspective reframing
-- [x] **Phase 3: Audio Pipeline** - Recording, transcription, speaker separation, audio analysis
-- [ ] **Phase 4: Partner & Engagement** - Sharing features, cool-down tools, communication exercises
-
-## Phase Details
+<details>
+<summary>v1.0 MVP (Phases 1-4 + Post-4) - SHIPPED 2026-02-08</summary>
 
 ### Phase 1: Foundation & Safety
-**Goal**: Users can securely create accounts, link with partners, and trust their sensitive data is protected. Legal and ethical safeguards are in place before any therapy features.
-**Depends on**: Nothing (first phase)
-**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, SAFE-01, SAFE-03, SAFE-04 (SAFE-02 deferred)
-**Stack**: Django 5.x + DRF (backend), Expo SDK 53+ (mobile)
-**Success Criteria** (what must be TRUE):
-  1. User can create account with email/password and stay logged in across app restarts
-  2. User can generate invite code and link with partner (verified connection visible to both)
-  3. User sees and accepts "not therapy replacement" disclaimer before using app
-  4. Recording consent prompt appears before any audio capture with both partners' explicit agreement
-  5. User completes mandatory tutorial (coach-mark tour) after onboarding
-**Plans**: 4 plans in 4 waves
+**Goal**: Users can securely create accounts, link with partners, and trust their sensitive data is protected.
+**Requirements**: AUTH-01~04, SAFE-01, SAFE-03, SAFE-04
+**Plans**: 4/4 complete
 
 Plans:
-- [x] 01-01-PLAN.md — Django backend: project setup, models, JWT auth (Wave 1)
-- [x] 01-02-PLAN.md — Expo frontend: project setup, auth screens (Wave 2)
-- [x] 01-03-PLAN.md — Partner invitation: deep links, code generation (Wave 3)
-- [x] 01-04-PLAN.md — Tutorial + recording consent with WebSocket (Wave 4)
+- [x] 01-01-PLAN.md — Django backend: project setup, models, JWT auth
+- [x] 01-02-PLAN.md — Expo frontend: project setup, auth screens
+- [x] 01-03-PLAN.md — Partner invitation: deep links, code generation
+- [x] 01-04-PLAN.md — Tutorial + recording consent with WebSocket
 
 ### Phase 2: Core Reframing
-**Goal**: Users can log conflicts via text chat and receive AI-generated perspective reframing that helps them understand how their partner might have heard their words.
-**Depends on**: Phase 1
-**Requirements**: RECR-01, RECR-03, RECR-04, REFR-01, REFR-02, REFR-03, REFR-04, ONBD-01, ONBD-02
-**Stack**: anthropic SDK (Claude API), react-native-gifted-chat, react-hook-form + zod
-**Success Criteria** (what must be TRUE):
-  1. User can describe conflict situation in chat format and see conversation history
-  2. User receives "how your partner might have heard this" reframing for each entry
-  3. User receives concrete next-action suggestions (not generic advice)
-  4. AI response never assigns blame or declares who is right/wrong
-  5. User can share analysis with partner at chosen privacy level (full/summary/none)
-**Plans**: 5 plans in 4 waves
+**Goal**: AI-powered chat with perspective reframing and onboarding.
+**Requirements**: RECR-01, RECR-03, RECR-04, REFR-01~04, ONBD-01, ONBD-02
+**Plans**: 5/5 complete
 
 Plans:
-- [x] 02-01-PLAN.md — Backend models & core API for onboarding and chat (Wave 1)
-- [x] 02-02-PLAN.md — Two-mode AI pipeline: conversational chat + structured reframing (Wave 2, re-architected)
-- [x] 02-03-PLAN.md — Onboarding questionnaire UI for attachment style and goals (Wave 2)
-- [x] 02-04-PLAN.md — Chat interface with streaming responses and suggestions (Wave 3)
-- [x] 02-05-PLAN.md — Reframing modal and partner sharing with WebSocket (Wave 4)
+- [x] 02-01-PLAN.md — Backend models & core API for onboarding and chat
+- [x] 02-02-PLAN.md — Two-mode AI pipeline: conversational chat + structured reframing
+- [x] 02-03-PLAN.md — Onboarding questionnaire UI
+- [x] 02-04-PLAN.md — Chat interface with streaming responses
+- [x] 02-05-PLAN.md — Reframing modal and partner sharing
 
 ### Phase 3: Audio Pipeline
-**Goal**: Users can record conflicts via voice and receive transcription with speaker-separated analysis, enabling capture of actual arguments for deeper insight.
-**Depends on**: Phase 2
-**Requirements**: RECR-02, CONF-01, CONF-02, CONF-03, CONF-04, PATN-01, PATN-02, PATN-03
-**Success Criteria** (what must be TRUE):
-  1. User can record voice describing situation and see transcribed text
-  2. User can record actual conflict (with partner consent) and see who-said-what transcript
-  3. App correctly identifies which partner said which lines (speaker diarization)
-  4. User sees recurring conflict themes highlighted across multiple entries
-  5. User sees trigger words/phrases flagged (e.g., "you always", "you never")
-**Plans**: 10 plans (7 core + 3 gap closure)
+**Goal**: Recording, transcription, speaker separation, pattern detection.
+**Requirements**: RECR-02, CONF-01~04, PATN-01~03
+**Plans**: 10/10 complete
 
 Plans:
-- [x] 03-01-PLAN.md — Backend: Celery setup, audio models, transcription service, comfort mode (Wave 1)
-- [x] 03-02-PLAN.md — Frontend: expo-av recording, waveform, preview, upload (Wave 1)
-- [x] 03-03-PLAN.md — Transcript display: chat-bubble view, speaker assignment, audio player, post-actions (Wave 2)
-- [x] 03-04-PLAN.md — Unified conversation list: backend endpoint + frontend list with tab update (Wave 2)
-- [x] 03-05-PLAN.md — Live conflict recording: partner consent flow, diarized recording (Wave 3)
-- [x] 03-06-PLAN.md — Pattern detection backend: models, LLM analysis, Celery tasks, API (Wave 3)
-- [x] 03-07-PLAN.md — Insights dashboard: charts, trigger highlights, weekly summary (Wave 4)
-- [x] 03-08-PLAN.md — Gap closure: Home/Record flow unification, back button (Wave 5, gap closure)
-- [x] 03-09-PLAN.md — Gap closure: UI polish - button styling, prompt hints (Wave 5, gap closure)
-- [x] 03-10-PLAN.md — Gap closure: Waveform performance optimization (Wave 5, gap closure)
+- [x] 03-01 through 03-10 (see git history for details)
 
 ### Phase 4: Partner & Engagement
-**Goal**: Partners can collaborate on relationship improvement through shared tools, guided exercises, and structured communication prompts.
-**Depends on**: Phase 3
-**Requirements**: ONBD-03, COOL-01, COOL-02, COOL-03, COMM-01, COMM-02, COMM-03
-**Success Criteria** (what must be TRUE):
-  1. User can invite partner through in-app flow (completes partner linking from Phase 1)
-  2. User can start cool-down timer with guided breathing/meditation during heated moments
-  3. User receives daily conversation prompts; both partners must answer before seeing each other's response
-  4. User can browse conversation topic library by category
-  5. User receives prompt to re-engage after cool-down period ends
-**Plans**: 5 plans in 2 waves
+**Goal**: Cool-down tools, daily prompts, topic library, partner features.
+**Requirements**: ONBD-03, COOL-01~03, COMM-01~03
+**Plans**: 5/5 complete
 
 Plans:
-- [x] 04-01-PLAN.md — Cool-down timer: backend model + API, frontend countdown + breathing guide (Wave 1)
-- [x] 04-02-PLAN.md — Daily prompts: backend models + auto-assignment + seed data, frontend prompt card + reveal (Wave 1)
-- [x] 04-03-PLAN.md — Topic library: browsable prompt library with category tabs (Wave 1)
-- [x] 04-04-PLAN.md — Abuse screening (SAFE-02): safety assessment + risk scoring + crisis resources (Wave 1)
-- [x] 04-05-PLAN.md — Polish: TODO fixes, infrastructure hardening, automated test foundation (Wave 2)
+- [x] 04-01 through 04-05 (see git history for details)
 
 ### Post-Phase 4: v1 Hardening
-**Goal**: Harden the application for launch readiness — crisis safety, legal compliance, partner UX polish, and shared content features.
-**Depends on**: Phase 4
-**Workstreams**: 4 completed via ultrawork parallel execution
+**Goal**: Crisis safety, legal compliance, partner UX, shared content.
+**Plans**: 4/4 complete (WS2-04, WS2-05, WS3-02, WS3-03)
 
-Workstreams:
-- [x] WS3-03 — Crisis detection: Korean keyword monitoring, CrisisEvent logging, hotline auto-response (1393, 1577-0199, 1366)
-- [x] WS3-02 — PIPA legal compliance: privacy policy, terms of service, data deletion/export endpoints
-- [x] WS2-04 — Partner invitation UX: Share API, partner status indicator, welcome screen
-- [x] WS2-05 — Partner shared content viewer: SharedReframing respond/read/unread-count, privacy-level display
+</details>
 
-### Future: Production Readiness (WS4)
-**Goal**: Prepare infrastructure and distribution for app store launch.
-**Depends on**: Post-Phase 4
-**Status**: Not started (requires server infrastructure)
+### v1.1 Intelligence & Launch (In Progress)
+
+**Milestone Goal:** 축적형 치료 인텔리전스 시스템 구축 + 프로덕션 출시 준비. Chat Agent를 therapeutic listener로 전환하고, 다중 에이전트 분석 파이프라인으로 개인화된 인사이트 리포트를 제공한다.
+
+- [ ] **Phase 5: Foundation & Stack** - Fix 4 critical integration gaps and modernize dependencies
+- [ ] **Phase 6: Infrastructure** - PostgreSQL migration and push notification system
+- [ ] **Phase 7: Chat Agent** - Transform chat from analyzer to therapeutic listener
+- [ ] **Phase 8: Analysis & Insights** - Multi-agent analysis pipeline and insight report delivery
+- [ ] **Phase 9: Health Dashboard & Launch** - Health score, home dashboard, and production readiness
+
+## v1.1 Phase Details
+
+### Phase 5: Foundation & Stack
+**Goal**: The existing analysis pipeline executes end-to-end without crashing, and all dependencies are current
+**Depends on**: v1.0 complete
+**Requirements**: FNDX-01, FNDX-02, FNDX-03, FNDX-04, FNDX-05, STAK-01, STAK-02
+**Complexity**: Medium
+**Success Criteria** (what must be TRUE):
+  1. Analysis graph executes with unified agent signatures — calling graph.invoke() with a test state runs all agents without signature errors
+  2. Event triggers fire in production code paths — ending a conversation or submitting a check-in dispatches the corresponding Celery task
+  3. Backend runs under ASGI/Daphne without asyncio event loop crashes
+  4. Importing chat_graph.py does not raise compilation errors (lazy compilation works)
+  5. End-to-end test passes: trigger fires -> analysis graph runs -> InsightReport saved to database
+**Plans**: TBD
 
 Plans:
-- [ ] WS4-01 — PostgreSQL migration from SQLite
-- [ ] WS4-02 — Push notifications (Expo Push)
-- [ ] WS4-03 — Performance optimization (Redis, API profiling, bundle audit)
-- [ ] WS4-04 — App Store preparation (metadata, screenshots, age rating)
+- [ ] 05-01: TBD
+- [ ] 05-02: TBD
+
+### Phase 6: Infrastructure
+**Goal**: Production database and push notification delivery are operational
+**Depends on**: Phase 5
+**Requirements**: PROD-01, PROD-02, PROD-03
+**Complexity**: Medium
+**Success Criteria** (what must be TRUE):
+  1. Application runs on PostgreSQL 16 with all existing data intact — encrypted fields (Fernet) decrypt correctly after migration
+  2. Mobile app registers push tokens and backend stores them — POST /api/v1/push/register succeeds
+  3. Backend can send a push notification to a registered device and it appears on the device
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: TBD
+- [ ] 06-02: TBD
+
+### Phase 7: Chat Agent
+**Goal**: Users experience the chat as a therapeutic listener that accumulates context across sessions, not an instant analyzer
+**Depends on**: Phase 5 (working pipeline foundation), Phase 6 (push for downstream delivery)
+**Requirements**: AGNT-01, AGNT-02, AGNT-03, AGNT-04, AGNT-05, AGNT-06, AGNT-07
+**Complexity**: High — paradigm shift with UX risk (P1: removing immediate gratification)
+**Success Criteria** (what must be TRUE):
+  1. With ACCUMULATIVE_THERAPY_ENABLED=true, chat responds with empathy and follow-up questions first — no immediate multi-point analysis in the first response
+  2. Chat automatically transitions through conversation phases (initial -> exploring -> deepening -> wrapping) based on message depth
+  3. User sees insight readiness progress during conversation and receives a brief reflection summary when conversation ends
+  4. AI responses reference user's personal context (attachment style, conflict style, recent patterns) when available
+  5. With ACCUMULATIVE_THERAPY_ENABLED=false, chat behaves identically to v1.0 (backward compatible)
+**Plans**: TBD
+
+Plans:
+- [ ] 07-01: TBD
+- [ ] 07-02: TBD
+
+### Phase 8: Analysis & Insights
+**Goal**: Background analysis pipeline produces personalized insight reports and delivers them to users
+**Depends on**: Phase 5 (working analysis graph), Phase 7 (chat accumulates data)
+**Requirements**: ANAL-01, ANAL-02, ANAL-03, ANAL-04, ANAL-05, ANAL-06, INSG-01, INSG-02, INSG-03, INSG-04, INSG-05
+**Complexity**: High — 6-agent LangGraph pipeline, trigger logic, cost controls, privacy enforcement
+**Success Criteria** (what must be TRUE):
+  1. When trigger conditions are met (crisis/threshold/sufficiency/periodic), background analysis runs automatically and produces an InsightReport with pattern, emotion, balance, and resolution sections
+  2. Ethics Guardian blocks reports that fail safety/bias checks — blocked reports are never shown to users
+  3. User can view report list, open report detail, and mark reports as read — unread count badge updates correctly
+  4. User receives push notification when a new report is ready
+  5. Reports reference partner dynamics without quoting partner's private data — no direct partner data appears in any report field
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01: TBD
+- [ ] 08-02: TBD
+- [ ] 08-03: TBD
+
+### Phase 9: Health Dashboard & Launch
+**Goal**: Users see their relationship health at a glance on the home screen and the app is ready for App Store submission
+**Depends on**: Phase 8 (reports for dashboard badges), Phase 6 (PostgreSQL for production)
+**Requirements**: HLTH-01, HLTH-02, HLTH-03, HLTH-04, HLTH-05, HLTH-06, PROD-04, PROD-05
+**Complexity**: Medium
+**Success Criteria** (what must be TRUE):
+  1. Home screen shows Health Score (0-100) with trend indicator (up/down/stable) and 30-day history is viewable
+  2. Health score reflects 5 weighted components and computes daily — couple-level score averages both partners
+  3. Dashboard displays today's recommended actions based on health score weaknesses (low mood -> gratitude prompt, high escalation -> easy activity)
+  4. Home dashboard shows health score, today's tasks, unread report badge, and partner status in one screen
+  5. App passes performance benchmarks (database indexed, queries optimized, Redis cache active) and App Store metadata is prepared
+
+**Plans**: TBD
+
+Plans:
+- [ ] 09-01: TBD
+- [ ] 09-02: TBD
+- [ ] 09-03: TBD
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 1.1 -> 1.2 -> 2 -> 2.1 -> 3 -> 4 -> Post-4
+v1.0: 1 -> 2 -> 3 -> 4 -> Post-4
+v1.1: 5 -> 6 -> 7 -> 8 -> 9
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation & Safety | 4/4 | ✓ Complete | 2026-01-23 |
-| 2. Core Reframing | 5/5 | ✓ Complete | 2026-02-02 |
-| 3. Audio Pipeline | 10/10 | ✓ Complete | 2026-02-08 |
-| 4. Partner & Engagement | 5/5 | ✓ Complete | 2026-02-08 |
-| Post-4. v1 Hardening | 4/4 | ✓ Complete | 2026-02-08 |
-| WS4. Production Readiness | 0/4 | Pending | — |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Foundation & Safety | v1.0 | 4/4 | Complete | 2026-01-23 |
+| 2. Core Reframing | v1.0 | 5/5 | Complete | 2026-02-02 |
+| 3. Audio Pipeline | v1.0 | 10/10 | Complete | 2026-02-08 |
+| 4. Partner & Engagement | v1.0 | 5/5 | Complete | 2026-02-08 |
+| Post-4. v1 Hardening | v1.0 | 4/4 | Complete | 2026-02-08 |
+| 5. Foundation & Stack | v1.1 | 0/TBD | Not started | - |
+| 6. Infrastructure | v1.1 | 0/TBD | Not started | - |
+| 7. Chat Agent | v1.1 | 0/TBD | Not started | - |
+| 8. Analysis & Insights | v1.1 | 0/TBD | Not started | - |
+| 9. Health Dashboard & Launch | v1.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-23*
-*Phase 1 re-planned: 2026-01-23 (Django backend)*
-*Phase 2 planned: 2026-01-23 (5 plans in 4 waves)*
-*Phase 2 Plan 02 re-architected: 2026-02-02 (two-mode chat+reframing pipeline)*
-*Phase 3 planned: 2026-02-03 (7 plans in 4 waves)*
-*Phase 3 gap closure: 2026-02-04 (3 plans addressing UAT gaps)*
-*Phase 3 complete: 2026-02-08 (10/10 plans, gap closure verified)*
-*Phase 4 complete: 2026-02-08 (5/5 plans, all requirements implemented)*
-*Post-Phase 4 hardening: 2026-02-08 (crisis detection, PIPA, partner UX, shared viewer)*
-*Depth: quick (4 phases + hardening)*
-*Coverage: 32/32 v1 requirements mapped + 4 hardening workstreams*
+*v1.0 shipped: 2026-02-08 (32/32 requirements, 28 plans + 4 workstreams)*
+*v1.1 roadmap added: 2026-02-13 (5 phases, 36 requirements mapped)*
+*Depth: quick (5 phases for v1.1)*

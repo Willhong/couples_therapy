@@ -3,7 +3,7 @@
 **Defined:** 2026-01-22
 **Core Value:** 갈등 상황에서 상대방의 관점을 이해하도록 돕는 리프레이밍
 
-## v1 Requirements (Validated — v1.0 Complete)
+## v1 Requirements (Validated -- v1.0 Complete)
 
 All v1 requirements shipped in v1.0 (2026-02-08). See MILESTONES.md for details.
 
@@ -32,7 +32,7 @@ All v1 requirements shipped in v1.0 (2026-02-08). See MILESTONES.md for details.
 
 ### Conflict Recording & Analysis
 - [x] **CONF-01**: 녹음 시작 (싸움 전/후 선택)
-- [x] **CONF-02**: 녹음 완료 후 음성→텍스트 전사
+- [x] **CONF-02**: 녹음 완료 후 음성->텍스트 전사
 - [x] **CONF-03**: 전사된 대화에서 화자 분리
 - [x] **CONF-04**: 갈등 내용 AI 분석 및 리프레이밍 생성
 
@@ -67,7 +67,7 @@ Requirements for Intelligence & Launch milestone. Each maps to roadmap phases.
 - [ ] **FNDX-02**: on_conversation_ended, on_checkin_submitted 이벤트 트리거를 실제 뷰에 연결
 - [ ] **FNDX-03**: asyncio.run() 이벤트 루프 충돌을 해결하여 ASGI/Daphne 프로덕션 배포 가능
 - [ ] **FNDX-04**: chat_graph.py에 lazy compilation 적용하여 임포트 시 에러 방지
-- [ ] **FNDX-05**: 트리거→분석→리포트 저장 end-to-end 테스트 통과
+- [ ] **FNDX-05**: 트리거->분석->리포트 저장 end-to-end 테스트 통과
 
 ### Stack Modernization
 
@@ -77,7 +77,7 @@ Requirements for Intelligence & Launch milestone. Each maps to roadmap phases.
 ### Chat Agent Transformation
 
 - [ ] **AGNT-01**: Chat Agent가 therapeutic listener로 동작 (경청+공감 우선, 즉시 분석 없음)
-- [ ] **AGNT-02**: 4단계 대화 페이즈 자동 전환 (초기→탐색→심화→정리)
+- [ ] **AGNT-02**: 4단계 대화 페이즈 자동 전환 (초기->탐색->심화->정리)
 - [ ] **AGNT-03**: AI가 사용자의 애착유형/갈등스타일/최근 패턴을 참조하여 개인화된 응답 생성
 - [ ] **AGNT-04**: 6차원 정보 체크리스트 추적 (갈등상황/근본원인/내감정/상대감정/시도한해결책/원하는결과)
 - [ ] **AGNT-05**: 인사이트 준비도 진행률을 사용자에게 표시 ("인사이트 준비: 40%")
@@ -106,7 +106,7 @@ Requirements for Intelligence & Launch milestone. Each maps to roadmap phases.
 - [ ] **HLTH-01**: Health Score 0-100 일일 산출 (기분25%/에스컬레이션25%/참여도20%/패턴심각도15%/쿨다운15%)
 - [ ] **HLTH-02**: 건강점수 트렌드 표시 (상승/하강/안정 + 30일 히스토리)
 - [ ] **HLTH-03**: 기분-패턴 상관관계 분석 서비스 (갈등일 vs 비갈등일 기분 비교, 위험일 감지)
-- [ ] **HLTH-04**: 건강점수 약점 기반 스마트 추천 (기분저하→감사 프롬프트, 에스컬레이션→쉬운 활동)
+- [ ] **HLTH-04**: 건강점수 약점 기반 스마트 추천 (기분저하->감사 프롬프트, 에스컬레이션->쉬운 활동)
 - [ ] **HLTH-05**: 홈 대시보드 재설계 (건강점수+오늘의 할일+리포트 뱃지+파트너 상태 한 화면)
 - [ ] **HLTH-06**: 커플 레벨 건강점수 (두 사용자 점수 평균)
 
@@ -171,23 +171,53 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COOL-01~03 | Phase 4 | Complete |
 | COMM-01~03 | Phase 4 | Complete |
 
-### v1.1 (Pending — roadmap TBD)
+### v1.1
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FNDX-01~05 | — | Pending |
-| STAK-01~02 | — | Pending |
-| AGNT-01~07 | — | Pending |
-| ANAL-01~06 | — | Pending |
-| INSG-01~05 | — | Pending |
-| HLTH-01~06 | — | Pending |
-| PROD-01~05 | — | Pending |
+| FNDX-01 | Phase 5: Foundation & Stack | Pending |
+| FNDX-02 | Phase 5: Foundation & Stack | Pending |
+| FNDX-03 | Phase 5: Foundation & Stack | Pending |
+| FNDX-04 | Phase 5: Foundation & Stack | Pending |
+| FNDX-05 | Phase 5: Foundation & Stack | Pending |
+| STAK-01 | Phase 5: Foundation & Stack | Pending |
+| STAK-02 | Phase 5: Foundation & Stack | Pending |
+| PROD-01 | Phase 6: Infrastructure | Pending |
+| PROD-02 | Phase 6: Infrastructure | Pending |
+| PROD-03 | Phase 6: Infrastructure | Pending |
+| AGNT-01 | Phase 7: Chat Agent | Pending |
+| AGNT-02 | Phase 7: Chat Agent | Pending |
+| AGNT-03 | Phase 7: Chat Agent | Pending |
+| AGNT-04 | Phase 7: Chat Agent | Pending |
+| AGNT-05 | Phase 7: Chat Agent | Pending |
+| AGNT-06 | Phase 7: Chat Agent | Pending |
+| AGNT-07 | Phase 7: Chat Agent | Pending |
+| ANAL-01 | Phase 8: Analysis & Insights | Pending |
+| ANAL-02 | Phase 8: Analysis & Insights | Pending |
+| ANAL-03 | Phase 8: Analysis & Insights | Pending |
+| ANAL-04 | Phase 8: Analysis & Insights | Pending |
+| ANAL-05 | Phase 8: Analysis & Insights | Pending |
+| ANAL-06 | Phase 8: Analysis & Insights | Pending |
+| INSG-01 | Phase 8: Analysis & Insights | Pending |
+| INSG-02 | Phase 8: Analysis & Insights | Pending |
+| INSG-03 | Phase 8: Analysis & Insights | Pending |
+| INSG-04 | Phase 8: Analysis & Insights | Pending |
+| INSG-05 | Phase 8: Analysis & Insights | Pending |
+| HLTH-01 | Phase 9: Health Dashboard & Launch | Pending |
+| HLTH-02 | Phase 9: Health Dashboard & Launch | Pending |
+| HLTH-03 | Phase 9: Health Dashboard & Launch | Pending |
+| HLTH-04 | Phase 9: Health Dashboard & Launch | Pending |
+| HLTH-05 | Phase 9: Health Dashboard & Launch | Pending |
+| HLTH-06 | Phase 9: Health Dashboard & Launch | Pending |
+| PROD-04 | Phase 9: Health Dashboard & Launch | Pending |
+| PROD-05 | Phase 9: Health Dashboard & Launch | Pending |
 
 **Coverage:**
-- v1 requirements: 32 total — all complete
-- v1.1 requirements: 36 total — all pending
-- Unmapped: 36 (awaiting roadmap)
+- v1 requirements: 32 total -- all complete
+- v1.1 requirements: 36 total -- all mapped to phases
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-22*
 *v1.1 requirements added: 2026-02-13*
+*v1.1 traceability mapped: 2026-02-13*
