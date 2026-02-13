@@ -11,9 +11,8 @@ from ...prompts.analysis_prompts import EMOTION_INTERPRETER_PROMPT
 logger = logging.getLogger(__name__)
 
 
-async def emotion_node(state: dict) -> dict:
+def emotion_node(state: dict, model) -> dict:
     """Interpret emotional patterns and mood trajectories."""
-    model = state['model_factory']('emotion_interpreter')
     context = state.get('therapy_context', {})
 
     context_str = json.dumps({
@@ -31,7 +30,7 @@ async def emotion_node(state: dict) -> dict:
     ]
 
     try:
-        response = await model.ainvoke(messages)
+        response = model.invoke(messages)
         result = _parse_json(response.content)
     except Exception:
         logger.exception("Emotion interpreter failed")
@@ -45,8 +44,7 @@ async def emotion_node(state: dict) -> dict:
             'summary': '감정 분석을 수행할 수 없습니다.',
         }
 
-    state['emotion_analysis'] = result
-    return state
+    return {'emotion_analysis': result}
 
 
 def _parse_json(text: str) -> dict:

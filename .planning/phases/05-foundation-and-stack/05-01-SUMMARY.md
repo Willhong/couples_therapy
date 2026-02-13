@@ -1,0 +1,21 @@
+# 05-01 Execution Summary
+
+- Converted all six analysis agent nodes to synchronous signatures:
+  - `pattern_node(state, model)`
+  - `emotion_node(state, model)`
+  - `balance_node(state, model)`
+  - `resolution_node(state, model)`
+  - `synthesizer_node(state, model)`
+  - `ethics_node(state, model)`
+- Replaced async model usage (`await model.ainvoke(...)`) with sync calls (`model.invoke(...)`).
+- Normalized node returns to partial state updates (dicts) rather than mutating full state.
+- Updated `report_synthesizer` to return flat report keys:
+  - `report_title`
+  - `report_summary`
+  - `key_insights`
+  - `suggested_actions`
+  - `recommended_activities`
+- Renamed ethics exception to `EthicsBlockError`.
+- Updated `ethics_node` to consume flat report fields when `state['report']` is absent and raise `EthicsBlockError` on rejection.
+- Confirmed `analysis_graph.py` now aligns with the new node contracts via wrapper model injection and `EthicsBlockError` import path.
+- No tests were executed in this pass.

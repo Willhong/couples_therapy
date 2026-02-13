@@ -11,9 +11,8 @@ from ...prompts.analysis_prompts import PATTERN_ANALYST_PROMPT
 logger = logging.getLogger(__name__)
 
 
-async def pattern_node(state: dict) -> dict:
+def pattern_node(state: dict, model) -> dict:
     """Analyze communication patterns from therapy data."""
-    model = state['model_factory']('pattern_analyst')
     context = state.get('therapy_context', {})
 
     context_str = json.dumps({
@@ -31,7 +30,7 @@ async def pattern_node(state: dict) -> dict:
     ]
 
     try:
-        response = await model.ainvoke(messages)
+        response = model.invoke(messages)
         result = _parse_json(response.content)
     except Exception:
         logger.exception("Pattern analyst failed")
@@ -44,8 +43,7 @@ async def pattern_node(state: dict) -> dict:
             'summary': '패턴 분석을 수행할 수 없습니다.',
         }
 
-    state['pattern_analysis'] = result
-    return state
+    return {'pattern_analysis': result}
 
 
 def _parse_json(text: str) -> dict:

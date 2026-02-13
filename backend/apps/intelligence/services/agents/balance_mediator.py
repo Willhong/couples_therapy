@@ -15,9 +15,8 @@ from ...prompts.analysis_prompts import BALANCE_MEDIATOR_PROMPT
 logger = logging.getLogger(__name__)
 
 
-async def balance_node(state: dict) -> dict:
+def balance_node(state: dict, model) -> dict:
     """Produce balanced integration of pattern and emotion analyses."""
-    model = state['model_factory']('balance_mediator')
     context = state.get('therapy_context', {})
 
     pattern_str = json.dumps(
@@ -44,7 +43,7 @@ async def balance_node(state: dict) -> dict:
     ]
 
     try:
-        response = await model.ainvoke(messages)
+        response = model.invoke(messages)
         result = _parse_json(response.content)
     except Exception:
         logger.exception("Balance mediator failed")
@@ -58,8 +57,7 @@ async def balance_node(state: dict) -> dict:
             'summary': '균형 분석을 수행할 수 없습니다.',
         }
 
-    state['balance_analysis'] = result
-    return state
+    return {'balance_analysis': result}
 
 
 def _parse_json(text: str) -> dict:

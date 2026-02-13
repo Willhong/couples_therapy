@@ -11,9 +11,8 @@ from ...prompts.analysis_prompts import RESOLUTION_STRATEGIST_PROMPT
 logger = logging.getLogger(__name__)
 
 
-async def resolution_node(state: dict) -> dict:
+def resolution_node(state: dict, model) -> dict:
     """Generate actionable resolution strategies."""
-    model = state['model_factory']('resolution_strategist')
     context = state.get('therapy_context', {})
 
     balance_str = json.dumps(
@@ -36,7 +35,7 @@ async def resolution_node(state: dict) -> dict:
     ]
 
     try:
-        response = await model.ainvoke(messages)
+        response = model.invoke(messages)
         result = _parse_json(response.content)
     except Exception:
         logger.exception("Resolution strategist failed")
@@ -50,8 +49,7 @@ async def resolution_node(state: dict) -> dict:
             'summary': '해결 전략을 생성할 수 없습니다.',
         }
 
-    state['resolution_suggestions'] = result
-    return state
+    return {'resolution_suggestions': result}
 
 
 def _parse_json(text: str) -> dict:

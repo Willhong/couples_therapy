@@ -15,27 +15,42 @@ from ...prompts.analysis_prompts import ETHICS_GUARDIAN_PROMPT
 logger = logging.getLogger(__name__)
 
 
-class EthicsReviewFailed(Exception):
+class EthicsBlockError(Exception):
     """Raised when ethics review rejects the report."""
-    pass
 
 
-async def ethics_node(state: dict) -> dict:
+def ethics_node(state: dict, model) -> dict:
     """Review report for ethical compliance. Blocks on failure."""
-    model = state['model_factory']('ethics_guardian')
+    report = state.get('report')
+    if not isinstance(report, dict):
+        report = {
+            'report_title': state.get('report_title', ''),
+            'report_summary': state.get('report_summary', ''),
+            'key_insights': state.get('key_insights', []),
+            'suggested_actions': state.get('suggested_actions', []),
+            'recommended_activities': state.get('recommended_activities', []),
+            'encouragement': state.get('encouragement', ''),
+            'pattern_analysis': state.get('pattern_analysis', {}),
+            'emotion_analysis': state.get('emotion_analysis', {}),
+            'balance_analysis': state.get('balance_analysis', {}),
+            'resolution_suggestions': state.get('resolution_suggestions', {}),
+        }
 
-    report = state.get('report', {})
     report_str = json.dumps(report, ensure_ascii=False, default=str)
-
     prompt = ETHICS_GUARDIAN_PROMPT.format(report_summary=report_str)
 
     messages = [
         SystemMessage(content=prompt),
-        HumanMessage(content="위 보고서의 윤리적 검토를 수행해 주세요."),
+        HumanMessage(
+            content=(
+                "Review the submitted report, flag any emotional safety issues, and "
+                "return strict JSON with an approved boolean."
+            ),
+        ),
     ]
 
     try:
-        response = await model.ainvoke(messages)
+        response = model.invoke(messages)
         result = _parse_json(response.content)
     except Exception:
         logger.exception("Ethics guardian failed - blocking report delivery")
@@ -49,22 +64,17 @@ async def ethics_node(state: dict) -> dict:
             'cultural_appropriateness': True,
             'professional_referral_flag': False,
             'review_notes': 'Ethics guardian encountered an error',
-            'summary': '윤리 검토 시스템 오류로 보고서 전달이 차단되었습니다.',
+            'summary': 'Ethics review could not be completed.',
         }
 
-    state['ethics_review'] = result
-
-    # BLOCK: if not approved, mark report as failed
     if not result.get('approved', False):
         logger.warning(
             "Ethics review BLOCKED report: %s",
             result.get('modifications_required', []),
         )
-        state['ethics_blocked'] = True
-    else:
-        state['ethics_blocked'] = False
+        raise EthicsBlockError(str(result.get('modifications_required', ['Blocked'])))
 
-    return state
+    return {'ethics_review': result}
 
 
 def _parse_json(text: str) -> dict:

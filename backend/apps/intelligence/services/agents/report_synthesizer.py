@@ -14,10 +14,8 @@ from ...prompts.analysis_prompts import REPORT_SYNTHESIZER_PROMPT
 logger = logging.getLogger(__name__)
 
 
-async def synthesizer_node(state: dict) -> dict:
+def synthesizer_node(state: dict, model) -> dict:
     """Synthesize all analyses into a user-facing Korean report."""
-    model = state['model_factory']('report_synthesizer')
-
     pattern_str = json.dumps(
         state.get('pattern_analysis', {}), ensure_ascii=False, default=str,
     )
@@ -40,25 +38,33 @@ async def synthesizer_node(state: dict) -> dict:
 
     messages = [
         SystemMessage(content=prompt),
-        HumanMessage(content="모든 분석 결과를 종합하여 사용자를 위한 인사이트 보고서를 작성해 주세요."),
+        HumanMessage(
+            content="Generate a practical Korean therapy report from all analysis output as strict JSON.",
+        ),
     ]
 
     try:
-        response = await model.ainvoke(messages)
+        response = model.invoke(messages)
         result = _parse_json(response.content)
     except Exception:
         logger.exception("Report synthesizer failed")
         result = {
-            'report_title': '인사이트 보고서',
-            'report_summary': '분석 결과를 종합할 수 없습니다. 데이터가 충분히 수집되면 다시 시도해 주세요.',
+            'report_title': 'Insight report',
+            'report_summary': 'Report synthesis failed; partial data is available.',
             'key_insights': [],
             'suggested_actions': [],
             'recommended_activities': [],
-            'encouragement': '함께 노력하고 계신 모습이 정말 대단합니다.',
+            'encouragement': 'Please review available analytics and continue.',
         }
 
-    state['report'] = result
-    return state
+    return {
+        'report_title': result.get('report_title', 'Insight report'),
+        'report_summary': result.get('report_summary', ''),
+        'key_insights': result.get('key_insights', []),
+        'suggested_actions': result.get('suggested_actions', []),
+        'recommended_activities': result.get('recommended_activities', []),
+        'encouragement': result.get('encouragement', ''),
+    }
 
 
 def _parse_json(text: str) -> dict:
