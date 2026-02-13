@@ -59,7 +59,7 @@ Plans:
 
 **Milestone Goal:** 축적형 치료 인텔리전스 시스템 구축 + 프로덕션 출시 준비. Chat Agent를 therapeutic listener로 전환하고, 다중 에이전트 분석 파이프라인으로 개인화된 인사이트 리포트를 제공한다.
 
-- [ ] **Phase 5: Foundation & Stack** - Fix 4 critical integration gaps and modernize dependencies
+- [x] **Phase 5: Foundation & Stack** - Fix 4 critical integration gaps and modernize dependencies
 - [ ] **Phase 6: Infrastructure** - PostgreSQL migration and push notification system
 - [ ] **Phase 7: Chat Agent** - Transform chat from analyzer to therapeutic listener
 - [ ] **Phase 8: Analysis & Insights** - Multi-agent analysis pipeline and insight report delivery
@@ -81,10 +81,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Fix 6 analysis agent signatures + 4 integration bugs (FNDX-01)
-- [ ] 05-02-PLAN.md -- Wire event triggers, replace asyncio.run, lazy compile chat_graph (FNDX-02/03/04)
-- [ ] 05-03-PLAN.md -- Upgrade backend dependencies, verify mobile compatibility (STAK-01/02)
-- [ ] 05-04-PLAN.md -- End-to-end pipeline test (FNDX-05)
+- [x] 05-01-PLAN.md -- Fix 6 analysis agent signatures + 4 integration bugs (FNDX-01)
+- [x] 05-02-PLAN.md -- Wire event triggers, replace asyncio.run, lazy compile chat_graph (FNDX-02/03/04)
+- [x] 05-03-PLAN.md -- Upgrade backend dependencies, verify mobile compatibility (STAK-01/02)
+- [x] 05-04-PLAN.md -- End-to-end pipeline test (FNDX-05)
 
 ### Phase 6: Infrastructure
 **Goal**: Production database and push notification delivery are operational
@@ -168,7 +168,7 @@ v1.1: 5 -> 6 -> 7 -> 8 -> 9
 | 3. Audio Pipeline | v1.0 | 10/10 | Complete | 2026-02-08 |
 | 4. Partner & Engagement | v1.0 | 5/5 | Complete | 2026-02-08 |
 | Post-4. v1 Hardening | v1.0 | 4/4 | Complete | 2026-02-08 |
-| 5. Foundation & Stack | v1.1 | 0/TBD | Not started | - |
+| 5. Foundation & Stack | v1.1 | 4/4 | Complete | 2026-02-13 |
 | 6. Infrastructure | v1.1 | 0/TBD | Not started | - |
 | 7. Chat Agent | v1.1 | 0/TBD | Not started | - |
 | 8. Analysis & Insights | v1.1 | 0/TBD | Not started | - |
