@@ -1,7 +1,11 @@
 """Health check endpoints for container orchestration."""
 
 import logging
+import os
+from typing import Any, Dict
 
+from django.conf import settings
+from django.utils import timezone
 from django.db import connection
 from django.http import JsonResponse
 
@@ -23,7 +27,7 @@ def readiness(request):
     Checks database and Redis connectivity.
     Used by load balancers to determine if traffic should be routed here.
     """
-    checks = {}
+    checks: Dict[str, Any] = {}
     healthy = True
 
     # Check database
@@ -38,11 +42,16 @@ def readiness(request):
 
     # Check Redis (channel layer)
     try:
-        from django.conf import settings
         channel_backend = settings.CHANNEL_LAYERS.get('default', {}).get('BACKEND', '')
         if 'Redis' in channel_backend:
             import redis
-            redis_url = settings.CHANNEL_LAYERS['default']['CONFIG']['hosts'][0]
+
+            channel_config = settings.CHANNEL_LAYERS.get('default', {}).get('CONFIG', {})
+            redis_hosts = channel_config.get('hosts') if channel_config else None
+            if not redis_hosts:
+                raise ValueError('CHANNEL_LAYERS Redis host is not configured.')
+
+            redis_url = redis_hosts[0]
             r = redis.from_url(redis_url)
             r.ping()
             checks['redis'] = 'ok'
@@ -55,6 +64,11 @@ def readiness(request):
 
     status_code = 200 if healthy else 503
     return JsonResponse(
-        {'status': 'ok' if healthy else 'unhealthy', 'checks': checks},
+        {
+            'status': 'ok' if healthy else 'unhealthy',
+            'checks': checks,
+            'service_version': os.getenv('APP_VERSION', 'local'),
+            'timestamp': timezone.now().isoformat(),
+        },
         status=status_code,
     )

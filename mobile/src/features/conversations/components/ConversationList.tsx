@@ -7,7 +7,7 @@
  * - narration (with post_action) -> transcript/[id]
  * - live -> transcript/[id]
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   FlatList,
   View,
@@ -81,6 +81,19 @@ export function ConversationList({ nested = false }: ConversationListProps = {})
     );
   }, [hasMore]);
 
+  const contentContainerStyle = useMemo(
+    () => (conversations.length === 0 ? styles.emptyContainer : styles.list),
+    [conversations.length]
+  );
+
+  const handleRefresh = useCallback(() => {
+    refresh();
+  }, [refresh]);
+
+  const handleEndReached = useCallback(() => {
+    loadMore();
+  }, [loadMore]);
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -122,12 +135,10 @@ export function ConversationList({ nested = false }: ConversationListProps = {})
       data={conversations}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      contentContainerStyle={
-        conversations.length === 0 ? styles.emptyContainer : styles.list
-      }
+      contentContainerStyle={contentContainerStyle}
       refreshing={refreshing}
-      onRefresh={refresh}
-      onEndReached={loadMore}
+      onRefresh={handleRefresh}
+      onEndReached={handleEndReached}
       onEndReachedThreshold={0.3}
       ListFooterComponent={renderFooter}
       ListEmptyComponent={

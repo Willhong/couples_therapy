@@ -91,7 +91,10 @@ export default function SettingsScreen(): React.ReactElement {
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         {/* Profile Card */}
         <ProfileCard email={userData?.email || ''} />
 

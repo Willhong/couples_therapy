@@ -8,7 +8,7 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
@@ -57,9 +57,12 @@ export default function AttachmentStyleScreen(): React.ReactElement {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+        <Pressable
+          style={({ pressed }) => [styles.backButton, pressed && styles.pressedOpacity]}
+          onPress={handleBack}
+        >
           <ArrowLeft size={20} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.progressContainer}>
           <View style={styles.progressTrack}>
             <View style={[styles.progressFill, { width: '75%' }]} />
@@ -96,9 +99,12 @@ export default function AttachmentStyleScreen(): React.ReactElement {
                   <View style={styles.sliderArea}>
                     <View style={styles.sliderDots}>
                       {[0, 1, 2, 3, 4].map((value) => (
-                        <TouchableOpacity
+                        <Pressable
                           key={value}
-                          style={styles.dotTouchable}
+                          style={({ pressed }) => [
+                            styles.dotTouchable,
+                            pressed && styles.pressedOpacity,
+                          ]}
                           onPress={() => handleSliderChange(q.id, value as SliderValue)}
                         >
                           <View
@@ -107,7 +113,7 @@ export default function AttachmentStyleScreen(): React.ReactElement {
                               currentValue === value && styles.dotSelected,
                             ]}
                           />
-                        </TouchableOpacity>
+                        </Pressable>
                       ))}
                     </View>
 
@@ -151,13 +157,19 @@ export default function AttachmentStyleScreen(): React.ReactElement {
 
       {/* Bottom Buttons */}
       <View style={styles.bottomBtns}>
-        <TouchableOpacity style={styles.prevButton} onPress={handleBack}>
+        <Pressable
+          style={({ pressed }) => [styles.prevButton, pressed && styles.pressedOpacity]}
+          onPress={handleBack}
+        >
           <ArrowLeft size={20} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [styles.nextButton, pressed && styles.pressedOpacity]}
+          onPress={handleNext}
+        >
           <Text style={styles.nextButtonText}>계속하기</Text>
           <ArrowRight size={20} color={colors.white} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -207,6 +219,9 @@ const styles = StyleSheet.create({
   stepLabel: {
     fontSize: 13,
     color: colors.textSecondary,
+  },
+  pressedOpacity: {
+    opacity: 0.2,
   },
   scrollView: {
     flex: 1,

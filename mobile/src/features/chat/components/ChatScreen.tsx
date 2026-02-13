@@ -7,7 +7,7 @@ import React, { useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   Text,
   ActivityIndicator,
 } from 'react-native';
@@ -84,10 +84,13 @@ export function ChatScreen({
     return (
       <View style={styles.streamingFooter}>
         <AIThinkingIndicator statusMessage={statusMessage} />
-        <TouchableOpacity style={styles.stopButton} onPress={stopStreaming}>
+        <Pressable
+          style={({ pressed }) => [styles.stopButton, pressed && styles.pressed]}
+          onPress={stopStreaming}
+        >
           <StopCircle size={24} color={colors.error} />
           <Text style={styles.stopText}>중지</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   }, [isTyping, statusMessage, stopStreaming]);
@@ -104,13 +107,13 @@ export function ChatScreen({
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton}>
+        <Pressable style={({ pressed }) => [styles.headerButton, pressed && styles.pressed]}>
           <ArrowLeft size={20} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>함께 리프레이밍</Text>
-        <TouchableOpacity style={styles.headerButton}>
+        <Pressable style={({ pressed }) => [styles.headerButton, pressed && styles.pressed]}>
           <EllipsisVertical size={20} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <MessageList
@@ -188,5 +191,8 @@ const styles = StyleSheet.create({
     color: colors.error,
     marginLeft: 4,
     fontSize: 14,
+  },
+  pressed: {
+    opacity: 0.2,
   },
 });

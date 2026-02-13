@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
 } from 'react-native';
 import { colors, typography, spacing } from '@/theme';
@@ -17,9 +17,12 @@ export function SectionHeader({ title, action }: SectionHeaderProps) {
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
       {action && (
-        <TouchableOpacity onPress={action.onPress} activeOpacity={0.7}>
+        <Pressable
+          onPress={action.onPress}
+          style={({ pressed }) => pressed && styles.pressed}
+        >
           <Text style={styles.actionLabel}>{action.label}</Text>
-        </TouchableOpacity>
+        </Pressable>
       )}
     </View>
   );
@@ -34,13 +37,12 @@ export function PageHeader({ title, onBack }: PageHeaderProps) {
   return (
     <View style={styles.pageHeader}>
       {onBack && (
-        <TouchableOpacity
+        <Pressable
           onPress={onBack}
-          style={styles.backButton}
-          activeOpacity={0.7}
+          style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
         >
           <Text style={styles.backArrow}>←</Text>
-        </TouchableOpacity>
+        </Pressable>
       )}
       <Text style={styles.pageTitle}>{title}</Text>
     </View>
@@ -78,6 +80,9 @@ const styles = StyleSheet.create({
   backArrow: {
     fontSize: 24,
     color: colors.textPrimary,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   pageTitle: {
     ...typography.headingMd,

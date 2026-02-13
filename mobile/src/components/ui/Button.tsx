@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  TouchableOpacity,
+  Pressable,
   Text,
   StyleSheet,
   ActivityIndicator,
@@ -26,6 +26,8 @@ export function PrimaryButton({
   loading = false,
   style,
 }: ButtonProps) {
+  const isDisabled = disabled || loading;
+
   const getButtonStyle = () => {
     switch (variant) {
       case 'primaryGreen':
@@ -51,16 +53,16 @@ export function PrimaryButton({
   };
 
   return (
-    <TouchableOpacity
-      style={[
+    <Pressable
+      style={({ pressed }) => [
         styles.button,
         getButtonStyle(),
         disabled && styles.disabled,
+        pressed && !isDisabled && styles.pressed,
         style,
       ]}
       onPress={onPress}
-      disabled={disabled || loading}
-      activeOpacity={0.7}
+      disabled={isDisabled}
     >
       {loading ? (
         <ActivityIndicator
@@ -69,7 +71,7 @@ export function PrimaryButton({
       ) : (
         <Text style={[styles.text, getTextStyle()]}>{title}</Text>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -100,18 +102,18 @@ export function IconButton({
   };
 
   return (
-    <TouchableOpacity
-      style={[
+    <Pressable
+      style={({ pressed }) => [
         styles.iconButton,
         getVariantStyle(),
         { width: size, height: size, borderRadius: size / 2 },
+        pressed && styles.pressed,
         style,
       ]}
       onPress={onPress}
-      activeOpacity={0.7}
     >
       {icon}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -144,6 +146,9 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   text: {
     ...typography.button,

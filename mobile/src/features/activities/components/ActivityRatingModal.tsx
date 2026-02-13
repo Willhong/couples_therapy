@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Modal, Pressable, StyleSheet } from 'react-native';
 import { Star } from 'lucide-react-native';
 import { colors } from '@/theme';
 
@@ -34,29 +34,39 @@ export function ActivityRatingModal({ visible, activityTitle, onSubmit, onSkip }
 
           <View style={styles.stars}>
             {[1, 2, 3, 4, 5].map((value) => (
-              <TouchableOpacity key={value} onPress={() => setRating(value)} activeOpacity={0.7}>
+              <Pressable
+                key={value}
+                onPress={() => setRating(value)}
+                style={({ pressed }) => (pressed ? styles.pressedOpacity70 : undefined)}
+              >
                 <Star
                   size={36}
                   color={value <= rating ? colors.warningAmber : colors.border}
                   fill={value <= rating ? colors.warningAmber : 'transparent'}
                   strokeWidth={1.5}
                 />
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
 
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.skipButton} onPress={handleSkip} activeOpacity={0.7}>
+            <Pressable
+              style={({ pressed }) => [styles.skipButton, pressed && styles.pressedOpacity70]}
+              onPress={handleSkip}
+            >
               <Text style={styles.skipText}>건너뛰기</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.submitButton, rating === 0 && styles.submitButtonDisabled]}
+            </Pressable>
+            <Pressable
+              style={({ pressed }) => [
+                styles.submitButton,
+                rating === 0 && styles.submitButtonDisabled,
+                pressed && styles.pressedOpacity70,
+              ]}
               onPress={handleSubmit}
-              activeOpacity={0.7}
               disabled={rating === 0}
             >
               <Text style={[styles.submitText, rating === 0 && styles.submitTextDisabled]}>평가 제출</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </View>
@@ -130,5 +140,8 @@ const styles = StyleSheet.create({
   },
   submitTextDisabled: {
     color: colors.textTertiary,
+  },
+  pressedOpacity70: {
+    opacity: 0.7,
   },
 });

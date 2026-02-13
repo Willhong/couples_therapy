@@ -18,6 +18,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         # Get user's couple for group membership
         self.couple = await self.get_active_couple()
+        if not self.couple:
+            await self.close(code=4003)
+            return
 
         if self.couple:
             self.couple_group = f'chat_couple_{self.couple.id}'
@@ -48,6 +51,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         message_id = content.get('message_id')
         privacy_level = content.get('privacy_level', 'full')
 
+        if not self.couple or not message_id:
+            await self.send_json({
+                'type': 'error',
+                'message': 'Invalid share request.',
+            })
+            return
+
         share = await self.create_share(message_id, privacy_level)
 
         if share:
@@ -74,6 +84,13 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         """Handle partner response to shared content."""
         share_id = content.get('share_id')
         response_text = content.get('response')
+
+        if not share_id or response_text is None:
+            await self.send_json({
+                'type': 'error',
+                'message': 'Invalid share response request.',
+            })
+            return
 
         updated = await self.save_response(share_id, response_text)
 

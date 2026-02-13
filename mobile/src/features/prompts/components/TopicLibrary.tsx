@@ -6,7 +6,6 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Pressable,
@@ -115,11 +114,12 @@ export function TopicLibrary() {
         contentContainerStyle={styles.categoryTabsContent}
       >
         {CATEGORIES.map((cat) => (
-          <TouchableOpacity
+          <Pressable
             key={cat.key}
-            style={[
+            style={({ pressed }) => [
               styles.categoryTab,
               selectedCategory === cat.key && styles.categoryTabActive,
+              pressed && styles.pressedOpacity,
             ]}
             onPress={() => setSelectedCategory(cat.key)}
           >
@@ -131,7 +131,7 @@ export function TopicLibrary() {
             >
               {cat.label}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </ScrollView>
 
@@ -143,9 +143,15 @@ export function TopicLibrary() {
       ) : error ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={loadTopics}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.retryButton,
+              pressed && styles.pressedOpacity,
+            ]}
+            onPress={loadTopics}
+          >
             <Text style={styles.retryButtonText}>다시 시도</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       ) : (
         <ScrollView
@@ -169,17 +175,25 @@ export function TopicLibrary() {
               <Text style={styles.modalCategory}>
                 {selectedTopic.category_display}
               </Text>
-              <TouchableOpacity onPress={() => setSelectedTopic(null)}>
+              <Pressable
+                onPress={() => setSelectedTopic(null)}
+                style={({ pressed }) =>
+                  pressed ? styles.pressedOpacity : undefined
+                }
+              >
                 <Text style={styles.modalClose}>✕</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
             <Text style={styles.modalTopicText}>{selectedTopic.text_ko}</Text>
-            <TouchableOpacity
-              style={styles.startButton}
+            <Pressable
+              style={({ pressed }) => [
+                styles.startButton,
+                pressed && styles.pressedOpacity,
+              ]}
               onPress={handleStartConversation}
             >
               <Text style={styles.startButtonText}>이 주제로 대화하기</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       )}
@@ -281,6 +295,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2,
+  },
+  pressedOpacity: {
+    opacity: 0.2,
   },
   topicHeader: {
     flexDirection: 'row',

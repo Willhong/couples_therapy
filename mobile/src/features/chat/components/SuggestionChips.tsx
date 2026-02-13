@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Suggestion chips component
  * Displays quick action buttons for voice input and topic recommendations
  */
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Mic, Lightbulb } from 'lucide-react-native';
 import { colors } from '@/theme';
 
@@ -21,22 +21,20 @@ export function SuggestionChips({
   return (
     <View style={styles.container}>
       <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.actionButton}
+        <Pressable
+          style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
           onPress={onVoicePress}
-          activeOpacity={0.7}
         >
           <Mic size={14} color="#5A5A5A" />
           <Text style={styles.actionText}>음성</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
           onPress={onTopicRecommendPress}
-          activeOpacity={0.7}
         >
           <Lightbulb size={14} color="#5A5A5A" />
           <Text style={styles.actionText}>주제 추천</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
@@ -66,3 +64,4 @@ const styles = StyleSheet.create({
     color: '#5A5A5A',
   },
 });
+

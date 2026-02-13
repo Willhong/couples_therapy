@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -74,6 +74,27 @@ export default function SharedScreen(): React.ReactElement {
     [router]
   );
 
+  const handleRetryPress = useCallback(() => {
+    loadSharedReframings();
+  }, [loadSharedReframings]);
+
+  const handleRefresh = useCallback(() => {
+    loadSharedReframings(true);
+  }, [loadSharedReframings]);
+
+  const keyExtractor = useCallback((item: SharedReframing) => item.id, []);
+
+  const refreshControl = useMemo(
+    () => (
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
+        tintColor={colors.primary}
+      />
+    ),
+    [refreshing, handleRefresh]
+  );
+
   const renderItem = useCallback(
     ({ item }: { item: SharedReframing }) => {
       const date = new Date(item.shared_at);
@@ -129,7 +150,7 @@ export default function SharedScreen(): React.ReactElement {
       {error ? (
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
-          <Pressable style={styles.retryButton} onPress={() => loadSharedReframings()}>
+          <Pressable style={styles.retryButton} onPress={handleRetryPress}>
             <Text style={styles.retryButtonText}>다시 시도</Text>
           </Pressable>
         </View>
@@ -145,15 +166,9 @@ export default function SharedScreen(): React.ReactElement {
         <FlatList
           data={sharedItems}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={keyExtractor}
           contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => loadSharedReframings(true)}
-              tintColor={colors.primary}
-            />
-          }
+          refreshControl={refreshControl}
         />
       )}
     </SafeAreaView>

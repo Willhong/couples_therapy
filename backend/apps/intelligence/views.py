@@ -89,7 +89,10 @@ def unread_count(request):
         is_read=False,
         status='completed',
     ).count()
-    return Response({'unread_count': count})
+    return Response({
+        'count': count,
+        'unread_count': count,
+    })
 
 
 @api_view(['GET'])

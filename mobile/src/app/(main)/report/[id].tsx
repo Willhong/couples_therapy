@@ -10,12 +10,12 @@ import { markReportRead } from '@/features/intelligence';
 
 export default function ReportDetailScreen(): React.ReactElement {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const reportId = Number(id);
+  const { id } = useLocalSearchParams<{ id: string | string[] }>();
+  const reportId = Array.isArray(id) ? String(id[0]) : id;
   const { data, loading, error } = useReportDetail(reportId);
 
   useEffect(() => {
-    if (data && data.status === 'generated') {
+    if (data && (data.status === 'generated' || (data.status === 'completed' && !data.is_read))) {
       markReportRead(reportId).catch(() => {
         // Silently fail
       });

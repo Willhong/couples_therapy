@@ -30,147 +30,49 @@ export default function MainLayout(): React.ReactElement {
       <Tabs.Screen
         name="home"
         options={{
-          title: '홈',
-          tabBarIcon: ({ color, size }) => (
-            <House size={size} color={color} />
-          ),
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => <House size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="activities"
         options={{
-          title: '활동',
-          tabBarIcon: ({ color, size }) => (
-            <CalendarHeart size={size} color={color} />
-          ),
+          title: 'Activities',
+          tabBarIcon: ({ color, size }) => <CalendarHeart size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="journal"
         options={{
-          title: '일기',
-          tabBarIcon: ({ color, size }) => (
-            <MessageSquareHeart size={size} color={color} />
-          ),
+          title: 'Journal',
+          tabBarIcon: ({ color, size }) => <MessageSquareHeart size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="insights"
         options={{
-          title: '인사이트',
-          tabBarIcon: ({ color, size }) => (
-            <BarChart3 size={size} color={color} />
-          ),
+          title: 'Insights',
+          tabBarIcon: ({ color, size }) => <BarChart3 size={size} color={color} />,
         }}
       />
-      <Tabs.Screen
-        name="record"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="checkin-flow"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="chat"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="transcript/[id]"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="post-recording-choice"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="cooldown"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="topics"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="shared"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="shared/[id]"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="conversations"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="prompt-history"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="recording-preview"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="reports"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="report/[id]"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="partner-settings"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="privacy-settings"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="notification-settings"
-        options={{
-          href: null,
-        }}
-      />
+      <Tabs.Screen name="record" options={{ href: null }} />
+      <Tabs.Screen name="checkin-flow" options={{ href: null }} />
+      <Tabs.Screen name="chat" options={{ href: null }} />
+      <Tabs.Screen name="settings" options={{ href: null }} />
+      <Tabs.Screen name="transcript/[id]" options={{ href: null }} />
+      <Tabs.Screen name="post-recording-choice" options={{ href: null }} />
+      <Tabs.Screen name="cooldown" options={{ href: null }} />
+      <Tabs.Screen name="topics" options={{ href: null }} />
+      <Tabs.Screen name="shared" options={{ href: null }} />
+      <Tabs.Screen name="shared/[id]" options={{ href: null }} />
+      <Tabs.Screen name="conversations" options={{ href: null }} />
+      <Tabs.Screen name="prompt-history" options={{ href: null }} />
+      <Tabs.Screen name="recording-preview" options={{ href: null }} />
+      <Tabs.Screen name="reports" options={{ href: null }} />
+      <Tabs.Screen name="report/[id]" options={{ href: null }} />
+      <Tabs.Screen name="partner-settings" options={{ href: null }} />
+      <Tabs.Screen name="privacy-settings" options={{ href: null }} />
+      <Tabs.Screen name="notification-settings" options={{ href: null }} />
     </Tabs>
   );
 }

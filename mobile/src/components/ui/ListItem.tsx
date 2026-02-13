@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
 } from 'react-native';
 import { colors, typography, spacing } from '@/theme';
@@ -24,13 +24,11 @@ export function ListItem({
   showChevron = false,
   onPress,
 }: ListItemProps) {
-  const Component = onPress ? TouchableOpacity : View;
-
   return (
-    <Component
-      style={styles.container}
+    <Pressable
+      style={({ pressed }) => [styles.container, pressed && onPress && styles.pressed]}
       onPress={onPress}
-      activeOpacity={onPress ? 0.7 : 1}
+      disabled={!onPress}
     >
       {icon && <View style={styles.iconContainer}>{icon}</View>}
       <View style={styles.textContainer}>
@@ -39,7 +37,7 @@ export function ListItem({
       </View>
       {right && <View style={styles.rightContainer}>{right}</View>}
       {showChevron && <Text style={styles.chevron}>›</Text>}
-    </Component>
+    </Pressable>
   );
 }
 
@@ -49,6 +47,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   iconContainer: {
     marginRight: spacing.md,

@@ -9,7 +9,7 @@ import {
   Text,
   Modal,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   Alert,
 } from 'react-native';
@@ -139,12 +139,12 @@ export function ReframingModal({
               <Text style={styles.resourceText}>여성긴급전화 1366 (24시간)</Text>
               <Text style={styles.resourceText}>경찰 112</Text>
             </View>
-            <TouchableOpacity
-              style={styles.acknowledgeButton}
+            <Pressable
+              style={({ pressed }) => [styles.acknowledgeButton, pressed && styles.pressed]}
               onPress={onClose}
             >
               <Text style={styles.acknowledgeText}>확인했습니다</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -162,19 +162,25 @@ export function ReframingModal({
         <View style={styles.header}>
           <Text style={styles.headerTitle}>관점 분석</Text>
           <View style={styles.headerActions}>
-            <TouchableOpacity onPress={handleCopy} style={styles.iconButton}>
+            <Pressable
+              onPress={handleCopy}
+              style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
+            >
               <Copy size={22} color={colors.textSecondary} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleSave} style={styles.iconButton}>
+            </Pressable>
+            <Pressable
+              onPress={handleSave}
+              style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
+            >
               <Heart size={22} color={saved ? colors.error : colors.textSecondary} fill={saved ? colors.error : 'none'} />
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               onPress={handleClose}
-              style={styles.iconButton}
+              style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
               disabled={!acknowledged}
             >
               <X size={24} color={acknowledged ? colors.gray700 : colors.gray300} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
 
@@ -226,36 +232,39 @@ export function ReframingModal({
 
         {/* Follow-up buttons */}
         <View style={styles.followUpContainer}>
-          <TouchableOpacity
-            style={styles.followUpButton}
+          <Pressable
+            style={({ pressed }) => [styles.followUpButton, pressed && styles.pressed]}
             onPress={() => onFollowUp('이 부분에 대해 더 자세히 알려주세요')}
           >
             <MessageCircle size={18} color={colors.primary} />
             <Text style={styles.followUpText}>더 자세히</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.followUpButton}
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [styles.followUpButton, pressed && styles.pressed]}
             onPress={() => onFollowUp('이 분석에 동의하지 않아요')}
           >
             <Hand size={18} color={colors.primary} />
             <Text style={styles.followUpText}>동의하지 않아요</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Bottom actions */}
         <View style={styles.bottomActions}>
           {!acknowledged ? (
-            <TouchableOpacity
-              style={styles.acknowledgeButton}
+            <Pressable
+              style={({ pressed }) => [styles.acknowledgeButton, pressed && styles.pressed]}
               onPress={handleAcknowledge}
             >
               <Text style={styles.acknowledgeText}>읽었습니다</Text>
-            </TouchableOpacity>
+            </Pressable>
           ) : (
-            <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+            <Pressable
+              style={({ pressed }) => [styles.shareButton, pressed && styles.pressed]}
+              onPress={handleShare}
+            >
               <Share2 size={20} color={colors.white} />
               <Text style={styles.shareText}>파트너와 공유하기</Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
 
@@ -366,6 +375,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
+  },
+  pressed: {
+    opacity: 0.2,
   },
   // Abuse warning styles
   abuseWarning: {

@@ -81,7 +81,10 @@ export default function PrivacySettingsScreen(): React.ReactElement {
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         {/* PIPA Notice */}
         <View style={styles.noticeCard}>
           <Shield size={20} color={colors.primary} />

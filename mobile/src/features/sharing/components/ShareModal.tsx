@@ -8,7 +8,7 @@ import {
   View,
   Text,
   Modal,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
@@ -82,9 +82,12 @@ export function ShareModal({
         <View style={styles.container}>
           <View style={styles.header}>
             <Text style={styles.title}>파트너와 공유</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Pressable
+              onPress={onClose}
+              style={({ pressed }) => [styles.closeButton, pressed && styles.pressed]}
+            >
               <X size={24} color={colors.textSecondary} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <Text style={styles.description}>
@@ -93,11 +96,12 @@ export function ShareModal({
 
           <View style={styles.options}>
             {PRIVACY_OPTIONS.map((option) => (
-              <TouchableOpacity
+              <Pressable
                 key={option.level}
-                style={[
+                style={({ pressed }) => [
                   styles.option,
                   selected === option.level && styles.optionSelected,
+                  pressed && styles.pressed,
                 ]}
                 onPress={() => setSelected(option.level)}
               >
@@ -123,12 +127,16 @@ export function ShareModal({
                 {selected === option.level && (
                   <CheckCircle size={24} color={colors.primary} />
                 )}
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
 
-          <TouchableOpacity
-            style={[styles.shareButton, loading && styles.shareButtonDisabled]}
+          <Pressable
+            style={({ pressed }) => [
+              styles.shareButton,
+              loading && styles.shareButtonDisabled,
+              pressed && styles.pressed,
+            ]}
             onPress={handleShare}
             disabled={loading}
           >
@@ -139,7 +147,7 @@ export function ShareModal({
                 {selected === 'none' ? '닫기' : '공유하기'}
               </Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </Modal>
@@ -232,5 +240,8 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  pressed: {
+    opacity: 0.2,
   },
 });

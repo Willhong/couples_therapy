@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,17 @@ export default function ReportsScreen(): React.ReactElement {
     setRefreshing(false);
   }, [refetch]);
 
+  const handleBackPress = useCallback(() => {
+    router.back();
+  }, [router]);
+
+  const keyExtractor = useCallback((item: InsightReportSummary) => item.id, []);
+
+  const refreshControl = useMemo(
+    () => <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />,
+    [refreshing, handleRefresh],
+  );
+
   const renderItem = useCallback(
     ({ item }: { item: InsightReportSummary }) => <ReportListItem report={item} />,
     [],
@@ -53,7 +64,7 @@ export default function ReportsScreen(): React.ReactElement {
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
+        <Pressable style={styles.backButton} onPress={handleBackPress}>
           <ChevronLeft size={24} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.headerTitle}>분석 리포트</Text>
@@ -71,13 +82,11 @@ export default function ReportsScreen(): React.ReactElement {
       ) : (
         <FlatList
           data={data}
-          keyExtractor={(item) => String(item.id)}
+          keyExtractor={keyExtractor}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
+          refreshControl={refreshControl}
         />
       )}
     </SafeAreaView>

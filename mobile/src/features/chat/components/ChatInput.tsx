@@ -6,7 +6,7 @@ import React, { useState, useCallback } from 'react';
 import {
   View,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -67,17 +67,20 @@ export function ChatInput({
             blurOnSubmit={false}
             onSubmitEditing={handleSend}
           />
-          <TouchableOpacity
-            style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
+          <Pressable
+            style={({ pressed }) => [
+              styles.sendButton,
+              !canSend && styles.sendButtonDisabled,
+              pressed && canSend && styles.sendButtonPressed,
+            ]}
             onPress={handleSend}
             disabled={!canSend}
-            activeOpacity={0.7}
           >
             <Send
               size={20}
               color={colors.white}
             />
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <View style={styles.quickActions}>
           <VoiceInputButton onTranscript={(transcribedText) => {
@@ -139,5 +142,8 @@ const styles = StyleSheet.create({
   },
   sendButtonDisabled: {
     opacity: 0.3,
+  },
+  sendButtonPressed: {
+    opacity: 0.7,
   },
 });

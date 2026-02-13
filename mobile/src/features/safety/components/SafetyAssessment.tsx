@@ -6,7 +6,7 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -131,21 +131,30 @@ export function SafetyAssessment() {
                     {hotline.description}
                   </Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.callButton}
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.callButton,
+                    pressed && styles.pressedOpacity,
+                  ]}
                   onPress={() => handleCallHotline(hotline.number)}
                 >
                   <Text style={styles.callButtonText}>{hotline.number}</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             ))}
           </View>
 
           <Text style={styles.disclaimer}>{crisisResources.disclaimer}</Text>
 
-          <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.continueButton,
+              pressed && styles.pressedOpacity,
+            ]}
+            onPress={handleContinue}
+          >
             <Text style={styles.continueButtonText}>계속하기</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </ScrollView>
     );
@@ -180,11 +189,12 @@ export function SafetyAssessment() {
         {currentQuestion.type === 'scale_1_5' ? (
           <View style={styles.scaleContainer}>
             {[1, 2, 3, 4, 5].map((value) => (
-              <TouchableOpacity
+              <Pressable
                 key={value}
-                style={[
+                style={({ pressed }) => [
                   styles.scaleButton,
                   currentAnswer === value && styles.scaleButtonActive,
+                  pressed && styles.pressedOpacity,
                 ]}
                 onPress={() => handleScaleAnswer(value)}
               >
@@ -197,15 +207,16 @@ export function SafetyAssessment() {
                   {value}
                 </Text>
                 <Text style={styles.scaleLabel}>{SCALE_LABELS[value - 1]}</Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         ) : (
           <View style={styles.yesNoContainer}>
-            <TouchableOpacity
-              style={[
+            <Pressable
+              style={({ pressed }) => [
                 styles.yesNoButton,
                 currentAnswer === 'no' && styles.yesNoButtonActive,
+                pressed && styles.pressedOpacity,
               ]}
               onPress={() => handleYesNoAnswer('no')}
             >
@@ -217,11 +228,12 @@ export function SafetyAssessment() {
               >
                 아니요
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
+            </Pressable>
+            <Pressable
+              style={({ pressed }) => [
                 styles.yesNoButton,
                 currentAnswer === 'yes' && styles.yesNoButtonActive,
+                pressed && styles.pressedOpacity,
               ]}
               onPress={() => handleYesNoAnswer('yes')}
             >
@@ -233,7 +245,7 @@ export function SafetyAssessment() {
               >
                 예
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         )}
       </ScrollView>
@@ -241,29 +253,37 @@ export function SafetyAssessment() {
       {/* Navigation */}
       <View style={styles.navigation}>
         {currentStep > 0 && (
-          <TouchableOpacity style={styles.backButton} onPress={goBack}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && styles.pressedOpacity,
+            ]}
+            onPress={goBack}
+          >
             <Text style={styles.backText}>이전</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
 
         {!isLastQuestion ? (
-          <TouchableOpacity
-            style={[
+          <Pressable
+            style={({ pressed }) => [
               styles.nextButton,
               currentStep === 0 && styles.nextButtonFull,
               !canProceed && styles.buttonDisabled,
+              pressed && canProceed && styles.pressedOpacity,
             ]}
             onPress={goNext}
             disabled={!canProceed}
           >
             <Text style={styles.nextText}>다음</Text>
-          </TouchableOpacity>
+          </Pressable>
         ) : (
-          <TouchableOpacity
-            style={[
+          <Pressable
+            style={({ pressed }) => [
               styles.nextButton,
               !canProceed && styles.buttonDisabled,
               submitting && styles.buttonDisabled,
+              pressed && canProceed && !submitting && styles.pressedOpacity,
             ]}
             onPress={handleSubmit}
             disabled={!canProceed || submitting}
@@ -273,7 +293,7 @@ export function SafetyAssessment() {
             ) : (
               <Text style={styles.nextText}>완료</Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
     </View>
@@ -420,6 +440,9 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.5,
+  },
+  pressedOpacity: {
+    opacity: 0.2,
   },
   crisisContainer: {
     paddingTop: 24,

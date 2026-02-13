@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
@@ -94,14 +94,14 @@ export function ConflictStyleStep({
           render={({ field: { onChange, value } }) => (
             <View style={styles.optionsContainer}>
               {CONFLICT_STYLES.map((style) => (
-                <TouchableOpacity
+                <Pressable
                   key={style.value}
-                  style={[
+                  style={({ pressed }) => [
                     styles.optionCard,
                     value === style.value && styles.optionCardSelected,
+                    pressed && styles.pressedOpacity,
                   ]}
                   onPress={() => onChange(style.value)}
-                  activeOpacity={0.7}
                 >
                   <View style={styles.radioOuter}>
                     {value === style.value && (
@@ -121,7 +121,7 @@ export function ConflictStyleStep({
                       {style.description}
                     </Text>
                   </View>
-                </TouchableOpacity>
+                </Pressable>
               ))}
             </View>
           )}
@@ -145,14 +145,14 @@ export function ConflictStyleStep({
           render={({ field: { onChange, value } }) => (
             <View style={styles.frequencyContainer}>
               {COMMUNICATION_FREQUENCIES.map((freq) => (
-                <TouchableOpacity
+                <Pressable
                   key={freq.value}
-                  style={[
+                  style={({ pressed }) => [
                     styles.frequencyOption,
                     value === freq.value && styles.frequencyOptionSelected,
+                    pressed && styles.pressedOpacity,
                   ]}
                   onPress={() => onChange(freq.value)}
-                  activeOpacity={0.7}
                 >
                   <Text
                     style={[
@@ -165,7 +165,7 @@ export function ConflictStyleStep({
                   <Text style={styles.frequencyDescription}>
                     {freq.description}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               ))}
             </View>
           )}
@@ -289,6 +289,9 @@ const styles = StyleSheet.create({
   frequencyDescription: {
     fontSize: 14,
     color: colors.textSecondary,
+  },
+  pressedOpacity: {
+    opacity: 0.7,
   },
   errorText: {
     fontSize: 14,

@@ -75,7 +75,10 @@ export default function NotificationSettingsScreen(): React.ReactElement {
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <View style={styles.card}>
           {prefs && (Object.keys(PREF_LABELS) as Array<keyof NotificationPrefs>).map((key, index, arr) => (
             <React.Fragment key={key}>

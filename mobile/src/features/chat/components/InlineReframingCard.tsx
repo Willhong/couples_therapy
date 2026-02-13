@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Inline Reframing Card component
  * Displays reframing suggestions inline within the chat bubble
  * with action chips for sharing and saving
  */
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { colors } from '@/theme';
 import type { ReframingData } from '../types';
 
@@ -34,20 +34,18 @@ export function InlineReframingCard({
         <Text style={styles.quoteText}>{reframedText}</Text>
       </View>
       <View style={styles.actionRow}>
-        <TouchableOpacity
-          style={styles.actionChip}
+        <Pressable
+          style={({ pressed }) => [styles.actionChip, pressed && styles.actionChipPressed]}
           onPress={onShareWithPartner}
-          activeOpacity={0.7}
         >
           <Text style={styles.actionChipText}>파트너와 공유</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionChip}
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [styles.actionChip, pressed && styles.actionChipPressed]}
           onPress={onSaveToJournal}
-          activeOpacity={0.7}
         >
           <Text style={styles.actionChipText}>일기에 저장</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
@@ -90,3 +88,4 @@ const styles = StyleSheet.create({
     color: '#5A5A5A',
   },
 });
+

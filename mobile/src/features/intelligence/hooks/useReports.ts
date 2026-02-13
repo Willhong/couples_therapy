@@ -27,7 +27,7 @@ export function useReports() {
   return { data, loading, error, refetch: fetch };
 }
 
-export function useReportDetail(id: number) {
+export function useReportDetail(id: string) {
   const [data, setData] = useState<InsightReportDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

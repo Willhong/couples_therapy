@@ -2,7 +2,7 @@
  * Activities route - displays activities and exercises for the couple
  */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SlidersHorizontal } from 'lucide-react-native';
 import { colors, headingFont } from '@/theme';
@@ -156,9 +156,12 @@ export default function ActivitiesRoute(): React.ReactElement {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>활동</Text>
-        <TouchableOpacity
-          style={[styles.filterButton, !sortByNew && styles.filterButtonActive]}
-          activeOpacity={0.7}
+        <Pressable
+          style={({ pressed }) => [
+            styles.filterButton,
+            !sortByNew && styles.filterButtonActive,
+            pressed && styles.pressedOpacity70,
+          ]}
           onPress={() => {
             Alert.alert(
               '정렬',
@@ -172,23 +175,22 @@ export default function ActivitiesRoute(): React.ReactElement {
           }}
         >
           <SlidersHorizontal size={20} color={colors.textPrimary} strokeWidth={2} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Tab Bar */}
       <View style={styles.tabBar}>
         {(['추천', '소통', '친밀감'] as TabType[]).map((tab) => (
-          <TouchableOpacity
+          <Pressable
             key={tab}
-            style={styles.tab}
+            style={({ pressed }) => [styles.tab, pressed && styles.pressedOpacity70]}
             onPress={() => setActiveTab(tab)}
-            activeOpacity={0.7}
           >
             <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
               {tab}
             </Text>
             {activeTab === tab && <View style={styles.tabIndicator} />}
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
 
@@ -314,5 +316,8 @@ const styles = StyleSheet.create({
   },
   activityList: {
     gap: 12,
+  },
+  pressedOpacity70: {
+    opacity: 0.7,
   },
 });

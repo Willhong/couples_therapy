@@ -4,14 +4,14 @@
  */
 import { useState, useCallback, useRef } from 'react';
 import { TokenStorage } from '@/lib/auth';
-import { API_URL } from '@/lib/api';
+import { API_URL, getApiErrorMessage } from '@/lib/api';
 import type { ReframingData } from '../types';
 
 interface StreamResult {
   finalResponse: string;
   analysis?: ReframingData['analysis'];
   suggestions?: string[];
-  messageId?: string; // Database UUID for the AI message
+  messageId?: string;
   mode?: 'chat' | 'reframing' | 'comfort' | 'crisis';
   crisisType?: string;
 }
@@ -43,22 +43,23 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
       onStatus?: (message: string) => void,
       onComplete?: (result: StreamResult) => void
     ): Promise<StreamResult> => {
-      // Cancel any existing request
+      if (!conversationId || !message) {
+        throw new Error('유효하지 않은 채팅 요청입니다.');
+      }
+
       abortControllerRef.current?.abort();
       abortControllerRef.current = new AbortController();
 
       setIsStreaming(true);
-      setStatusMessage('분석 중...');
+      setStatusMessage('요청 중입니다...');
       setError(null);
-      onStatus?.('분석 중...');
+      onStatus?.('요청 중입니다...');
 
       let result: StreamResult = { finalResponse: '' };
 
       try {
         const token = await TokenStorage.getAccessToken();
 
-        // Use regular reframe endpoint instead of streaming
-        // React Native fetch doesn't support ReadableStream
         const response = await fetch(`${API_URL}/api/v1/chat/reframe/`, {
           method: 'POST',
           headers: {
@@ -73,13 +74,16 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
         });
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.detail || '요청에 실패했습니다');
+          const errorBody = await response.json().catch(() => undefined);
+          const message = getApiErrorMessage({
+            response: { data: errorBody },
+            message: `요청 실패: ${response.status}`,
+          });
+          throw new Error(message);
         }
 
         const data = await response.json();
 
-        // Handle two-mode response
         if (data.mode === 'chat') {
           result = {
             finalResponse: data.message || '',
@@ -88,12 +92,13 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
             messageId: data.message_id,
           };
         } else {
-          // reframing mode (backward-compatible with old format without mode field)
           result = {
             finalResponse: data.final_response || '',
             analysis: data.analysis,
             suggestions: data.suggestions || [],
             messageId: data.message_id,
+            mode: data.mode,
+            crisisType: data.crisis_type,
           };
         }
 
@@ -101,17 +106,18 @@ export function useStreamingResponse(): UseStreamingResponseReturn {
         setStatusMessage('');
         onComplete?.(result);
         return result;
-      } catch (error: unknown) {
-        const err = error as Error;
-        if (err.name === 'AbortError') {
+      } catch (streamError: unknown) {
+        if (streamError instanceof Error && streamError.name === 'AbortError') {
           setIsStreaming(false);
           setStatusMessage('');
           return result;
         }
+
+        const message = getApiErrorMessage(streamError);
         setIsStreaming(false);
         setStatusMessage('');
-        setError(err.message || '알 수 없는 오류가 발생했습니다');
-        throw error;
+        setError(message);
+        throw new Error(message);
       }
     },
     []

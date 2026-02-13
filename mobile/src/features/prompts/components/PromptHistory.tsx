@@ -1,7 +1,7 @@
 /**
  * Prompt History component - list of past exchanges
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,11 +18,7 @@ export function PromptHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadHistory();
-  }, []);
-
-  const loadHistory = async () => {
+  const loadHistory = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -33,9 +29,13 @@ export function PromptHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const renderItem = ({ item }: { item: DailyPromptAssignment }) => {
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
+
+  const renderItem = useCallback(({ item }: { item: DailyPromptAssignment }) => {
     const [response1, response2] = item.responses;
 
     return (
@@ -64,7 +64,9 @@ export function PromptHistory() {
         </View>
       </View>
     );
-  };
+  }, []);
+
+  const keyExtractor = useCallback((item: DailyPromptAssignment) => item.id.toString(), []);
 
   if (loading) {
     return (
@@ -94,7 +96,7 @@ export function PromptHistory() {
     <FlatList
       data={history}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={keyExtractor}
       contentContainerStyle={styles.list}
     />
   );

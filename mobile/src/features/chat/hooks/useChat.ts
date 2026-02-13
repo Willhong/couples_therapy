@@ -4,11 +4,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { chatApi } from '../services/chatApi';
 import { useStreamingResponse } from './useStreamingResponse';
-import { Message, ReframingData, ChatMessage } from '../types';
+import { Message, ChatMessage } from '../types';
 
-/**
- * Convert backend message to ChatMessage format
- */
 function toChatMessage(msg: Message): ChatMessage {
   return {
     _id: msg.id,
@@ -16,7 +13,7 @@ function toChatMessage(msg: Message): ChatMessage {
     createdAt: new Date(msg.created_at),
     user: {
       _id: msg.role === 'user' ? 'user' : 'ai',
-      name: msg.role === 'user' ? undefined : 'AI 코치',
+      name: msg.role === 'user' ? undefined : 'AI',
     },
     reframingData: msg.reframing_data || undefined,
   };
@@ -32,7 +29,6 @@ interface UseChatReturn {
   conversationId: string | null;
 }
 
-// Stable empty array reference to prevent re-renders
 const EMPTY_MESSAGES: ChatMessage[] = [];
 
 export function useChat(conversationId: string | null): UseChatReturn {
@@ -44,64 +40,86 @@ export function useChat(conversationId: string | null): UseChatReturn {
   const [isTyping, setIsTyping] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
 
-  // Use ref to track message updates without triggering re-renders
   const messagesRef = useRef<ChatMessage[]>(EMPTY_MESSAGES);
-
   const { startStreaming, stopStreaming: stopStream } = useStreamingResponse();
 
-  // Load conversation history
   useEffect(() => {
+    setCurrentConversationId((prev) => {
+      if (prev === conversationId) {
+        return prev;
+      }
+      return conversationId;
+    });
+  }, [conversationId]);
+
+  useEffect(() => {
+    let active = true;
+
     async function loadConversation() {
       if (!currentConversationId) {
-        setLoading(false);
+        messagesRef.current = EMPTY_MESSAGES;
+        if (active) {
+          setMessages(EMPTY_MESSAGES);
+          setLoading(false);
+        }
         return;
       }
 
       try {
+        if (active) {
+          setLoading(true);
+        }
         const data = await chatApi.getConversation(currentConversationId);
         const chatMessages = data.messages.map(toChatMessage).reverse();
-        messagesRef.current = chatMessages;
-        setMessages(chatMessages);
+        if (active) {
+          messagesRef.current = chatMessages;
+          setMessages(chatMessages);
+        }
       } catch (error) {
         console.error('Failed to load conversation:', error);
+        if (active) {
+          messagesRef.current = EMPTY_MESSAGES;
+          setMessages(EMPTY_MESSAGES);
+        }
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     }
 
     loadConversation();
+    return () => {
+      active = false;
+    };
   }, [currentConversationId]);
 
-  // Stop streaming handler
   const stopStreaming = useCallback(() => {
     stopStream();
     setIsTyping(false);
     setStatusMessage('');
   }, [stopStream]);
 
-  // Create or get conversation
   const ensureConversation = useCallback(async (): Promise<string> => {
-    if (currentConversationId) return currentConversationId;
+    if (currentConversationId) {
+      return currentConversationId;
+    }
 
     const newConversation = await chatApi.createConversation();
     setCurrentConversationId(newConversation.id);
     return newConversation.id;
   }, [currentConversationId]);
 
-  // Helper to update messages without triggering infinite loops
   const addMessage = useCallback((message: ChatMessage) => {
-    // Prepend message (newest first for inverted list)
     const newMessages = [message, ...messagesRef.current];
     messagesRef.current = newMessages;
     setMessages(newMessages);
   }, []);
 
-  // Send message
   const sendMessage = useCallback(
     async (text: string) => {
       const convId = await ensureConversation();
 
-      // Add user message immediately (optimistic UI)
       const userMessage: ChatMessage = {
         _id: `user-${Date.now()}`,
         text,
@@ -110,12 +128,10 @@ export function useChat(conversationId: string | null): UseChatReturn {
       };
       addMessage(userMessage);
 
-      // Show typing indicator
       setIsTyping(true);
-      setStatusMessage('처리 중...');
+      setStatusMessage('답변 생성 중');
 
       try {
-        // Call reframe endpoint - it saves both user and AI messages
         const result = await startStreaming(
           convId,
           text,
@@ -126,14 +142,11 @@ export function useChat(conversationId: string | null): UseChatReturn {
             setIsTyping(false);
             setStatusMessage('');
 
-            // Build AI message from result
-            // Backend already saved it, we just need to display it
-            // Use actual database UUID from backend for sharing
             const aiMessage: ChatMessage = {
               _id: streamResult.messageId || `ai-${Date.now()}`,
               text: streamResult.finalResponse,
               createdAt: new Date(),
-              user: { _id: 'ai', name: 'AI 코치' },
+              user: { _id: 'ai', name: 'AI' },
               reframingData: streamResult.analysis
                 ? {
                     analysis: streamResult.analysis,
@@ -148,7 +161,6 @@ export function useChat(conversationId: string | null): UseChatReturn {
           }
         );
 
-        // Edge case: if result returned but onComplete wasn't called
         if (result.finalResponse && isTyping) {
           setIsTyping(false);
           setStatusMessage('');
@@ -158,18 +170,16 @@ export function useChat(conversationId: string | null): UseChatReturn {
         setStatusMessage('');
         console.error('Reframe error:', error);
 
-        // Remove optimistic user message on error
         messagesRef.current = messagesRef.current.filter(
           (m) => m._id !== userMessage._id
         );
         setMessages([...messagesRef.current]);
 
-        // Show error message
         const errorMessage: ChatMessage = {
           _id: `error-${Date.now()}`,
-          text: '응답을 받는 중 오류가 발생했습니다. 다시 시도해주세요.',
+          text: '요청 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
           createdAt: new Date(),
-          user: { _id: 'system', name: '시스템' },
+          user: { _id: 'system', name: 'System' },
         };
         addMessage(errorMessage);
       }

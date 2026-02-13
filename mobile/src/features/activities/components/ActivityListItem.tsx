@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { ChevronRight, MessageCircle, Gamepad2, Dumbbell, Heart, Star } from 'lucide-react-native';
 import { colors } from '@/theme';
 import type { Activity } from '../api';
@@ -24,9 +24,8 @@ export function ActivityListItem({ activity, index = 0, onPress }: Props): React
   const iconBg = ICON_BG_COLORS[index % 2];
 
   return (
-    <TouchableOpacity
-      style={styles.container}
-      activeOpacity={0.7}
+    <Pressable
+      style={({ pressed }) => [styles.container, pressed && styles.pressedOpacity70]}
       onPress={() => onPress?.(activity)}
     >
       <View style={[styles.iconCircle, { backgroundColor: iconBg }]}>
@@ -38,7 +37,7 @@ export function ActivityListItem({ activity, index = 0, onPress }: Props): React
       </View>
       <Text style={styles.duration}>{activity.estimated_minutes}분</Text>
       <ChevronRight size={18} color={colors.textSecondary} strokeWidth={2} />
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -77,5 +76,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: colors.textSecondary,
+  },
+  pressedOpacity70: {
+    opacity: 0.7,
   },
 });

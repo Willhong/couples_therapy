@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { colors } from '@/theme';
 import { headingFont } from '@/theme/typography';
@@ -85,14 +85,14 @@ export function GoalSelectionStep({
           render={({ field: { onChange, value } }) => (
             <View style={styles.goalsContainer}>
               {PRIMARY_GOALS.map((goal) => (
-                <TouchableOpacity
+                <Pressable
                   key={goal.value}
-                  style={[
+                  style={({ pressed }) => [
                     styles.goalCard,
                     value === goal.value && styles.goalCardSelected,
+                    pressed && styles.pressedOpacity,
                   ]}
                   onPress={() => onChange(goal.value)}
-                  activeOpacity={0.7}
                 >
                   <Text style={styles.goalEmoji}>{goal.emoji}</Text>
                   <Text
@@ -106,7 +106,7 @@ export function GoalSelectionStep({
                   <Text style={styles.goalDescription}>
                     {goal.description}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               ))}
             </View>
           )}
@@ -147,15 +147,15 @@ export function GoalSelectionStep({
                     !isSelected && (value?.length || 0) >= MAX_FOCUS_AREAS;
 
                   return (
-                    <TouchableOpacity
+                    <Pressable
                       key={area.value}
-                      style={[
+                      style={({ pressed }) => [
                         styles.chip,
                         isSelected && styles.chipSelected,
                         isDisabled && styles.chipDisabled,
+                        pressed && !isDisabled && styles.pressedOpacity,
                       ]}
                       onPress={() => toggleFocusArea(area.value)}
-                      activeOpacity={isDisabled ? 1 : 0.7}
                       disabled={isDisabled}
                     >
                       <Text
@@ -167,7 +167,7 @@ export function GoalSelectionStep({
                       >
                         {area.label}
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   );
                 })}
               </View>
@@ -282,6 +282,9 @@ const styles = StyleSheet.create({
   },
   chipLabelDisabled: {
     color: colors.textTertiary,
+  },
+  pressedOpacity: {
+    opacity: 0.7,
   },
   errorText: {
     fontSize: 14,

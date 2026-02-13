@@ -2,7 +2,7 @@
  * Conversation List route - displays AI conversations and voice analysis
  */
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Plus } from 'lucide-react-native';
@@ -17,13 +17,12 @@ export default function ConversationsRoute(): React.ReactElement {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>대화</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          activeOpacity={0.7}
+        <Pressable
+          style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
           onPress={() => router.push('/(main)/chat')}
         >
           <Plus size={20} color={colors.white} strokeWidth={2} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Live conversation list with pull-to-refresh, infinite scroll, loading/error/empty states */}
@@ -57,5 +56,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  addButtonPressed: {
+    opacity: 0.7,
   },
 });

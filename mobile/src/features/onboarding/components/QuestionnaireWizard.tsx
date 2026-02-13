@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
   ScrollView,
@@ -183,39 +183,44 @@ export function QuestionnaireWizard(): React.ReactElement {
         {/* Navigation buttons */}
         <View style={styles.navigation}>
           {currentStep > 0 && (
-            <TouchableOpacity
-              style={styles.backButton}
+            <Pressable
+              style={({ pressed }) => [
+                styles.backButton,
+                pressed && styles.pressedOpacity,
+              ]}
               onPress={goBack}
-              activeOpacity={0.7}
             >
               <Text style={styles.backText}>이전</Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           {!isLastStep ? (
-            <TouchableOpacity
-              style={[styles.nextButton, currentStep === 0 && styles.nextButtonFull]}
+            <Pressable
+              style={({ pressed }) => [
+                styles.nextButton,
+                currentStep === 0 && styles.nextButtonFull,
+                pressed && styles.pressedOpacity,
+              ]}
               onPress={goNext}
-              activeOpacity={0.7}
             >
               <Text style={styles.nextText}>다음</Text>
-            </TouchableOpacity>
+            </Pressable>
           ) : (
-            <TouchableOpacity
-              style={[
+            <Pressable
+              style={({ pressed }) => [
                 styles.nextButton,
                 submitting && styles.buttonDisabled,
+                pressed && !submitting && styles.pressedOpacity,
               ]}
               onPress={handleSubmit(onSubmit)}
               disabled={submitting}
-              activeOpacity={0.7}
             >
               {submitting ? (
                 <ActivityIndicator color={colors.white} size="small" />
               ) : (
                 <Text style={styles.nextText}>완료</Text>
               )}
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </KeyboardAvoidingView>
@@ -304,6 +309,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: colors.white,
+  },
+  pressedOpacity: {
+    opacity: 0.7,
   },
   buttonDisabled: {
     backgroundColor: colors.textTertiary,

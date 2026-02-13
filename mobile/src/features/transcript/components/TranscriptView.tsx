@@ -34,6 +34,8 @@ interface Props {
   onActionComplete?: (action: PostTranscriptAction) => void;
 }
 
+const EMPTY_SPEAKER_MAP: SpeakerMap = {};
+
 export function TranscriptView({
   recordingId,
   conversationId,
@@ -107,6 +109,10 @@ export function TranscriptView({
   }, [isPlaying, position, segments]);
 
   const isNarration = recordingType === 'narration';
+  const speakerMapForList = useMemo(
+    () => (isNarration ? EMPTY_SPEAKER_MAP : speakerMap),
+    [isNarration, speakerMap]
+  );
 
   // Handle segment press: jump to audio position
   const handleSegmentPress = useCallback(
@@ -173,7 +179,7 @@ export function TranscriptView({
     ({ item }: ListRenderItemInfo<TranscriptSegment>) => (
       <TranscriptLine
         segment={item}
-        speakerMap={speakerMap}
+        speakerMap={speakerMapForList}
         isCurrentlyPlaying={currentPlayingSegmentId === item.id}
         isNarration={isNarration}
         triggerPhrases={triggerPhrases}
@@ -181,7 +187,7 @@ export function TranscriptView({
         onLongPress={handleSegmentLongPress}
       />
     ),
-    [speakerMap, currentPlayingSegmentId, isNarration, triggerPhrases, handleSegmentPress, handleSegmentLongPress]
+    [speakerMapForList, currentPlayingSegmentId, isNarration, triggerPhrases, handleSegmentPress, handleSegmentLongPress]
   );
 
   const keyExtractor = useCallback(

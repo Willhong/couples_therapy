@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ActivityCard } from './ActivityCard';
 import { getFeaturedActivities, startActivity, type Activity } from '../api';
@@ -47,9 +47,12 @@ export function ActivitiesSection(): React.ReactElement | null {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>커플 활동</Text>
-        <TouchableOpacity onPress={handleSeeAll} activeOpacity={0.7}>
+        <Pressable
+          onPress={handleSeeAll}
+          style={({ pressed }) => (pressed ? styles.pressedOpacity70 : undefined)}
+        >
           <Text style={styles.seeAll}>전체보기</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
       <ScrollView
         horizontal
@@ -91,5 +94,8 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 16,
     gap: 12,
+  },
+  pressedOpacity70: {
+    opacity: 0.7,
   },
 });

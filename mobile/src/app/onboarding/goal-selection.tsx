@@ -8,7 +8,7 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
@@ -82,9 +82,12 @@ export default function GoalSelectionScreen(): React.ReactElement {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+        <Pressable
+          style={({ pressed }) => [styles.backButton, pressed && styles.pressedOpacity]}
+          onPress={handleBack}
+        >
           <ArrowLeft size={20} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.progressContainer}>
           <View style={styles.progressTrack}>
             <View style={[styles.progressFill, { width: '25%' }]} />
@@ -114,9 +117,13 @@ export default function GoalSelectionScreen(): React.ReactElement {
                 const Icon = goal.icon;
                 const isSelected = selectedGoal === goal.id;
                 return (
-                  <TouchableOpacity
+                  <Pressable
                     key={goal.id}
-                    style={[styles.goalCard, isSelected && styles.goalCardSelected]}
+                    style={({ pressed }) => [
+                      styles.goalCard,
+                      isSelected && styles.goalCardSelected,
+                      pressed && styles.pressedOpacity,
+                    ]}
                     onPress={() => setSelectedGoal(goal.id)}
                   >
                     <Icon
@@ -127,7 +134,7 @@ export default function GoalSelectionScreen(): React.ReactElement {
                       <Text style={styles.goalCardTitle}>{goal.title}</Text>
                       <Text style={styles.goalCardDesc}>{goal.description}</Text>
                     </View>
-                  </TouchableOpacity>
+                  </Pressable>
                 );
               })}
             </View>
@@ -141,15 +148,19 @@ export default function GoalSelectionScreen(): React.ReactElement {
               {FOCUS_AREAS.map((area) => {
                 const isSelected = selectedFocus.has(area.id);
                 return (
-                  <TouchableOpacity
+                  <Pressable
                     key={area.id}
-                    style={[styles.chip, isSelected && styles.chipSelected]}
+                    style={({ pressed }) => [
+                      styles.chip,
+                      isSelected && styles.chipSelected,
+                      pressed && styles.pressedOpacity,
+                    ]}
                     onPress={() => toggleFocus(area.id)}
                   >
                     <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
                       {area.label}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 );
               })}
             </View>
@@ -159,13 +170,19 @@ export default function GoalSelectionScreen(): React.ReactElement {
 
       {/* Bottom Buttons */}
       <View style={styles.bottomBtns}>
-        <TouchableOpacity style={styles.prevButton} onPress={handleBack}>
+        <Pressable
+          style={({ pressed }) => [styles.prevButton, pressed && styles.pressedOpacity]}
+          onPress={handleBack}
+        >
           <ArrowLeft size={20} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [styles.nextButton, pressed && styles.pressedOpacity]}
+          onPress={handleNext}
+        >
           <Text style={styles.nextButtonText}>계속하기</Text>
           <ArrowRight size={20} color={colors.white} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -215,6 +232,9 @@ const styles = StyleSheet.create({
   stepLabel: {
     fontSize: 13,
     color: colors.textSecondary,
+  },
+  pressedOpacity: {
+    opacity: 0.2,
   },
   scrollView: {
     flex: 1,

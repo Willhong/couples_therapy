@@ -6,7 +6,7 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   StyleSheet,
 } from 'react-native';
@@ -98,9 +98,9 @@ export function GuidedPrompts({
         {GUIDED_PROMPTS.map((prompt) => {
           const isSelected = selectedId === prompt.id;
           return (
-            <TouchableOpacity
+            <Pressable
               key={prompt.id}
-              style={[
+              style={({ pressed }) => [
                 styles.chip,
                 {
                   backgroundColor: isSelected
@@ -110,9 +110,9 @@ export function GuidedPrompts({
                     ? CATEGORY_TEXT_COLORS[prompt.category]
                     : colors.border,
                 },
+                pressed && styles.chipPressed,
               ]}
               onPress={() => onPromptSelect(prompt)}
-              activeOpacity={0.7}
             >
               <Text
                 style={[
@@ -132,7 +132,7 @@ export function GuidedPrompts({
               >
                 {prompt.text}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </ScrollView>
@@ -181,6 +181,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
+  },
+  chipPressed: {
+    opacity: 0.7,
   },
   categoryBadge: {
     fontSize: 11,

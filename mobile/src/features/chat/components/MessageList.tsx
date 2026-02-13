@@ -22,19 +22,13 @@ interface Props {
 
 export function MessageList({
   messages,
-  onOpenReframing,
   ListHeaderComponent,
 }: Props): React.ReactElement {
   const flatListRef = useRef<FlatList<ChatMessage>>(null);
 
   const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<ChatMessage>) => (
-      <MessageBubble
-        message={item}
-        onOpenReframing={onOpenReframing}
-      />
-    ),
-    [onOpenReframing]
+    ({ item }: ListRenderItemInfo<ChatMessage>) => <MessageBubble message={item} />,
+    []
   );
 
   const keyExtractor = useCallback((item: ChatMessage) => item._id, []);

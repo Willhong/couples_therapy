@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Clock } from 'lucide-react-native';
 import { colors, alpha, headingFont } from '@/theme';
 import type { Activity } from '../api';
@@ -16,7 +16,10 @@ interface Props {
 
 export function FeaturedActivityCard({ activity, onPress }: Props): React.ReactElement {
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.8} onPress={onPress}>
+    <Pressable
+      style={({ pressed }) => [styles.container, pressed && styles.pressedOpacity80]}
+      onPress={onPress}
+    >
       <View style={styles.imageArea} />
       <View style={styles.content}>
         <View style={styles.badge}>
@@ -29,7 +32,7 @@ export function FeaturedActivityCard({ activity, onPress }: Props): React.ReactE
           <Text style={styles.durationText}>{activity.estimated_minutes}분</Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -81,5 +84,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: colors.white,
+  },
+  pressedOpacity80: {
+    opacity: 0.8,
   },
 });
