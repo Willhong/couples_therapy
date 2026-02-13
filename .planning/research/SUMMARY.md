@@ -1,446 +1,409 @@
 # Project Research Summary
 
-**Project:** CouplesAI - AI-based Couples Therapy Mobile App
-**Domain:** Mental health tech / AI-powered relationship counseling
-**Researched:** 2026-01-23
+**Project:** CouplesAI v1.1 - Intelligence & Launch Additions
+**Domain:** AI couples therapy mobile app - accumulative intelligence layer
+**Researched:** 2026-02-13
 **Confidence:** HIGH
 
 ## Executive Summary
 
-CouplesAI is an AI-powered couples therapy mobile app centered on a unique value proposition: real-time conflict reframing to help partners understand each other's perspectives. This type of product sits at the intersection of mental health apps (like Headspace, Calm) and relationship tools (like Paired, Lasting), but with a critical differentiator - using AI to reframe conflicts during or immediately after they occur, rather than providing generic communication exercises.
+v1.1 transforms CouplesAI from a reactive per-message analysis tool into an accumulative therapy system that mirrors how real couples therapy works. The existing v1.0 foundation (Django 5.x + DRF backend, Expo SDK 54 mobile, LangChain 0.3 + LangGraph 0.2+ for AI, Redis/Celery for async processing) is architecturally sound and fully compatible with all planned v1.1 features. **Critical finding: almost everything needed is already installed.** The work is primarily architectural (new services, new graph topology, new models) not dependency-driven. Only three changes are required: (1) pin langgraph to >=0.2.60 for reliable fan-out conditional edges, (2) migrate development from SQLite to PostgreSQL (docker-compose already configured), and (3) wire push notifications (both expo-notifications and exponent-server-sdk already installed).
 
-The recommended approach is a privacy-first React Native (Expo) mobile app with Supabase backend, leveraging Claude for nuanced emotional reframing and Whisper for audio transcription. The architecture must prioritize three non-negotiable aspects: (1) security architecture designed from day one to handle highly sensitive relationship data, (2) abuse screening to avoid enabling abusive relationships, and (3) non-judgmental AI analysis that never "takes sides" to avoid the Reddit pain point of feeling judged. The technical stack is mature and well-documented, with Expo SDK 53+ providing stable audio recording via expo-audio and comprehensive tooling for mobile development.
+The paradigm shift from "analyze every message" to "listen across sessions, analyze when ready, deliver insights separately" introduces a critical UX risk: users lose immediate gratification (instant per-message analysis) and receive nothing tangible until days/weeks later when sufficient data accumulates. This is the single most dangerous pitfall in v1.1. Prevention requires bridge UX (micro-insights, visible accumulation progress, transparent communication about the new approach, ensuring first insight report arrives within 1 week for active users). The seven target features form a coherent intelligence layer: chat agent becomes therapeutic listener, data accumulates across all touchpoints (chat/audio/check-ins/patterns/activities), analysis triggers fire when data is sufficient, insights arrive in separate reports, health score gives daily at-a-glance view, recommendations bridge insight to action. No competitor (Maia, Lasting, Paired) offers this accumulative paradigm with cross-source multi-session analysis.
 
-The primary risk is not technical - it's ethical and legal. Unlike typical SaaS apps, mistakes here can destroy marriages, enable abuse, or violate wiretapping laws. The research identified 13 distinct pitfalls, with 5 rated as critical (could cause user harm or legal liability). Success requires building the legal/ethical foundation first (abuse screening, recording consent, data security) before implementing AI features. The core reframing feature must be designed to validate emotions first, present multiple perspectives without judgment, and explicitly avoid the thin line between therapeutic reframing and gaslighting.
+The technical implementation has clean boundaries: UserIntelligenceService (lightweight cached context for real-time chat, <100ms) versus TherapyDataCollector (comprehensive aggregation for background analysis, ~5 seconds). However, the existing code has 4 critical integration gaps that block v1.1: (1) agent signature mismatch (analysis_graph.py passes `(state, model)` but agents expect `state['model_factory']` callable), (2) sync/async mismatch (agents are async but graph uses sync `graph.invoke()`), (3) event triggers not wired (on_conversation_ended exists but never called), and (4) asyncio.run() event loop conflict under ASGI/Daphne (works in dev WSGI but crashes in production ASGI). The 6-agent analysis graph (Pattern + Emotion in parallel, then Balance, Resolution, Synthesizer, Ethics Guardian) multiplies production risk by 6: cascading failures, timeouts, runaway costs, or thread exhaustion could crash Celery workers or create unexpected API bills.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The technology stack is optimized for privacy-critical AI therapy with audio recording. Modern React Native development in 2025 centers on Expo as the de-facto framework (74.6% adoption of New Architecture), with expo-audio being the only stable audio recording solution after expo-av's deprecation in SDK 53. The combination of Supabase (PostgreSQL with Row-Level Security) and Anthropic Claude API represents best practices for handling sensitive relationship data while delivering nuanced emotional understanding.
+The v1.0 stack is production-ready for v1.1 with minimal changes. Django 5.x + DRF provides the REST API layer. Expo SDK 54 + expo-router 6 handle mobile navigation and UI. LangChain 0.3 + LangGraph 0.2+ orchestrate multi-agent AI pipelines. OpenRouter/OpenAI/Anthropic models provide LLM reasoning. Redis serves as cache (db 2), Celery broker (db 1), and Channels layer (db 0). Celery + celery-beat handle background tasks and periodic triggers. Fernet encryption (djfernet) secures all sensitive therapy content.
 
 **Core technologies:**
-
-- **Expo SDK 53+** (React Native 0.79, React 19.x): De-facto standard framework with New Architecture enabled by default. Critical for expo-audio stability and EAS Build/Submit automation. TypeScript 5.x essential for complex therapy logic.
-
-- **expo-audio**: New stable API replacing deprecated expo-av. Only reliable cross-platform audio recording solution for React Native in 2025. Supports HIGH_QUALITY presets optimized for Whisper transcription.
-
-- **Supabase** (PostgreSQL + Auth + Storage + Edge Functions): BaaS optimized for relational therapy data with Row-Level Security policies. Offers HIPAA BAA for healthcare compliance, encrypted storage for audio files, and server-side LLM integration via Edge Functions to keep API keys secure.
-
-- **Anthropic Claude API** (claude-3.5-sonnet or claude-3-opus): Best-in-class for nuanced emotional/relationship understanding and perspective-taking. Streaming support enables real-time feedback UX. Superior to GPT-4 for therapeutic reframing contexts.
-
-- **OpenAI Whisper API** (gpt-4o-transcribe): Cost-effective transcription at $0.006/min with speaker diarization. 4x cheaper than Google Cloud STT with comparable accuracy.
-
-- **NativeWind v4.1+** (Tailwind for React Native): Build-time compiled styling with no runtime overhead. Includes theming for dark mode support (important for therapy app UX).
-
-- **Zustand 5.x + TanStack Query v5**: Client state and server state separation. Handles React concurrency correctly, minimal boilerplate. Critical: never store sensitive therapy data in AsyncStorage-persisted Zustand - use expo-secure-store for PII/PHI.
-
-- **expo-secure-store**: Native keychain/keystore encryption for auth tokens and sensitive metadata. iOS Keychain and Android EncryptedSharedPreferences provide hardware-backed security.
-
-**Version compatibility:** Expo SDK 53 ships with React 19.x (breaking changes from v18) and React Native 0.79. NativeWind v4.1 is stable; v5 is in preview. All documentation is current as of January 2025.
+- **langgraph >=0.2.60** (UPGRADE from >=0.2.0) — StateGraph for multi-agent pipelines, fan-out conditional edges for parallel agent execution. Current floor is dangerously low; 0.2.60+ stabilized list returns from route functions.
+- **PostgreSQL 16** (MIGRATE from SQLite) — Native JSON operators for DailyHealthScore components, compound indexes for pattern queries, Row-Level Security for data isolation. Already in docker-compose; just switch DATABASE_URL.
+- **expo-notifications + exponent-server-sdk** (ALREADY INSTALLED) — Mobile push notifications for insight report delivery and health score alerts. Requires Development Build (not Expo Go), FCM config for Android, APNs for iOS.
+- **LangGraph StateGraph** (ALREADY INSTALLED) — 7-node analysis graph (collect_data -> parallel_analysis -> balance -> resolution -> synthesizer -> ethics -> save/block). 6-agent pipeline with conditional routing based on ethics approval.
+- **UserIntelligenceService + Django Cache** (ALREADY IMPLEMENTED) — 1-hour cached user context (attachment style, conflict style, recent patterns) for real-time chat personalization. Signal-invalidated on profile/pattern/checkin updates.
+- **TherapyDataCollector** (ALREADY IMPLEMENTED) — Comprehensive data aggregation from 9 sources across 7 apps: conversations, check-ins, patterns, audio insights, activities, cooldowns, weekly summaries, health scores, conflict info.
+- **Celery Beat** (ALREADY CONFIGURED) — Periodic tasks: evaluate_analysis_triggers (daily 00:30 KST), compute_daily_health_scores (daily 00:00 KST), weekly_summary (weekly Monday).
 
 ### Expected Features
 
-The couples therapy app market reveals a clear white space: no competitor centers on conflict-moment intervention with perspective reframing. Paired (8M downloads) focuses on daily questions, Lasting provides structured Gottman-based learning, and Maia does audio analysis, but none address the core need of understanding partner perspective during actual conflicts.
+v1.1 is not about adding features users expect from competitors, but about transforming the paradigm from reactive (per-message) to accumulative (multi-session). The four table stakes ensure the intelligence upgrade doesn't break trust: (1) chat agent must feel like talking to a therapist not a search engine (empathy first, follow-up questions, no immediate analysis), (2) AI must know who you are (attachment style, conflict style, recurring topics), (3) insights must arrive as separate readable reports (not crammed into chat), and (4) safety must be preserved through the upgrade (keyword pre-filter, crisis detection, Ethics Guardian validation).
 
 **Must have (table stakes):**
-
-- **Secure account with partner linking** - Both partners need separate accounts that sync. Apps like Paired lock answers until both respond to prevent bias. Missing this makes the app feel incomplete.
-
-- **Privacy & data security** - AI therapy raises major privacy concerns. Users expect HIPAA-adjacent protections even though most apps aren't covered. Encryption, secure storage, and clear data policies are non-negotiable.
-
-- **Daily engagement mechanism** - Paired's 5-min/day model and streak mechanics drive 22% retention improvement. Lightweight daily touchpoints prevent abandonment.
-
-- **Basic communication exercises** - Every competitor has question prompts and conversation starters. Missing this signals lack of relationship expertise.
-
-- **Progress tracking** - Health/wellness app standard. Users expect visual progress, completion tracking, and relationship health indicators.
-
-- **Onboarding assessment** - Relationship baseline, attachment styles, love languages. Sets personalization foundation.
+- **Chat agent as therapeutic listener (TS-1)** — Responds with empathy first, asks follow-up questions, does NOT immediately jump to analysis. Follows phases: rapport -> exploration -> deepening -> reflection. Feature flag routes to new chat_agent/chat_graph.py.
+- **Personalized AI context (TS-2)** — AI references user's attachment style, conflict style, communication preferences. UserIntelligenceService assembles cached context snapshot (<100ms). Safety-gated: high-risk users get minimal context.
+- **Insight delivery as separate report (TS-3)** — Report has title, summary, key insights (3-5 bullets), suggested actions, recommended activities. Two delivery channels: report screen (primary) and in-conversation (permission-based). Push notification when new report available.
+- **Safety preservation (TS-4)** — Existing keyword pre-filter and crisis detection unchanged. Ethics Guardian validates every analysis output. Three-level safety: per-message (real-time), chat agent monitoring (emotional intensity), analysis safety (cross-source patterns).
 
 **Should have (competitive differentiators):**
-
-- **Conflict-moment reframing AI** - OUR CORE DIFFERENTIATOR. Help users see partner's perspective during/after conflict. Addresses "judgment" pain point that no competitor solves.
-
-- **AI-generated perspective narrative** - Generate "how your partner might be feeling" explanations based on conflict input. Direct delivery of core value prop.
-
-- **Conflict pattern recognition** - Identify recurring themes across multiple arguments. Maia does this with 1hr/week free analysis.
-
-- **Cool-down facilitation** - Guided 10-min break during heated moments. Research shows planned pauses cut escalation by 50%.
-
-- **Non-judgmental framing** - AI positioned as neutral third party that presents both perspectives, never takes sides. Addresses Reddit pain point.
+- **Accumulative multi-session insight reports (DF-1)** — No competitor does this. System collects data silently from all touchpoints. When sufficient data accumulates (3+ conversations, 60%+ information checklist, sufficient check-ins), 5 specialized agents analyze patterns/emotions/balance/resolution/ethics. Result stored as InsightReport.
+- **Relationship Health Score 0-100 (DF-2)** — Dynamic daily score from 5 weighted components: mood (25%), escalation (25%), engagement (20%), pattern severity (15%), cooldown frequency (15%). Historical trend visible (30-day chart). Both individual and couple-level scores.
+- **Three-tier analysis triggers (DF-3)** — Crisis/safety (immediate), threshold breach (mood decline, escalation spike, score drop), data sufficiency (enough accumulated data), plus periodic weekly scheduled. Ensures insights arrive when they matter.
+- **Smart recommendations (DF-4)** — Map health score weaknesses to specific app content. Low mood -> gratitude prompts. High escalation -> lower-difficulty activities. Recurring topic (finance) -> finance-related daily prompts.
+- **Home dashboard (DF-5)** — Health score + trend indicator, today's tasks (check-in, activity, prompt), report unread badge, partner connection status, quick-access to chat. Single-screen daily touchpoint.
+- **Partner data referenced but never quoted (DF-6)** — Analysis can infer partner perspective from user's own words, but never quotes partner's private data. Queryset-level isolation: partner's Pattern records never loaded for the other partner.
 
 **Defer (v2+):**
-
-- **Voice/audio analysis of arguments** - High complexity (tone analysis, interruption detection, emotional spikes). Donkey Chats and Maia offer this but it's not essential for MVP validation.
-
-- **Real-time text tone checking** - Donkey Chats scans messages before sending. High complexity, narrow use case.
-
-- **Emergency escalation path** - Crisis detection with therapist referral. Important but requires partnerships and complex detection logic.
+- In-conversation insight delivery refinement (get report screen working first)
+- Activity effectiveness tracking (needs completion data)
+- Prompt response alignment analysis (needs both partners active)
+- Report filtering/sorting/tabs
+- Advanced health score visualization
 
 **Anti-features (explicitly exclude):**
-
-- **"Who's right" determination** - ArgueResolver tries this; increases adversarial dynamics. Focus on understanding, not winning.
-
-- **Sycophantic validation** - AI tendency to agree prevents seeking real help. Must challenge gently and present both perspectives.
-
-- **Individual-only usage encouraging secrecy** - Using AI secretly damages trust between partners. Design for transparency.
-
-- **Replacing human therapy claims** - Legal/ethical issues. Position as "supplement" or "between sessions" tool.
+- Per-message multi-agent analysis (expensive, shallow insights)
+- In-conversation analysis without permission (feels interrupting)
+- Real-time health score updates (creates anxiety during conflicts)
+- Partner pattern content sharing (creates ammunition)
+- Automated therapy recommendations without context
+- Overly frequent insight reports (report fatigue)
 
 ### Architecture Approach
 
-AI couples therapy apps are structured around four core domains: (1) secure user data management with partner linking, (2) audio capture and transcription, (3) AI-powered conversation analysis and reframing, and (4) privacy-first data handling. The architecture must balance real-time responsiveness (< 3 seconds for text analysis, < 30 seconds for 5-minute audio) with robust security for highly sensitive relationship data that could destroy marriages if breached.
+v1.1 adds an intelligence layer on top of v1.0's solid foundation without replacing any core components. The architecture maintains clean separation: real-time chat path (UserIntelligenceService, cached context, single LLM call, <3 seconds) versus background analysis path (TherapyDataCollector, comprehensive data, 6-agent pipeline, 30-120 seconds). Feature flag (ACCUMULATIVE_THERAPY_ENABLED) routes at pipeline level after safety pre-filter and context gathering, so both paths benefit from shared infrastructure.
 
 **Major components:**
 
-1. **Mobile Client (React Native + Expo)** - Audio recording via expo-audio, local encryption before upload, chat interface for text-based logging, partner linking via pairing codes, offline support with queue sync, secure token storage via expo-secure-store.
+1. **Chat Agent (therapeutic listener)** — `chat_agent/chat_graph.py` with 4-node StateGraph: determine_phase (initial/exploring/deepening/wrapping) -> evaluate_checklist (6 boolean fields tracking conflict info) -> generate_response (THERAPEUTIC_LISTENER_PROMPT, 1 LLM call) -> build_result. Returns same contract as old pipeline for backwards compatibility but adds checklist_update and phase. Information state (ConflictInformation) tracks 6 dimensions: conflict_scenario, root_cause, user_emotions, partner_emotions, attempted_solutions, desired_outcome.
 
-2. **API Gateway** - JWT authentication, rate limiting (especially for expensive AI endpoints), request routing to microservices, TLS 1.3 termination for all traffic.
+2. **Intelligence Data Layer** — UserIntelligenceService (real-time, cached 1hr, 6 ORM queries max, safety-gated) versus TherapyDataCollector (background, no cache, 9 data sources, full context regardless of risk). Signals bust cache on post_save of UserProfile, Pattern, DailyCheckIn, SafetyAssessment.
 
-3. **Auth Service** - Email/OAuth registration (Google, Apple), JWT issuance and validation, partner linking via 6-digit pairing codes (expires 10 min), sharing preferences management.
+3. **Analysis Trigger Service** — 4-tier evaluation: (1) CRITICAL (safety/crisis/severe patterns) -> immediate, (2) THRESHOLD (escalation spike, mood decline, score drop >=15) -> within hours, (3) SUFFICIENCY (first-time, 3+ conversations, 60%+ checklist) -> next window, (4) PERIODIC (weekly Monday + has activity) -> scheduled. 48-hour cooldown between analyses prevents over-triggering.
 
-4. **User Service** - Profile management, partnership data, sharing preferences (none/analysis-only/full), subscription tier tracking (free/premium).
+4. **Multi-Agent Analysis Graph** — LangGraph StateGraph with 7 nodes: collect_data (TherapyDataCollector) -> parallel_analysis (pattern_analyst + emotion_interpreter) -> balance_mediator -> resolution_strategist -> report_synthesizer -> ethics_guardian -> conditional edge (approved -> save_report, blocked -> mark_blocked). Each agent makes 1 LLM call. Total 6-7 LLM calls per analysis run. State flows through TypedDict (AnalysisState) with encrypted content fields.
 
-5. **Audio Service** - Encrypted audio upload and storage in S3, transcription orchestration via Whisper API, audio cleanup after configurable retention (default 7 days).
+5. **Health Score Service** — Daily Celery task computes 5 components for each user: mood (14d avg mood * 5, max 25), escalation ((10 - avg) * 2.5, max 25), engagement (streak + activity rate, max 20), severity ((5 - avg) * 3, max 15), cooldown (inverse frequency, max 15). Couple averaging: (user_score + partner_score) / 2. Missing components get neutral 50% (not 0, which penalizes new users).
 
-6. **Analysis Service (Core AI)** - Speaker diarization (who said what), sentiment analysis per speaker, reframing generation ("what partner might have heard"), action suggestions. Uses GPT-4o for complex perspective-taking, GPT-4o-mini for cost-effective sentiment.
+6. **Intelligence API** — 5 REST endpoints under /api/v1/intelligence/: report_list (GET), report_detail (GET :id), mark_read (POST :id/read), unread_count (GET), partner_dashboard (GET). InsightReport model stores encrypted analysis fields (pattern_analysis, emotion_analysis, balance_analysis, resolution_suggestions, report_summary). DailyHealthScore model stores daily score + components JSON.
 
-7. **Sharing Service** - Permission management (what each partner can see), shared view compilation, notification when new shared content available.
+7. **Mobile Intelligence** — Feature directory `mobile/src/features/intelligence/` with types, api, adapters, hooks (useReports, useReportDetail, useUnreadCount), components (ReportListItem, ReportDetailView). Adapter layer normalizes backend snake_case to frontend camelCase. Status normalization: completed + is_read=true -> 'read', completed + is_read=false -> 'generated'.
 
-**Data flow architecture:**
-- Text input: Client -> API Gateway -> Analysis Service -> LLM -> PostgreSQL -> Client (< 3s target)
-- Audio input: Client -> Audio Service -> S3 -> Whisper API -> Analysis Service -> LLM -> PostgreSQL -> Client (< 30s for 5-min audio)
-- Partner viewing: Client -> Sharing Service (verify partnership, check permissions, filter data) -> Client
-
-**Database design:** PostgreSQL with Row-Level Security (RLS) for fine-grained access control. Core tables: users, partnerships, entries (text/audio), analyses (sentiment + reframing + suggestions), partner_notes. Field-level encryption for sensitive content. PostgreSQL chosen over MongoDB for strong relationships (users-partnerships-entries-analyses), RLS for HIPAA-grade isolation, and proven security track record.
-
-**Security layers:** Transport (TLS 1.3), Storage (AES-256), Application (field-level encryption for transcripts/notes), Client (platform encryption for local storage). Zero-trust principles: every request authenticated, every endpoint authorized, every action logged, minimum necessary data access.
+**Data flow:**
+- Real-time chat: POST /chat/reframe -> crisis detection -> UserIntelligenceService (cached) -> ACCUMULATIVE_THERAPY_ENABLED? (YES -> chat_agent/chat_graph.py, NO -> TWO_MODE_SYSTEM_PROMPT) -> 1 LLM call -> save message -> analyze_patterns.delay() -> return response. Target <3 seconds.
+- Background analysis: Celery Beat evaluate_analysis_triggers (daily 00:30) OR event on_conversation_ended -> AnalysisTriggerService.evaluate() -> 4-tier check -> dispatch_multi_agent_analysis.delay() -> InsightReport status='processing' -> run_analysis() -> graph.invoke() (7 nodes, 6-7 LLM calls) -> save_report/mark_blocked -> [GAP: push notification on complete]. Target 30-120 seconds.
+- Health score: Celery Beat compute_daily_health_scores (daily 00:00) -> for each active user -> HealthScoreService.compute() (5 components, ORM queries) -> DailyHealthScore.update_or_create(). Target <10 seconds per user.
 
 ### Critical Pitfalls
 
-The research identified 13 pitfalls across three severity levels. The top 5 critical pitfalls could cause user harm or legal liability:
+The research identified 14 pitfalls across 3 severity levels. The 4 critical pitfalls could cause production outages, user harm, or rewrites.
 
-1. **Enabling Abuse Through "Neutral" Therapy** - Treating both partners equally in abusive relationships gives abusers tools to manipulate victims. Couples therapy assumes power balance; neutrality in abuse equals enabling. National Domestic Violence Hotline explicitly recommends against couples therapy with abusers. Prevention: abuse screening before couples features activate, individual-only mode that doesn't share with partner, clear disclaimers, never frame abuse as "communication problems". Detection: one partner always "wrong", extreme emotional language patterns, controlling app usage. Address in Phase 1 (non-negotiable safety feature).
+1. **Removing immediate gratification without replacement value (P1)** — v1.0 gives instant per-message analysis. v1.1 replaces with therapeutic listener that only empathizes. Users feel app got worse. New users have zero data, get empathy-only chat with NO reports for potentially weeks. **Prevention:** Bridge UX with micro-insights (brief reflection at conversation end), transparent communication ("I'm now listening more carefully across sessions"), graduated transition (listener first 5-8 messages then lighter reframing), visible accumulation progress ("Insight readiness: 40%"), ensure first report within 1 week for active users. MUST be addressed in same phase as chat agent refactoring.
 
-2. **Audio Recording Legal Liability** - Recording conversations in two-party consent states without proper consent violates wiretapping laws. 12+ US states require all-party consent. Federal Wiretap Act creates criminal liability for interstate violations. 2025 class action lawsuits against AI recording tools demonstrate active legal risk. Prevention: explicit in-app consent from BOTH partners before any recording, location-based stricter law application, clear recording indicator that cannot be hidden, consent records with timestamps. Consider not allowing live conversation recording - only post-hoc journaling. Address in Phase 1 (legal architecture must be correct from day one).
+2. **LangGraph multi-agent pipeline production failures (P2)** — 6-agent graph multiplies production risk by 6. Each agent makes independent LLM call (timeout, malformed JSON, rate limits). LangGraph parallel execution creates threads -> "can't start a new thread" RuntimeError crashes Celery worker. 6 sequential-ish LLM calls = $0.10-0.30 per analysis run. Misconfigured triggers at scale explode costs. **Prevention:** Per-agent timeout (30s each, 180s total), cost ceiling (daily/hourly token budget), circuit breaker (3 consecutive failures -> stop 1 hour), separate Celery queue for analysis (isolate from real-time tasks), bounded thread pool (not unbounded), graceful degradation per-agent (work with missing outputs), shadow mode first (2 weeks without user delivery). MUST be addressed when building analysis graph.
 
-3. **AI "Judges" Creating the "Referee" Problem** - Users perceive AI analysis as determining who is "right" or "wrong". Partner who feels judged disengages. App becomes weapon in arguments ("See? Even the AI says you're wrong!"). LLMs have documented bias in relationship advice. Prevention: never assign blame/fault/sides, frame insights as "perspectives" not "truth", show BOTH partners' valid concerns in every analysis, avoid numerical scores on conflicts, explicit "This is not a judgment" statements. Address in Phase 2 (must be designed into analysis feature from start).
+3. **SQLite to PostgreSQL migration corrupting encrypted data (P3)** — Migration fails silently or corrupts Fernet-encrypted fields (EncryptedTextField) on 8 models: Message.content, ConversationSummary, InsightReport analysis fields. Binary data encoding differs (SQLite loose, PostgreSQL strict bytea). Standard dumpdata/loaddata can mangle binary fields. UUID primary keys have format differences (SQLite text without dashes, PostgreSQL native UUID). django-fernet-fields docs warn "won't be able to use simple AlterField operation". **Prevention:** Test migration with production-like data first, use custom Python script (Django ORM both ends handles encryption/decryption), verify FERNET_KEYS transfer (exact same keys, even 1 char difference means all data lost), exclude ContentTypes, disable signals during migration, UUID format verification, backup untouched SQLite for 30 days. MUST be completed before production deployment.
 
-4. **Reframing Becoming Gaslighting** - Core reframing feature can invalidate legitimate feelings if not carefully designed. Thin line between therapeutic reframing and gaslighting. Reframing without validation is experienced as dismissal. LLMs documented to gaslight users as emergent behavior. Prevention: ALWAYS validate emotion before offering reframe ("Your frustration makes sense because..."), present reframes as additional perspectives not replacements, allow users to reject reframes, never suggest emotions are "wrong", include "This doesn't mean your feelings aren't valid", offer choice between exploring perspective or just being heard. Address in Phase 2 (central to reframing feature design).
+4. **asyncio.run() event loop conflict under ASGI/Daphne (P4)** — Existing views.py uses asyncio.run() to call async LLM pipeline from sync views. Works under WSGI (development) but crashes under ASGI (Daphne already configured in base.py). asyncio.run() creates NEW event loop; under ASGI loop already running -> RuntimeError. **Prevention:** Convert to async views NOW (Django 5.x native async def views), OR use sync_to_async/thread pool, test under Daphne before production, update Celery tasks too (gevent pool conflicts). MUST be resolved before ASGI deployment.
 
-5. **Catastrophic Data Breach of Intimate Content** - Recorded arguments and relationship vulnerabilities are extraordinarily sensitive. 2025 AI companion apps leaked 400K+ users' intimate conversations. Unlike typical breaches, this content can destroy marriages, enable blackmail, cause divorces. Couples therapy data includes admissions of affairs, abuse, financial secrets. Prevention: end-to-end encryption with zero-knowledge architecture, minimize retention (delete recordings after analysis), never store unencrypted transcripts, SOC 2 Type II certification, on-device processing for sensitive analysis, no third-party analytics on content, clear data deletion on user request. Address in Phase 1 (security architecture designed in, not added later).
+**Moderate pitfalls:**
+- P5: Health score meaningless for new/sparse users (progressive disclosure, confidence indicator)
+- P6: Partner data privacy leak through inference (strict one-way inference, no cross-referencing reports)
+- P7: Korean LLM therapy prompt quality degradation (native speaker evaluation, cultural adaptation layer)
+- P8: Feature flag combinatorial explosion (merge to single flag, removal plan)
+- P9: Backend-frontend API contract drift (adapter pattern, contract tests, version envelope)
+- P10: Push notification setup failures in Expo (dev build required, physical device testing, graceful fallback)
 
-**Moderate pitfalls (cause churn/poor outcomes):**
-- Reluctant partner problem (one partner refuses to participate)
-- Triangulation and over-reliance (app becomes substitute for real communication)
-- AI hallucination and fabrication (false advice or misquoted partner's words)
-- Sentiment analysis false positives (misreading tone, sarcasm, cultural context)
-- Regulatory compliance failure (practicing therapy without license, new AI mental health laws)
-
-**Phase-specific warnings:**
-- Phase 1 (Foundation): Abuse screening, recording consent, data security, regulatory positioning
-- Phase 2 (Core Features): Judging/referee problem, reframing vs gaslighting, sentiment accuracy, hallucination prevention
-- Phase 3 (Engagement): Reluctant partner engagement, triangulation, notification design
-- Phase 4 (Scale): Cultural localization, expectation management
+**Minor pitfalls:**
+- P11: Celery beat scheduling collisions (stagger schedules, add jitter)
+- P12: TherapyDataCollector N+1 query performance (prefetch, indexes, caching)
+- P13: In-conversation insight delivery timing (only after natural pause, never during emotional distress)
+- P14: Accumulative system memory leak in ConflictInformation state (cap list fields, rolling window)
 
 ## Implications for Roadmap
 
-Based on research, the recommended build sequence must prioritize ethical/legal foundation before AI features. The architecture dependencies and pitfall research strongly suggest a 5-phase approach:
+Based on combined research, the recommended build sequence must prioritize fixing existing code integration gaps before adding new features. The architecture has 4 critical gaps that block v1.1: agent signature mismatch, sync/async mismatch, event triggers not wired, asyncio.run() conflict. Phase 1 must make the existing code runnable before Phase 2 adds new features. The paradigm shift from reactive to accumulative requires simultaneous delivery of chat agent transformation + bridge UX to avoid removing value without replacement.
 
-### Phase 1: Legal & Ethical Foundation
+### Phase 1: Fix Foundation (Make existing code run)
 
-**Rationale:** Cannot build any user-facing features without solving critical safety and legal requirements first. Abuse screening, recording consent, and data security must be architected from day one - retrofitting is impossible. Research shows 5 critical pitfalls that must be addressed in Phase 1 to avoid user harm and legal liability.
-
-**Delivers:**
-- User authentication and account management
-- Partner linking via pairing codes
-- Abuse screening before couples features activate
-- Recording consent system with location-based legal compliance
-- Data security architecture (encryption layers, secure storage)
-- Privacy policy and regulatory positioning (not "therapy")
-- Basic user profiles and partnership data model
-
-**Addresses (from FEATURES.md):**
-- Secure account with partner linking (table stakes)
-- Privacy & data security (table stakes)
-
-**Uses (from STACK.md):**
-- Expo SDK 53+ for mobile framework
-- Supabase Auth for authentication
-- expo-secure-store for token storage
-- PostgreSQL with Row-Level Security
-- Supabase Edge Functions for server-side logic
-
-**Avoids (from PITFALLS.md):**
-- Pitfall #1: Enabling abuse through neutral therapy
-- Pitfall #2: Audio recording legal liability
-- Pitfall #5: Catastrophic data breach
-- Pitfall #10: Regulatory compliance failure
-
-**Research flag:** Legal requirements for Korean market (PIPA compliance, recording consent laws) need validation during planning.
-
-### Phase 2: Core Reframing (Text-Only)
-
-**Rationale:** Prove core value proposition (AI reframing for perspective understanding) before adding audio complexity. Text recording is simpler than audio but validates the fundamental product hypothesis. Architecture research shows text analysis builds foundation for later audio pipeline. Must address critical AI design pitfalls (#3 and #4) in this phase.
+**Rationale:** Cannot build any v1.1 features until the analysis pipeline executes without crashing. Four integration gaps block execution: (1) agent signatures expect different parameters than graph provides, (2) async agents called from sync graph.invoke(), (3) event triggers exist but never called, (4) asyncio.run() will crash in production ASGI. Retrofitting these after new features are built creates cascading rework.
 
 **Delivers:**
-- Chat interface for logging conflict situations
-- AI reframing engine (perspective generation)
-- Non-judgmental analysis that presents both viewpoints
-- Validation-first approach to avoid gaslighting
-- Conflict history and pattern recognition
-- Basic progress tracking
+- Agent signature fixes (sync, accept (state, model))
+- Analysis graph wrapper alignment
+- Lazy compilation in chat_graph.py
+- Wire on_conversation_ended into chat views
+- Wire on_checkin_submitted into checkins views
+- Convert chat views to async def OR fix event loop properly
+- End-to-end test: trigger -> analysis -> report save
 
-**Addresses (from FEATURES.md):**
-- Conflict-moment reframing AI (core differentiator)
-- AI-generated perspective narrative (core differentiator)
-- Conflict pattern recognition (should have)
-- Progress tracking (table stakes)
+**Addresses:** P2 (production failures), P4 (event loop conflict)
 
-**Uses (from STACK.md):**
-- Anthropic Claude API (claude-3.5-sonnet) for reframing
-- Supabase Edge Functions to keep API keys server-side
-- Zustand for client state
-- TanStack Query for server state
-- PostgreSQL for entries and analyses
+**Blocks:** All subsequent phases. Nothing works until this is complete.
 
-**Avoids (from PITFALLS.md):**
-- Pitfall #3: AI "judges" creating referee problem
-- Pitfall #4: Reframing becoming gaslighting
-- Pitfall #8: AI hallucination and fabrication
-- Pitfall #9: Sentiment analysis false positives
+**Research flag:** None (fixing existing code, not building new features).
 
-**Research flag:** Prompt engineering for non-judgmental reframing needs iteration. Cultural adaptation for Korean communication styles (indirect expression, nunchi) needs deeper research.
+### Phase 2: PostgreSQL Migration + Push Notifications
 
-### Phase 3: Audio Pipeline
-
-**Rationale:** Audio recording adds major value (analyze actual arguments) but requires complex pipeline (recording, upload, transcription, diarization). Builds on stable analysis infrastructure from Phase 2. Architecture research shows this is highest-complexity component due to expo-audio integration, Whisper API, and speaker diarization.
+**Rationale:** Simplest infrastructure work. Unblocks mobile development. PostgreSQL migration MUST complete before production deployment. Push notifications enable insight report delivery value loop.
 
 **Delivers:**
-- Audio recording via expo-audio
-- Encrypted upload to Supabase Storage
-- Whisper API transcription with speaker labels
-- Enhanced analysis with audio sentiment
-- Audio retention policies (auto-delete after 7 days)
-- Offline recording with sync queue
+- PostgreSQL migration (custom ORM-based script, test migration first, FERNET_KEYS verification)
+- DATABASE_URL switch to PostgreSQL in base.py
+- Push notification backend (PushToken model, registration endpoint, notification service)
+- Push notification mobile (registerForPushNotificationsAsync, notification handler at module top-level)
+- Push notification wiring (trigger on InsightReport completion, health score alerts)
+- Health score API endpoint (GET /intelligence/health-score/)
 
-**Addresses (from FEATURES.md):**
-- Voice input for conflict description (should have)
-- Deferred: Full audio analysis with tone/interruptions (v2+)
+**Addresses:** P3 (migration corruption), P10 (push notification failures)
 
-**Uses (from STACK.md):**
-- expo-audio (HIGH_QUALITY preset for Whisper)
-- expo-file-system for file handling
-- OpenAI Whisper API (gpt-4o-transcribe) with speaker diarization
-- Supabase Storage with signed URLs
-- Enhanced Analysis Service for speaker-separated sentiment
+**Uses:** psycopg[binary] (already installed), expo-notifications (already installed), exponent-server-sdk (already installed)
 
-**Avoids (from PITFALLS.md):**
-- Pitfall #2: Recording consent enforcement (built in Phase 1, tested here)
-- Pitfall #9: Sentiment false positives (especially with sarcasm/cultural context)
+**Blocks:** Phase 4 (mobile needs endpoints), Phase 5 (production requires PostgreSQL)
 
-**Research flag:** Whisper API speaker diarization accuracy for couple conflicts (overlapping speech, emotion) needs validation. expo-audio configuration for optimal transcription quality needs testing.
+**Research flag:** None (infrastructure setup with well-documented patterns).
 
-### Phase 4: Partner Features & Engagement
+### Phase 3: Chat Agent Transformation + Bridge UX
 
-**Rationale:** Partner features require stable individual experience first. Sharing logic is complex (permission levels, privacy controls) and builds on all previous components. Engagement features (daily prompts, notifications) help retention but aren't core value. Architecture research shows this as final piece of core feature set.
+**Rationale:** Core paradigm shift from analyzer to therapeutic listener. MUST include bridge UX in same phase to avoid removing value without replacement (P1 critical pitfall). New users need visible accumulation progress and micro-insights until first report arrives.
 
 **Delivers:**
-- Sharing Service (none/analysis-only/full permission levels)
-- Shared view compilation for both partners
-- Daily engagement prompts and questions
-- Push notifications (carefully designed to avoid conflict)
-- Streak tracking and gamification
-- Communication exercise library
+- Enable ACCUMULATIVE_THERAPY_ENABLED feature flag (routes to chat_agent/chat_graph.py)
+- Bridge UX: brief reflection summary at conversation end
+- Visible accumulation progress ("Insight readiness: 40% - 2 more conversations needed")
+- Transparent communication ("I'm now listening more carefully across sessions")
+- Graduated transition: listener 5-8 messages, then lighter reframing bridge
+- Trigger threshold adjustment to ensure first report within 1 week for active users
+- ConflictInformation persistence to DB (or JSON field on Conversation)
+- Conversation end detection logic
 
-**Addresses (from FEATURES.md):**
-- Daily engagement mechanism (table stakes)
-- Basic communication exercises (table stakes)
-- Onboarding assessment (table stakes)
+**Addresses:** P1 (removing immediate gratification), TS-1 (therapeutic listener), DF-6 (information state tracking)
 
-**Uses (from STACK.md):**
-- Sharing Service component from architecture
-- Push notification system
-- Content library storage in PostgreSQL
-- NativeWind theming for polished UX
+**Avoids:** P1 (most dangerous UX pitfall), P7 (Korean prompt quality degradation)
 
-**Avoids (from PITFALLS.md):**
-- Pitfall #6: Reluctant partner problem (design valuable solo mode)
-- Pitfall #7: Triangulation and over-reliance (usage limits, real-world prompts)
-- Pitfall #11: Notification design causing conflict
+**Uses:** Existing chat_agent/ implementation, UserIntelligenceService (personalization)
 
-**Research flag:** Engagement mechanics that work for both enthusiastic and reluctant partners need UX research. Balance between encouraging usage and avoiding over-reliance.
+**Blocks:** Nothing (can parallel with Phase 4)
 
-### Phase 5: Production Hardening & Scale
+**Research flag:** Korean prompt quality needs native speaker evaluation before flag-on. Cultural adaptation layer (nunchi, jeong, indirect communication) needs validation with Korean therapy experts.
 
-**Rationale:** Polish and security hardening after core features are stable. Premium features, advanced analytics, and scale optimizations can wait until product-market fit is proven. This phase prepares for growth and potential HIPAA certification.
+### Phase 4: Analysis Pipeline + Insight Reports
+
+**Rationale:** Builds on stable foundation from Phase 1. Chat agent (Phase 3) is listening and accumulating data. Now enable the analysis pipeline to produce insights. Shadow mode first (2 weeks) to validate costs, failure rates, quality before delivering to users.
 
 **Delivers:**
-- Enhanced audit logging for all PHI access
-- Crisis detection and escalation system
-- SOC 2 Type II certification preparation
-- Advanced pattern recognition and insights
-- Premium tier features (on-device transcription for privacy)
-- Performance optimization (read replicas, caching)
-- Localization for Korean market
+- Analysis trigger evaluation (daily Celery beat, event triggers wired in Phase 1)
+- Multi-agent analysis graph execution (fixed in Phase 1, now enable)
+- InsightReport delivery via API (report_list, report_detail, mark_read)
+- InsightDeliveryManager wiring into chat agent (permission-based in-conversation delivery)
+- Shadow mode: run analysis for 2 weeks without user delivery
+- Cost monitoring dashboard (track per-agent LLM calls, token usage, failures)
+- Circuit breaker pattern (3 consecutive failures -> stop 1 hour)
+- Graceful degradation per-agent (work with missing outputs)
 
-**Addresses (from FEATURES.md):**
-- Emergency escalation path (deferred to post-MVP)
-- Advanced features (pattern insights, premium tiers)
+**Addresses:** DF-1 (accumulative multi-session reports), DF-3 (trigger service), TS-3 (insight delivery), P2 (production failures)
 
-**Uses (from STACK.md):**
-- Redis for caching and rate limiting
-- Read replicas for PostgreSQL at scale
-- On-device whisper.cpp for privacy-focused premium tier
-- EAS Build and EAS Submit for production deployment
+**Uses:** TherapyDataCollector (comprehensive data), LangGraph StateGraph (6-agent pipeline), InsightReport model (encrypted storage)
 
-**Avoids (from PITFALLS.md):**
-- Pitfall #12: Onboarding creating false expectations
-- Pitfall #13: Cultural mismatch in communication styles
+**Avoids:** P2 (pipeline failures), P6 (partner privacy leak through inference)
 
-**Research flag:** HIPAA compliance requirements and BAA with Supabase need legal review. Korean mental health app regulations need investigation.
+**Blocks:** Phase 5 (reports must generate before dashboard shows them)
+
+**Research flag:** Per-agent prompt engineering for non-judgmental reframing needs iteration. Verify Balance Mediator prompt only uses user's description of partner, never partner's own data. Test with real Korean conflict descriptions for prompt quality (P7).
+
+### Phase 5: Health Score + Dashboard
+
+**Rationale:** Builds on stable analysis pipeline. Health score computation is independent of analysis pipeline (uses raw data sources directly). Dashboard ties everything together: health score + today's tasks + report badge = daily touchpoint.
+
+**Delivers:**
+- HealthScoreService computation (5 components, weighted formula)
+- DailyHealthScore Celery task (daily 00:00 KST)
+- Progressive disclosure (don't show until 3 check-ins + 2 conversations)
+- Confidence indicator ("Confidence: Low - based on 2 data points")
+- Component-level visibility (which have data, which need more)
+- RecommendationService (map score weaknesses to app content)
+- Smart prompt selection (recurring topic -> related prompts)
+- Home dashboard (score + trend, today's tasks, report badge, partner status)
+- Mobile health score screen (current score, components, 30-day chart)
+
+**Addresses:** DF-2 (health score 0-100), DF-4 (smart recommendations), DF-5 (home dashboard), P5 (cold start problem)
+
+**Uses:** DailyCheckIn (mood), WeeklySummary (escalation), Streak + CoupleActivity (engagement), Pattern (severity), CoolDown (frequency)
+
+**Avoids:** P5 (meaningless score for new users)
+
+**Blocks:** Nothing (final feature completion)
+
+**Research flag:** None (scoring formula and dashboard patterns well-documented).
+
+### Phase 6: Production Readiness + Rollout
+
+**Rationale:** Everything must work before enabling for all users. Feature flag allows gradual rollout. Monitoring ensures production issues caught early.
+
+**Delivers:**
+- ACCUMULATIVE_THERAPY_ENABLED=true in staging
+- A/B testing (10% users, then 50%, then 100%)
+- Monitoring: pipeline duration, success rates, cost per analysis, trigger distribution
+- Celery worker isolation (separate queue for analysis tasks)
+- Cost ceiling enforcement (daily/hourly token budget)
+- Rate limit trigger evaluation (100 users per minute, not all at once)
+- Korean prompt quality validation (native speaker evaluation)
+- End-to-end acceptance testing against intelligence-acceptance-matrix.md
+- Production ASGI deployment (Daphne) with async views (fixed in Phase 1)
+- Feature flag removal plan (target 4 weeks after 100% rollout)
+
+**Addresses:** P2 (production failures), P7 (Korean quality), P8 (flag explosion)
+
+**Uses:** All components from Phases 1-5
+
+**Avoids:** All critical and moderate pitfalls through monitoring and gradual rollout
+
+**Blocks:** Nothing (final rollout)
+
+**Research flag:** None (deployment and monitoring, standard patterns).
 
 ### Phase Ordering Rationale
 
 **Why this order:**
-1. Legal/ethical foundation must come first - cannot retrofit abuse screening or recording consent
-2. Text reframing proves core value before audio complexity
-3. Audio builds on stable analysis infrastructure from Phase 2
-4. Partner features require stable solo experience first
-5. Production hardening waits until product-market fit proven
+1. Fix foundation first — cannot build features on broken code (4 integration gaps block execution)
+2. PostgreSQL + push notifications next — infrastructure needed before features, unblocks mobile work
+3. Chat agent transformation + bridge UX — deliver paradigm shift with safety net (avoid P1 value removal)
+4. Analysis pipeline + insight reports — build on stable chat agent, shadow mode first
+5. Health score + dashboard — tie everything together, create daily touchpoint
+6. Production readiness — validate everything before full rollout
 
 **Dependency chain:**
-- Auth Service → Analysis Service → Audio Service → Sharing Service
-- Security architecture → AI features → Partner collaboration → Scale optimization
-- Compliance framework → Core features → Engagement mechanics → Advanced features
+- Phase 1 (fix foundation) -> Phase 2 (infrastructure) -> Phase 3 (chat transformation) | Phase 4 (analysis pipeline) -> Phase 5 (health score) -> Phase 6 (rollout)
+- Phases 3 and 4 can run in parallel after Phase 2 completes
 
 **Pitfall avoidance:**
-- Phase 1 addresses all 5 critical pitfalls' architectural requirements
-- Phase 2 addresses core AI design risks (#3, #4) before adding audio
-- Phase 3 validates recording consent system under real usage
-- Phase 4 handles engagement and partner dynamics after core value proven
+- Phase 1 addresses P2 (production failures), P4 (event loop conflict) by fixing existing code
+- Phase 2 addresses P3 (migration corruption), P10 (push notification failures) before features depend on them
+- Phase 3 addresses P1 (most dangerous UX pitfall) by delivering bridge UX simultaneously with chat transformation
+- Phase 4 addresses P2 (pipeline failures) with shadow mode, circuit breaker, graceful degradation
+- Phase 5 addresses P5 (cold start problem) with progressive disclosure and confidence indicators
+- Phase 6 addresses all moderate pitfalls (P6-P10) through validation, monitoring, gradual rollout
 
 ### Research Flags
 
 **Phases needing deeper research during planning:**
 
-- **Phase 1:** Korean legal requirements (PIPA compliance, recording consent laws differ from US), specific abuse screening protocols validated for digital context, partnership models with licensed professionals for regulatory coverage
+- **Phase 1:** None (fixing existing code, patterns are clear from codebase analysis)
 
-- **Phase 2:** Prompt engineering patterns for non-judgmental reframing, cultural adaptation of reframing techniques for Korean communication norms (indirect expression, nunchi, hierarchical dynamics)
+- **Phase 2:** PostgreSQL migration with encrypted fields + UUID primary keys needs dry-run test with production-like data. Push notification FCM/APNs configuration needs documentation review.
 
-- **Phase 3:** Whisper API accuracy with overlapping speech/high emotion, expo-audio optimal configuration for transcription quality, on-device transcription feasibility (whisper.cpp) for premium privacy tier
+- **Phase 3:** Korean prompt quality for therapeutic listener needs native speaker evaluation before flag-on. Cultural adaptation layer (nunchi, jeong, chaekmyeon concepts) needs validation with Korean therapy experts. Test with real Korean conflict descriptions (not translated English).
 
-- **Phase 5:** HIPAA BAA process with Supabase, SOC 2 Type II certification requirements, Korean mental health app regulations and licensing
+- **Phase 4:** Multi-agent prompt engineering for non-judgmental reframing needs iteration. Balance Mediator prompt must only use user's description of partner, never partner's own data (P6 privacy). Shadow mode cost monitoring crucial before user delivery.
 
-**Phases with standard patterns (likely skip detailed research-phase):**
+- **Phase 5:** None (health score computation and dashboard patterns well-documented in existing codebase and plans)
 
-- **Phase 4:** Notification systems, streak mechanics, content libraries are well-documented engagement patterns with abundant references in mainstream apps
+- **Phase 6:** None (deployment, monitoring, rollout patterns are standard)
 
-- **General:** Expo + Supabase integration, React Native state management, PostgreSQL schema design all have extensive official documentation and proven patterns
+**Phases with standard patterns (skip detailed research):**
+
+- **Phase 2:** PostgreSQL migration is well-documented Django pattern. Push notifications have official Expo SDK 54 documentation.
+
+- **Phase 5:** Health score computation is arithmetic over ORM queries. Dashboard composition is standard mobile UX. RecommendationService is rule-based mapping.
+
+- **Phase 6:** Celery worker configuration, monitoring setup, feature flag gradual rollout are standard SRE practices.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All recommendations based on official Expo SDK 53 docs, Supabase official guides, and authoritative 2025 React Native resources. Version compatibility verified. expo-audio migration from expo-av is well-documented. |
-| Features | MEDIUM-HIGH | Table stakes identified from competitor analysis (Paired, Lasting, Maia) with user counts and reviews. Differentiator validated by market gap research - no competitor focuses on conflict-moment reframing. Anti-features grounded in documented failures. |
-| Architecture | HIGH | Component structure based on mental health app development guides, HIPAA compliance resources, and official OpenAI/Anthropic API docs. PostgreSQL RLS for therapy data is proven pattern. Build order validated against dependency graph. |
-| Pitfalls | HIGH | All critical pitfalls supported by documented incidents: 2025 AI recording lawsuits, Character.AI settlement, AI companion app breaches, National Domestic Violence Hotline guidelines, research on therapy making abuse worse. Legal risks verified via multiple law firm publications. |
+| Stack | HIGH | All dependencies verified present in requirements.txt and package.json. Only change needed: langgraph pin upgrade from >=0.2.0 to >=0.2.60. PostgreSQL already in docker-compose. Push notification packages already installed. |
+| Features | MEDIUM-HIGH | Table stakes and differentiators grounded in existing codebase analysis and competitor research. The accumulative paradigm is genuinely novel (no competitor offers this). But UX risk (P1 removing immediate gratification) needs careful handling. |
+| Architecture | HIGH | Component boundaries verified through direct codebase analysis of all 15 Django apps and mobile feature code. Integration gaps identified and fixable. Two-tier intelligence (UserIntelligenceService vs TherapyDataCollector) is clean separation. |
+| Pitfalls | HIGH | All 4 critical pitfalls supported by documented incidents: LangGraph production failures (GitHub issues #2873, #4620, #4927), asyncio.run() conflict (langchain #8494), encrypted migration risks (django-fernet-fields docs), UX value removal (established product design pattern). |
 
 **Overall confidence:** HIGH
 
 Research quality is strong due to:
-- Official documentation for all core technologies (Expo, Supabase, Claude, Whisper)
-- Multiple independent sources confirming critical pitfalls (legal, ethical, user safety)
-- 2025/2026 sources ensuring currency (Expo SDK 53, new AI regulations)
-- Cross-validation of recommendations across STACK/FEATURES/ARCHITECTURE alignment
+- Direct codebase analysis of all 15 backend apps, all service implementations, mobile feature code, settings, Celery config, docker-compose
+- Existing plans provide detailed specifications: accumulative-therapy-system.md, backend-intelligence-upgrade.md, multi-agent-therapy-pipeline.md
+- Official documentation for all core technologies (Django 5.x, LangGraph 1.0.8, Expo SDK 54, expo-notifications)
+- Documented production failures for LangGraph and asyncio patterns (GitHub issues)
+- The code is 70% implemented — research validates existing work rather than proposing untested architecture
 
 ### Gaps to Address
 
 **Technical gaps:**
-- Korean market PIPA compliance specifics need legal consultation - research found general Korean privacy law but not therapy app precedents
-- On-device whisper.cpp integration effort unclear - found references to React Native ports but no production case studies
-- expo-audio optimal recording configuration for Whisper transcription needs empirical testing - documentation exists but conflict-specific settings untested
+
+- **Agent signature mismatch fix approach** — Two options: (A) convert agents to sync def + model parameter, or (B) convert graph to async with graph.ainvoke(). Codebase uses Celery tasks where sync is natural. Recommendation: Option A (sync agents). Gap: verify this doesn't break existing analysis graph tests.
+
+- **Push notification channel configuration** — Android notification channels (high/default/low priority for Insight Reports/Daily Reminders/Partner Activity) need explicit configuration at app startup. Gap: exact channel IDs and importance levels need design decision.
+
+- **Korean prompt temperature testing** — Pattern Analyst uses temperature 0.3 for consistency. Gap: verify this doesn't produce overly robotic Korean. May need 0.4-0.5 for natural Korean sentence ending variety.
 
 **Domain gaps:**
-- Abuse screening protocols for digital-first context - found guidance for human therapists but digital adaptation unclear. May need consultation with domestic violence experts for implementation.
-- Cultural adaptation depth for Korean market - research identified indirect communication (nunchi) as critical but specific prompt engineering patterns need development with Korean relationship counselors
-- Crisis detection thresholds and response protocols - found that app should detect crisis but specific keyword lists and intervention flows need expert validation
+
+- **Bridge UX specific design** — What exactly does "micro-insights" mean? Brief reflection summary? One-line observation? Gap: needs UX mockup before implementation. Recommendation: "Here's what I heard today: [3-sentence summary]" + "Your data is being analyzed: [progress %]" on conversation end screen.
+
+- **First report timing guarantee** — "Within 1 week for active users" requires defining "active" and adjusting trigger thresholds. Gap: what's the minimum data for acceptable quality? Recommendation: 3 conversations + 5 check-ins + 2 activities = trigger SUFFICIENCY regardless of checklist %.
+
+- **Korean cultural adaptation specifics** — Nunchi (reading the room), jeong (emotional bond), chaekmyeon (face-saving) are mentioned but not operationalized. Gap: how do these manifest in prompt engineering? Needs consultation with Korean relationship counselor for prompt review.
 
 **Regulatory gaps:**
-- Korean mental health app licensing requirements - research found US state-by-state variations (Illinois 2025 law, etc.) but Korean regulatory landscape needs investigation
-- HIPAA applicability for couples therapy apps - Supabase offers BAA but unclear if app qualifies as "covered entity" vs. personal wellness. Legal review needed.
+
+- **PIPA compliance for partner data inference** — Korean Personal Information Protection Act may require explicit consent for "Your anonymized patterns may be used to improve your partner's analysis". Gap: legal review needed for consent language and opt-out mechanism.
 
 **How to handle during planning/execution:**
-- Phase 1 planning: Engage legal counsel for Korean recording consent and PIPA compliance before finalizing auth architecture
-- Phase 2 planning: Partner with licensed therapist or relationship counselor for abuse screening protocol and crisis detection validation
-- Phase 2-3 execution: Pilot with small user group to validate reframing prompts and sentiment analysis accuracy before scaling
-- Phase 5 planning: Consult Korean relationship experts for cultural localization of reframing techniques
+
+- Phase 1 planning: Decide agent signature fix approach (sync vs async), write migration tests before touching agent files
+- Phase 2 planning: Document push notification channel design (IDs, priorities, user-facing strings), test migration dry-run with encrypted data
+- Phase 3 planning: Design bridge UX mockup (conversation end screen, progress indicator, micro-insight format), adjust trigger thresholds for first report timing
+- Phase 3 execution: Korean prompt quality validation with native speaker BEFORE turning on feature flag for real users
+- Phase 4 execution: Shadow mode for 2 weeks to validate costs (set budget ceiling before enabling), monitor failure patterns per-agent
+- Phase 6 planning: Korean cultural adaptation review with relationship counselor, PIPA legal review for partner data consent
 
 ## Sources
 
 ### Primary (HIGH confidence)
 
-**Official Documentation:**
-- Expo SDK 53 Changelog and expo-audio documentation
-- Supabase React Native Guide and Row-Level Security docs
-- Anthropic SDK GitHub and Claude API documentation
-- OpenAI Whisper API documentation and pricing
-- NativeWind installation and configuration guides
-- TanStack Query React Native offline support documentation
+**Codebase Analysis:**
+- Direct analysis of all files in backend/ (15 Django apps, all services, models, tasks, views, settings)
+- Direct analysis of mobile/src/ (features, types, api, adapters, hooks, components)
+- Existing plans: accumulative-therapy-system.md, backend-intelligence-upgrade.md, multi-agent-therapy-pipeline.md, frontend-intelligence-ui-gap-v1.md, intelligence-acceptance-matrix.md
+- backend/requirements.txt, mobile/package.json — all dependencies verified present
+- docker-compose.yml — PostgreSQL 16, Redis 7 already configured
 
-**Legal and Regulatory:**
-- Reed Smith: Legality of AI-powered Recording and Transcription (2025)
-- National Law Review: AI Recording Wiretap Lawsuits (2025)
-- Brown University: AI Chatbots Violate Mental Health Ethics Standards (2025-10-21)
-- Manatt Health: State AI Legislation Tracker (2025)
-- The National Domestic Violence Hotline: Couples Therapy with Abusers
+**Official Documentation:**
+- [LangGraph PyPI v1.0.8](https://pypi.org/project/langgraph/) — verified Feb 2026
+- [LangGraph StateGraph docs](https://docs.langchain.com/oss/python/langgraph/quickstart) — verified Feb 2026
+- [Django 5.x async views](https://docs.djangoproject.com/en/5.2/topics/async/) — verified
+- [Expo Notifications SDK 54](https://docs.expo.dev/versions/latest/sdk/notifications/) — verified
+- [Expo Push Notifications setup](https://docs.expo.dev/push-notifications/push-notifications-setup/) — SDK 54 specific
+- [psycopg 3.3.2 documentation](https://www.psycopg.org/psycopg3/) — verified Feb 2026
+- [django-fernet-fields documentation](https://django-fernet-fields.readthedocs.io/en/latest/) — encryption migration warnings
+
+**Production Issues:**
+- [LangGraph deployment timeout errors - GitHub #4620](https://github.com/langchain-ai/langgraph/issues/4620)
+- [LangGraph thread exhaustion - GitHub #2873](https://github.com/langchain-ai/langgraph/issues/2873)
+- [asyncio.run() event loop conflict - langchain #8494](https://github.com/langchain-ai/langchain/issues/8494)
 
 ### Secondary (MEDIUM confidence)
 
-**Industry Research:**
-- React Native Tech Stack 2025 - Galaxies.dev
-- Supabase vs Firebase 2025 - Zapier
-- OpenAI Whisper API Pricing Analysis - BrassTranscripts
-- Mental Health App HIPAA Compliance - SecurePrivacy
-- LLM Integration Mobile Apps 2025 - TheUsefulApps
+**Feature Research:**
+- [Dartmouth Therapy Chatbot Trial (2025)](https://home.dartmouth.edu/news/2025/03/first-therapy-chatbot-trial-yields-mental-health-benefits) — therapeutic alliance comparable to human therapists
+- [Wysa Therapeutic Alliance Study (Frontiers)](https://www.frontiersin.org/journals/digital-health/articles/10.3389/fdgth.2022.847991/full) — flexible conversational interface builds relational capacity
+- [APA Personalized Mental Health Trends (2026)](https://www.apa.org/monitor/2026/01-02/trends-personalized-mental-health-care) — personalization as defining trend
+- [Woebot Conversation Design Case Study](https://uxwritinghub.com/woebot-case-study-in-conversation-design-for-mental-health-products/) — listen-first philosophy
 
-**Competitor Analysis:**
-- Paired App Store (8M+ downloads)
-- Lasting App Review - Choosing Therapy
-- Maia - Why Recording Fights Helps Relationships
-- Donkey Chats - Top 10 Relationship Apps
-- Gottman Connect Platform documentation
+**Architecture:**
+- [LangChain in Production: Beyond the Tutorials](https://medium.com/@kasimoluwasegun/langchain-in-production-beyond-the-tutorials-e7b7f2506572) — $127 bill from misconfigured pipeline
+- [Scaling AI Agents in Django SaaS: LangGraph + Celery](https://medium.com/django-journal/scaling-ai-agents-in-django-saas-langgraph-celery-for-autonomous-workflows-at-1m-users-f6d7a274838c)
+- [Django SQLite to PostgreSQL migration guide](https://gist.github.com/sirodoht/f598d14e9644e2d3909629a41e3522ad)
+- [Making Expo Notifications Actually Work](https://medium.com/@gligor99/making-expo-notifications-actually-work-even-on-android-12-and-ios-206ff632a845)
 
-**Architecture References:**
-- Mental Health App Development Guide 2026 - TopFlight Apps
-- HIPAA Compliant App Development 2025 - AppInventiv
-- HIPAA Compliant Mobile Apps 2026 - OpenForge
-- PostgreSQL vs MongoDB 2025 - Xenoss
-- Building a Relationship App Guide - DHiWise
-- MIND-SAFE Framework for Mental Health Chatbots - JMIR Mental Health
+**Pitfalls:**
+- [Cold Start Problem in ML Explained](https://spotintelligence.com/2024/02/08/cold-start-problem-machine-learning/)
+- [Feature Flag Best Practices 2025](https://octopus.com/devops/feature-flags/feature-flag-best-practices/)
+- [Expo Push Notifications FAQ](https://docs.expo.dev/push-notifications/faq/)
 
 ### Tertiary (LOW-MEDIUM confidence)
 
-**User Safety and Documented Harm:**
-- Psychology Today: Emotional Abuse - How Your Couples Counseling Made It Worse (2019)
-- Character.AI Settlement - CNN (2026-01-07)
-- Carey Center: Why AI Can't Fix Your Love Life and Could Make It Worse
-- Talkspace: AI Couples Therapy Triangulation Concerns
-- Psychology Today: AI Gaslighting Patterns (2025-07)
+**Korean LLM:**
+- [Aligning LLMs for CBT: Proof-of-concept study (Frontiers)](https://www.frontiersin.org/journals/psychiatry/articles/10.3389/fpsyt.2025.1583739/full)
+- [Survey of LLMs in Psychotherapy](https://arxiv.org/html/2502.11095v1) — cognitive-affective gap in mental health contexts
 
-**Data Security Incidents:**
-- Cybernews: AI Companion App Breach - 400K Users Exposed (2025)
-- Private Internet Access: Mental Health App Privacy Dangers
-- Heartland Dental AI Recording Lawsuit (July 2025)
-
-**Engagement and UX:**
-- Couples Therapy Inc: Partner Resistance Guide
-- Psychotherapy Networker: When One Partner Won't Budge
-- Storyly: Gamification Strategies for App Engagement
-- Sentiment Analysis Limitations - AI Multiple, Toptal
+**Competitive Context:**
+- [Maia App (YC W24)](https://www.ycombinator.com/companies/maia) — voice analysis + daily activities, no accumulative multi-session analysis
+- [Paired App MQoRS Study (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC12001865/) — assessment-based relationship quality, not behavior-derived
 
 ---
-
-*Research completed: 2026-01-23*
+*Research completed: 2026-02-13*
 *Ready for roadmap: yes*
+*Target: v1.1 Intelligence & Launch milestone*

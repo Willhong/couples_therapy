@@ -1,435 +1,629 @@
-# Architecture Patterns: AI Couples Therapy Mobile App
+# Architecture Patterns: v1.1 Intelligence Layer Integration
 
-**Domain:** AI-powered couples therapy / relationship counseling mobile app
-**Researched:** 2026-01-23
-**Confidence:** HIGH (based on multiple authoritative sources + official documentation)
-
-## Executive Summary
-
-AI couples therapy apps are structured around four core domains: (1) secure user data management with partner linking, (2) audio capture and transcription, (3) AI-powered conversation analysis and reframing, and (4) privacy-first data handling. The architecture must balance real-time responsiveness with robust security for highly sensitive relationship data.
+**Domain:** AI couples therapy mobile app -- v1.1 intelligence & launch features
+**Researched:** 2026-02-13
+**Confidence:** HIGH (based on direct codebase analysis of all 15 Django apps, all service implementations, mobile feature code, existing plans, and settings)
 
 ---
 
-## Recommended Architecture
+## Current Architecture Snapshot
 
-```
-+------------------+     +------------------+     +------------------+
-|   React Native   |     |   React Native   |     |   React Native   |
-|   (Partner A)    |     |   (Partner B)    |     |   (Shared View)  |
-+--------+---------+     +--------+---------+     +--------+---------+
-         |                        |                        |
-         +------------------------+------------------------+
-                                  |
-                    +-------------v--------------+
-                    |      API Gateway           |
-                    |   (Authentication/Rate     |
-                    |    Limiting/Routing)       |
-                    +-------------+--------------+
-                                  |
-        +------------+------------+------------+------------+
-        |            |            |            |            |
-+-------v------+ +---v----+ +----v-----+ +----v-----+ +----v-----+
-|   Auth       | | User   | | Audio    | | Analysis | | Sharing  |
-|   Service    | | Service| | Service  | | Service  | | Service  |
-+--------------+ +--------+ +----------+ +----------+ +----------+
-        |            |            |            |            |
-        +------------+------------+------------+------------+
-                                  |
-                    +-------------v--------------+
-                    |      PostgreSQL            |
-                    |   (Encrypted at Rest)      |
-                    +----------------------------+
-                                  |
-                    +-------------v--------------+
-                    |   Object Storage (S3)     |
-                    |   (Audio Files, E2E       |
-                    |    Encrypted)             |
-                    +----------------------------+
-```
+Before describing how new components integrate, here is the verified state of every component mentioned in the research question.
+
+### What Already Exists (Implemented)
+
+| Component | Location | Status |
+|-----------|----------|--------|
+| InsightReport model | `apps/intelligence/models.py` | Complete -- 4 trigger tiers, encrypted analysis fields, delivery tracking |
+| Analysis graph (LangGraph) | `apps/intelligence/services/analysis_graph.py` | Complete -- 7-node `StateGraph` with conditional ethics routing |
+| 5 analysis agents + ethics + synthesizer | `apps/intelligence/services/agents/` | Complete -- async nodes, JSON parsing, Korean prompts |
+| TherapyDataCollector | `apps/intelligence/services/data_collector.py` | Complete -- aggregates 9 data sources across 7+ apps |
+| AnalysisTriggerService | `apps/intelligence/services/trigger_service.py` | Complete -- 4-tier evaluation (critical/threshold/sufficiency/periodic) |
+| Intelligence Celery tasks | `apps/intelligence/tasks.py` | Complete -- `evaluate_analysis_triggers`, `on_conversation_ended`, `on_checkin_submitted`, `dispatch_multi_agent_analysis` |
+| UserIntelligenceService | `apps/core/services/user_intelligence.py` | Complete -- cached context (1hr TTL), safety-gated, 6 ORM queries max |
+| Cache invalidation signals | `apps/core/signals.py` | Complete -- busts cache on profile/pattern/checkin/safety save |
+| HealthScoreService | `apps/patterns/services/health_score.py` | Complete -- 5-component composite (mood/escalation/engagement/severity/cooldown) |
+| DailyHealthScore model | `apps/patterns/models.py` | Complete -- daily storage with components JSON |
+| Health score Celery task | `apps/patterns/tasks.py` | Complete -- `compute_daily_health_scores` runs daily at midnight KST |
+| Chat agent (therapeutic listener) | `apps/chat/services/chat_agent/` | Complete -- `chat_graph.py`, `information_state.py`, `insight_delivery.py` |
+| Feature flag routing | `reframing_graph.py` lines 159-168 | Complete -- `ACCUMULATIVE_THERAPY_ENABLED` routes to chat agent |
+| Feature flag setting | `config/settings/base.py` line 258 | Complete -- `env.bool('ACCUMULATIVE_THERAPY_ENABLED', default=False)` |
+| Intelligence API views | `apps/intelligence/views.py` | Complete -- report_list, report_detail, mark_read, unread_count, partner_dashboard |
+| Intelligence URLs | `apps/intelligence/urls.py` | Complete -- 5 endpoints under `/api/v1/intelligence/` |
+| Mobile intelligence feature | `mobile/src/features/intelligence/` | Complete -- types, api, adapters, hooks (useReports, useReportDetail, useUnreadCount), components (ReportListItem, ReportDetailView) |
+| Celery Beat schedule | `config/celery.py` | Complete -- weekly summary, daily health scores, daily trigger evaluation |
+| UserIntelligenceService call from chat | `apps/chat/views.py` lines 326-330 | Complete -- fetches context for both reframe and comfort endpoints |
+
+### What Needs Work (Gaps Identified from Codebase)
+
+| Gap | Details | Severity |
+|-----|---------|----------|
+| Agent signature mismatch | `analysis_graph.py` sync wrappers pass `(state, model)` but agent files (`pattern_analyst.py`, etc.) expect `state['model_factory']` callable and use `await model.ainvoke()` | CRITICAL |
+| Sync/async mismatch in analysis graph | `analysis_graph.py` uses `graph.invoke()` (sync) but agent nodes are `async def` | CRITICAL |
+| Missing event trigger wiring | `on_conversation_ended` task exists in `intelligence/tasks.py` but is never called from `chat/views.py` | HIGH |
+| No push notification on report completion | `InsightDeliveryManager` exists but no push trigger when report completes | MODERATE |
+| No health score API endpoint | `HealthScoreService` computes scores but no dedicated REST view to expose them to mobile | MODERATE |
+| InsightDeliveryManager not wired to chat | `insight_delivery.py` exists but `chat_graph.py` never calls it | MODERATE |
+| ConflictInformation not persisted | `ChatAgentState` exists only in memory per-request; no cross-session persistence | MODERATE |
+| No mobile health score screen | Mobile has report screens but no health score display | LOW |
 
 ---
 
-## Component Boundaries
+## Recommended Architecture: Integration Map
 
-### 1. Mobile Client (React Native + Expo)
-
-| Responsibility | Details |
-|----------------|---------|
-| Audio Recording | Capture voice using `expo-audio` (new library, replaces deprecated `expo-av`) |
-| Local Encryption | Encrypt audio before upload using device encryption APIs |
-| Chat Interface | Text-based situation/emotion logging |
-| Partner Linking | Generate/enter pairing codes |
-| Offline Support | Queue recordings when offline, sync when connected |
-| Secure Storage | Store auth tokens via `expo-secure-store` |
-
-**Communicates With:** API Gateway (all external communication)
-
-**Key Libraries:**
-- `expo-audio` - Audio recording (NOT expo-av, which is deprecated)
-- `expo-secure-store` - Secure token storage
-- `expo-router` - File-based navigation
-- `react-hook-form` + `zod` - Form validation
-- `nativewind` - Styling
-
-### 2. API Gateway
-
-| Responsibility | Details |
-|----------------|---------|
-| Authentication | JWT validation, token refresh |
-| Rate Limiting | Prevent abuse, especially on expensive AI endpoints |
-| Request Routing | Direct to appropriate microservice |
-| TLS Termination | All traffic encrypted via TLS 1.3 |
-
-**Communicates With:** All backend services
-
-**Technology Options:**
-- AWS API Gateway (managed)
-- Kong (self-hosted)
-- Express.js middleware layer (simpler for MVP)
-
-### 3. Auth Service
-
-| Responsibility | Details |
-|----------------|---------|
-| User Registration | Email/password or OAuth (Google, Apple) |
-| Session Management | JWT issuance and validation |
-| MFA (Future) | SMS/TOTP second factor |
-| Partner Linking | Pairing code generation and validation |
-
-**Communicates With:** User Service, PostgreSQL
-
-**Partner Linking Flow:**
-```
-1. Partner A: Request pairing code -> Auth Service generates 6-digit code (expires 10 min)
-2. Partner A: Share code with Partner B (out-of-band: text, verbal)
-3. Partner B: Enter code -> Auth Service validates, creates Partnership record
-4. Both: Can now share analysis results based on sharing preferences
-```
-
-### 4. User Service
-
-| Responsibility | Details |
-|----------------|---------|
-| Profile Management | User preferences, notification settings |
-| Partnership Data | Linked partner relationships |
-| Sharing Preferences | What to share (original, analysis only, nothing) |
-| Subscription Status | Free/premium tier tracking |
-
-**Communicates With:** Auth Service, PostgreSQL
-
-### 5. Audio Service
-
-| Responsibility | Details |
-|----------------|---------|
-| Audio Upload | Receive encrypted audio files |
-| Storage Management | Store in S3 with encryption at rest |
-| Transcription Orchestration | Send to transcription API, receive text |
-| Audio Cleanup | Delete audio after configurable retention period |
-
-**Communicates With:** Analysis Service, Object Storage, Transcription API
-
-**Transcription Options (2025/2026):**
-
-| Provider | Model | Pros | Cons |
-|----------|-------|------|------|
-| OpenAI | `gpt-4o-transcribe` | Best WER, streaming support | Cloud only, cost |
-| OpenAI | `whisper-1` | Proven, cheaper | Legacy, no streaming |
-| On-device | `whisper.cpp` via React Native | Privacy, no network | Large model size (~500MB), slower |
-
-**Recommendation:** Use OpenAI `gpt-4o-transcribe` for cloud transcription. For privacy-sensitive users, offer on-device option in premium tier using whisper.cpp port.
-
-### 6. Analysis Service (Core AI)
-
-| Responsibility | Details |
-|----------------|---------|
-| Conversation Analysis | Parse transcription, identify speakers, extract key moments |
-| Sentiment Detection | Identify emotional tone per speaker |
-| Reframing Generation | Generate "what partner might have heard" perspectives |
-| Action Suggestions | Provide concrete next steps |
-
-**Communicates With:** Audio Service, Sharing Service, PostgreSQL
-
-**AI Architecture:**
+### System Overview (How Everything Connects)
 
 ```
-Transcription Text
+MOBILE (Expo SDK 54)                     BACKEND (Django 5.x + DRF)
+========================                 ================================
+
+[Chat Screen]                            [Chat App]
+  |                                        |
+  |--POST /chat/reframe/------------>      reframing_graph.py
+  |                                          |
+  |                                          +-- ACCUMULATIVE_THERAPY_ENABLED?
+  |                                          |     NO  --> TWO_MODE_SYSTEM_PROMPT (1 LLM call)
+  |                                          |     YES --> chat_agent/chat_graph.py (1 LLM call)
+  |                                          |               |
+  |                                          |               +-- UserIntelligenceService.get_ai_context()
+  |                                          |               |     (sync, cached 1hr, safety-gated)
+  |                                          |               |
+  |                                          |               +-- InsightDeliveryManager [GAP: not wired]
+  |                                          |               |     (check pending insights, offer in chat)
+  |                                          |               |
+  |                                          |               +-- information_state.py tracking
+  |                                          |
+  |                                          +-- analyze_patterns.delay() [Celery]
+  |                                          +-- on_conversation_ended.delay() [GAP: not called]
+  |
+[Report Screen]                          [Intelligence App]
+  |                                        |
+  |--GET /intelligence/reports/-------->   views.report_list
+  |--GET /intelligence/reports/:id/---->   views.report_detail
+  |--POST /intelligence/reports/:id/read-> views.mark_read
+  |--GET /intelligence/reports/unread----> views.unread_count
+  |                                        |
+  |                                      [Celery Worker]
+  |                                        |
+  |                                        +-- evaluate_analysis_triggers (daily beat, 00:30 KST)
+  |                                        |     |
+  |                                        |     +-- AnalysisTriggerService.evaluate(user_id)
+  |                                        |           |
+  |                                        |           +-- _check_critical_signals (safety/crisis/patterns)
+  |                                        |           +-- _check_threshold_breach (escalation/mood/score)
+  |                                        |           +-- _check_data_sufficiency (first-time analysis)
+  |                                        |           +-- _check_periodic_schedule (weekly Monday)
+  |                                        |
+  |                                        +-- dispatch_multi_agent_analysis
+  |                                        |     |
+  |                                        |     +-- InsightReport.create(status='processing')
+  |                                        |     +-- run_analysis() [BROKEN: sync/async mismatch]
+  |                                        |           |
+  |                                        |           +-- collect_data_node (TherapyDataCollector)
+  |                                        |           +-- parallel_analysis_node
+  |                                        |           |     +-- pattern_analyst [BROKEN: sig mismatch]
+  |                                        |           |     +-- emotion_interpreter [BROKEN: sig mismatch]
+  |                                        |           +-- balance_mediator
+  |                                        |           +-- resolution_strategist
+  |                                        |           +-- report_synthesizer
+  |                                        |           +-- ethics_guardian
+  |                                        |           +-- save_report / mark_blocked
+  |                                        |           +-- [GAP: push notification on complete]
+  |                                        |
+  |                                        +-- on_conversation_ended (event, not wired)
+  |                                        +-- on_checkin_submitted (event, wired TBD)
+  |
+[Dashboard Screen]                       [Health Score]
+  |                                        |
+  |--GET /intelligence/dashboard/------>   views.partner_dashboard
+  |--GET /intelligence/health-score/-->    [GAP: no endpoint]
+  |                                        |
+  |                                      [Health Score Celery Task]
+  |                                        +-- compute_daily_health_scores (daily, 00:00 KST)
+  |                                              +-- HealthScoreService.compute()
+  |                                              +-- DailyHealthScore.update_or_create()
+```
+
+### Component Boundaries
+
+| Component | Responsibility | Location | Communicates With |
+|-----------|---------------|----------|-------------------|
+| **Chat Pipeline** | Real-time message processing (1 LLM call) | `apps/chat/services/` | UserIntelligenceService (sync read), patterns tasks (async fire), intelligence tasks (async fire) |
+| **Chat Agent** | Therapeutic listener with information state tracking | `apps/chat/services/chat_agent/` | Chat Pipeline (delegated by feature flag), InsightDeliveryManager (pending) |
+| **UserIntelligenceService** | Lightweight cached user context for real-time chat personalization | `apps/core/services/user_intelligence.py` | Chat views (sync caller), Django Cache (1hr TTL), Signal receivers |
+| **TherapyDataCollector** | Comprehensive data aggregation for background analysis | `apps/intelligence/services/data_collector.py` | Analysis graph (first node), reads from 7+ Django apps |
+| **AnalysisTriggerService** | Determine when multi-agent analysis should run | `apps/intelligence/services/trigger_service.py` | Celery Beat (periodic), Celery event tasks, InsightReport model |
+| **Analysis Graph** | LangGraph multi-agent pipeline (5 agents + ethics + synthesizer) | `apps/intelligence/services/analysis_graph.py` | TherapyDataCollector, 6 agent modules, InsightReport model |
+| **HealthScoreService** | Compute daily composite health scores (0-100) | `apps/patterns/services/health_score.py` | Celery Beat (daily), DailyHealthScore model, 5 data sources |
+| **InsightDeliveryManager** | In-conversation insight delivery (offer + deliver + mark) | `apps/chat/services/chat_agent/insight_delivery.py` | InsightReport model (read), Chat agent (not yet wired) |
+| **Intelligence API** | REST endpoints for reports and partner dashboard | `apps/intelligence/views.py` | InsightReport, DailyHealthScore, partner data, SafetyAssessment |
+| **Mobile Intelligence** | Report list, detail, hooks, adapter layer | `mobile/src/features/intelligence/` | Backend REST API via typed adapters |
+| **Feature Flag** | `ACCUMULATIVE_THERAPY_ENABLED` env variable | `config/settings/base.py` | Chat pipeline routing decision |
+
+---
+
+## Data Flow Detail
+
+### Real-time Chat Path (per message, target < 3 seconds)
+
+```
+User sends message via POST /api/v1/chat/reframe/
+  |
+  v
+views.reframe_message(request)
+  |
+  +-- Save user message to DB (Message model, encrypted content)
+  |
+  +-- Crisis detection: detect_crisis(user_message)
+  |     |-- keyword matching (Korean crisis keywords)
+  |     |-- If crisis: create CrisisEvent, return safety resources, STOP
+  |
+  +-- Context: ConversationContextManager(conversation_id).get_context_for_ai()
+  |     |-- Last 10 messages verbatim
+  |     |-- Summary of older messages (via summarization LLM, cached in ConversationSummary)
+  |
+  +-- Intelligence: UserIntelligenceService.get_ai_context(user.id)  [SYNC, CACHED]
+  |     |-- Cache hit: return immediately (< 1ms)
+  |     |-- Cache miss: 6 ORM queries
+  |     |     +-- SafetyAssessment (risk_level, couple_features_enabled)
+  |     |     +-- UserProfile (attachment anxiety/avoidance, conflict_style)
+  |     |     +-- UserGoals (primary_goal, focus_areas)
+  |     |     +-- Pattern categories (top 5 by count, last 30 days)
+  |     |     +-- WeeklySummary (escalation_trend, trigger_frequency)
+  |     |     +-- InsightSummary (avg escalation score)
+  |     |-- Safety gating:
+  |     |     high risk: attachment label only, no patterns
+  |     |     moderate: no trigger phrases, no escalation details
+  |     |     low: full context
+  |
+  +-- Pipeline: asyncio.run(run_reframing_pipeline(...))
+  |     |
+  |     +-- check_safety(user_message)  [0 LLM calls, keyword only]
+  |     |     severe match: return safety template immediately
+  |     |     mild match: flag, continue to LLM
+  |     |
+  |     +-- ACCUMULATIVE_THERAPY_ENABLED?
+  |           |
+  |           NO:  TWO_MODE_SYSTEM_PROMPT -> 1 LLM call -> parse JSON
+  |           |    Mode decided by LLM: "chat" or "reframing"
+  |           |
+  |           YES: chat_agent/chat_graph.py -> 1 LLM call
+  |                |-- determine_phase (initial/exploring/deepening/wrapping_up)
+  |                |-- evaluate_checklist (6 boolean fields)
+  |                |-- generate_response (THERAPEUTIC_LISTENER_PROMPT, 1 LLM call)
+  |                |-- parse_response (JSON with message + checklist_update)
+  |                |-- build_result (merge checklist updates into state)
+  |                |
+  |                Returns: {mode: 'chat', final_response, checklist_update, phase}
+  |
+  +-- Save AI message to DB
+  +-- analyze_patterns.delay(conversation_id)  [fire-and-forget Celery task]
+  +-- Return response to mobile client
+```
+
+### Background Analysis Path (triggered, 30-120 seconds)
+
+```
+TRIGGER SOURCES:
+  (A) Celery Beat: evaluate_analysis_triggers runs daily at 00:30 KST
+  (B) Event: on_conversation_ended.delay() after conversation closes
+  (C) Event: on_checkin_submitted.delay() after daily check-in
+
+TRIGGER EVALUATION: AnalysisTriggerService.evaluate(user_id)
+  |
+  +-- _within_cooldown: InsightReport exists within 48 hours? -> skip
+  |
+  +-- Priority-ordered checks:
+  |   1. CRITICAL: CrisisEvent in 24hrs OR high-risk SafetyAssessment OR 3+ severity>=4 Patterns
+  |   2. THRESHOLD: escalation_score >= 7 OR mood declining 3+ days OR health score drop >= 15
+  |   3. SUFFICIENCY: first-time only, 3+ qualifying conversations, 3+ check-in days
+  |   4. PERIODIC: weekly Monday + has recent activity
+  |
+  +-- If triggered: dispatch_multi_agent_analysis.delay(user_id, tier, reason)
+
+ANALYSIS PIPELINE: dispatch_multi_agent_analysis (Celery task)
+  |
+  +-- Create InsightReport(status='processing', trigger_tier, trigger_reason)
+  +-- Attach couple if exists
+  +-- run_analysis(report_id, user_id, couple_id, tier, reason, lookback_days)
        |
-       v
-+------+-------+
-| Speaker      |  <- Diarization (who said what)
-| Identification|
-+------+-------+
-       |
-       v
-+------+-------+
-| Sentiment    |  <- Per-speaker emotional analysis
-| Analysis     |
-+------+-------+
-       |
-       v
-+------+-------+
-| Reframing    |  <- CORE VALUE: "Partner might have heard X as Y"
-| Engine       |
-+------+-------+
-       |
-       v
-+------+-------+
-| Action       |  <- Concrete suggestions
-| Generator    |
-+------+-------+
+       +-- build_analysis_graph().compile()  [lazy, cached]
+       +-- graph.invoke(initial_state)  [SYNCHRONOUS within Celery worker]
+            |
+            +-- Node 1: collect_data_node
+            |   TherapyDataCollector(user_id).collect_therapy_context(lookback_days)
+            |   Queries: user_profile, mood_trajectory, conversation_summaries,
+            |            accumulated_patterns, audio_insights, activity_engagement,
+            |            weekly_summaries, health_score, conflict_info (cooldowns)
+            |
+            +-- Node 2: parallel_analysis_node (sequential in practice)
+            |   pattern_analyst: recurring patterns, trigger analysis, escalation trend
+            |   emotion_interpreter: emotional landscape, attachment dynamics
+            |
+            +-- Node 3: balance_mediator
+            |   Integrates pattern + emotion analysis, checks for bias
+            |
+            +-- Node 4: resolution_strategist
+            |   Generates action recommendations based on all analyses
+            |
+            +-- Node 5: report_synthesizer
+            |   Creates report_title, report_summary, key_insights, suggested_actions
+            |
+            +-- Node 6: ethics_guardian
+            |   Reviews for bias, safety, cultural appropriateness
+            |   Result: approved=true/false
+            |
+            +-- Conditional edge:
+                approved  -> save_report_node (update InsightReport, status='completed')
+                blocked   -> mark_blocked_node (status='failed', ethics_review saved)
 ```
 
-**LLM Integration:**
+### Health Score Path (daily batch, < 10 seconds per user)
 
-| Component | Recommended Model | Rationale |
-|-----------|-------------------|-----------|
-| Sentiment Analysis | GPT-4o-mini | Cost-effective, accurate for emotions |
-| Reframing | GPT-4o | Complex perspective-taking needs stronger model |
-| Action Suggestions | GPT-4o-mini | Simpler generation task |
-
-**Prompt Engineering Considerations:**
-- Use MIND-SAFE framework principles (safety filters, therapeutic grounding)
-- Ground responses in evidence-based therapy (CBT reframing techniques)
-- Include safety detection for crisis situations (suicide, domestic violence)
-- Implement post-generation ethical filter
-
-### 7. Sharing Service
-
-| Responsibility | Details |
-|----------------|---------|
-| Permission Management | What each partner can see |
-| Shared View Generation | Compile data for joint viewing |
-| Notification | Alert partner when new shared content available |
-
-**Communicates With:** User Service, Analysis Service, PostgreSQL
-
-**Sharing Levels:**
 ```
-NONE:        Partner sees nothing
-ANALYSIS:    Partner sees reframing/suggestions only
-FULL:        Partner sees original text + analysis
+Celery Beat at midnight KST: compute_daily_health_scores()
+  |
+  +-- For each active couple:
+  |     For each user in couple:
+  |       HealthScoreService.compute(user_id, couple_id)
+  |         |-- _mood_component (14d avg mood * 5, max 25)
+  |         |-- _escalation_component ((10 - avg) * 2.5, max 25)
+  |         |-- _engagement_component (streak + activity rate, max 20)
+  |         |-- _severity_component ((5 - avg) * 3, max 15)
+  |         |-- _cooldown_component (inverse frequency, max 15)
+  |         |-- Couple averaging: (user_score + partner_score) / 2
+  |       DailyHealthScore.update_or_create(user, date, score, components)
+  |
+  +-- For each solo user (no couple):
+        Same computation without couple averaging
 ```
 
 ---
 
-## Data Flow
+## Critical Integration Points: Detailed Analysis
 
-### Flow 1: Personal Recording (Text)
+### 1. Chat Pipeline <-> UserIntelligenceService [CONNECTED]
 
-```
-1. User types situation/emotion in chat interface
-2. Client sends encrypted text to API Gateway
-3. Auth validation -> Analysis Service
-4. Analysis Service:
-   a. Sentiment analysis
-   b. Reframing generation
-   c. Action suggestions
-5. Results stored in PostgreSQL
-6. Client receives analysis
-7. (Optional) Shared to partner based on sharing preference
-```
+**Files:** `apps/chat/views.py` L326-330 + L617-619, `apps/core/services/user_intelligence.py`
 
-**Latency Target:** < 3 seconds for analysis response
-
-### Flow 2: Conflict Recording (Audio)
-
-```
-1. User starts recording in app
-2. Audio captured via expo-audio
-3. Client encrypts audio locally
-4. On stop: Upload encrypted audio to API Gateway
-5. Audio Service:
-   a. Store in S3 (encrypted)
-   b. Send to transcription API
-   c. Receive transcript
-6. Analysis Service:
-   a. Speaker diarization
-   b. Sentiment per speaker
-   c. Reframing from each perspective
-   d. Action suggestions
-7. Results stored in PostgreSQL
-8. Client receives analysis
-9. Audio deleted after configurable retention (default: 7 days)
-10. (Optional) Shared view available to partner
+**How it works:**
+```python
+# In views.py (both reframe_message and comfort_message):
+user_context = None
+try:
+    from apps.core.services.user_intelligence import UserIntelligenceService
+    user_context = UserIntelligenceService.get_ai_context(request.user.id)
+except Exception as e:
+    logger.warning(f"Failed to fetch user context: {e}")
 ```
 
-**Latency Target:** < 30 seconds for 5-minute audio
-
-### Flow 3: Partner Viewing Shared Analysis
-
+**Data contract (UserIntelligenceService returns):**
+```python
+{
+    'attachment_style': {'anxiety': int, 'avoidance': int, 'label': str},
+    'conflict_style': str,
+    'communication_frequency': str,
+    'primary_goal': str,
+    'focus_areas': list[str],
+    'risk_level': 'low' | 'moderate' | 'high',
+    'couple_features_enabled': bool,
+    'recent_patterns': {          # None for high-risk
+        'top_trigger_categories': list[str],
+        'top_topics': list[dict],
+        'escalation_trend': str,
+        'avg_escalation_score': float,
+    }
+}
 ```
-1. Partner B opens app, sees notification of shared content
-2. Client requests shared analysis from API
-3. Sharing Service:
-   a. Verify partnership exists
-   b. Check sharing permission level
-   c. Filter data based on level
-4. Client displays appropriate view
-5. Both partners can add notes/reactions
+
+**Cache invalidation:** Signals on `post_save` of UserProfile, Pattern, DailyCheckIn, SafetyAssessment (in `apps/core/signals.py`).
+
+### 2. Chat Pipeline <-> Chat Agent [CONNECTED via feature flag]
+
+**Files:** `apps/chat/services/reframing_graph.py` L159-168, `apps/chat/services/chat_agent/chat_graph.py`
+
+**Routing mechanism:**
+```python
+# In run_reframing_pipeline():
+if getattr(django_settings, 'ACCUMULATIVE_THERAPY_ENABLED', False):
+    from .chat_agent.chat_graph import run_chat_agent_pipeline
+    return await run_chat_agent_pipeline(
+        user_message=user_message,
+        conversation_context=conversation_context,
+        user_context=user_context,
+    )
 ```
+
+**Contract preserved:** Both pipelines return identical dict shape:
+```python
+{
+    'mode': 'chat' | 'reframing',
+    'final_response': str,
+    'analysis': dict | None,
+    'suggestions': list,
+    'is_abuse_detected': bool,
+    'safety_response': dict | None,
+}
+```
+
+Chat agent also returns `checklist_update` and `phase`, which the view ignores (backwards compatible).
+
+### 3. Chat Pipeline <-> Pattern Analysis [CONNECTED]
+
+**File:** `apps/chat/views.py` L373-377
+
+```python
+# After saving AI response:
+try:
+    from apps.patterns.tasks import analyze_patterns
+    analyze_patterns.delay(str(conversation.id))
+except Exception as e:
+    logger.warning(f"Failed to queue pattern analysis: {e}")
+```
+
+**Downstream effect:** Creates `Pattern` and `InsightSummary` records -> triggers `post_save` signals -> busts `UserIntelligenceService` cache -> next chat message gets fresh context.
+
+### 4. Event Triggers <-> Intelligence Analysis [PARTIALLY CONNECTED]
+
+**What exists:** `apps/intelligence/tasks.py` has `on_conversation_ended` and `on_checkin_submitted` tasks.
+
+**What is missing:** Neither is called from anywhere in the codebase.
+
+**Required wiring:**
+```python
+# In apps/chat/views.py, after conversation end detection:
+from apps.intelligence.tasks import on_conversation_ended
+on_conversation_ended.delay(str(conversation.id), str(request.user.id))
+
+# In apps/checkins/views.py (or wherever check-ins are submitted):
+from apps.intelligence.tasks import on_checkin_submitted
+on_checkin_submitted.delay(str(request.user.id))
+```
+
+### 5. Analysis Graph <-> Agent Nodes [BROKEN -- requires fix]
+
+**The problem in detail:**
+
+`analysis_graph.py` defines sync wrapper functions:
+```python
+def parallel_analysis_node(state: AnalysisState) -> dict:
+    pattern_model = _get_agent_model('pattern_analyst')
+    result = {}
+    result.update(pattern_node(state, pattern_model))  # passes (state, model)
+    ...
+```
+
+But `agents/pattern_analyst.py` expects:
+```python
+async def pattern_node(state: dict) -> dict:
+    model = state['model_factory']('pattern_analyst')  # expects factory in state
+    response = await model.ainvoke(messages)            # async call
+```
+
+**Root cause:** The analysis graph was written to use sync wrappers with model injection, but the agent files were written independently expecting a different interface.
+
+**Fix (recommended -- Option A, convert agents to sync):**
+```python
+# In each agent file (pattern_analyst.py, emotion_interpreter.py, etc.):
+# Change from:
+async def pattern_node(state: dict) -> dict:
+    model = state['model_factory']('pattern_analyst')
+    response = await model.ainvoke(messages)
+
+# To:
+def pattern_node(state: dict, model) -> dict:
+    response = model.invoke(messages)
+```
+
+**Rationale:** The analysis graph runs inside a Celery worker where everything is synchronous. Using `graph.invoke()` (sync) is correct for this context. Making agents async would require `graph.ainvoke()` and `asyncio.run()` in the Celery task, adding complexity with no benefit.
+
+### 6. InsightDeliveryManager <-> Chat Agent [NOT WIRED]
+
+**What exists:** `insight_delivery.py` has four class methods:
+- `check_pending_insights(user_id)` - finds undelivered reports
+- `prepare_insight_offer(insight_summary)` - generates Korean offer text
+- `deliver_insight(insight_id)` - formats report as chat text
+- `mark_delivered(insight_id)` - marks as in_conversation_delivered
+
+**What is missing:** `chat_graph.py` never calls any of these.
+
+**Integration approach:**
+```python
+# Add a pre-check step in chat_graph.py or run_chat_agent_pipeline():
+pending = InsightDeliveryManager.check_pending_insights(user_id)
+if pending:
+    # Inject into the LLM prompt context so the agent can naturally offer insights
+    # Or add a separate graph node that checks and conditionally routes
+```
+
+### 7. Intelligence API <-> Mobile [CONNECTED, needs extension]
+
+**Backend endpoints (existing):**
+| Endpoint | View | Mobile Consumer |
+|----------|------|-----------------|
+| `GET /intelligence/reports/` | `report_list` | `getReports()` -> `useReports()` |
+| `GET /intelligence/reports/:id/` | `report_detail` | `getReportDetail()` -> `useReportDetail()` |
+| `POST /intelligence/reports/:id/read/` | `mark_read` | `markReportRead()` |
+| `GET /intelligence/reports/unread-count/` | `unread_count` | `getUnreadCount()` -> `useUnreadCount()` |
+| `GET /intelligence/dashboard/` | `partner_dashboard` | Not consumed yet |
+
+**Needed endpoints:**
+| Endpoint | Purpose | Priority |
+|----------|---------|----------|
+| `GET /intelligence/health-score/` | Current user's health score + trend + components | HIGH |
+| `GET /intelligence/health-score/history/` | Last 30 days of health scores | MEDIUM |
 
 ---
 
-## Database Design
+## Patterns to Follow
 
-### Core Tables (PostgreSQL)
+### Pattern 1: Two-Tier Intelligence (UserIntelligenceService vs TherapyDataCollector)
 
-```sql
--- Users
-users (
-  id UUID PRIMARY KEY,
-  email VARCHAR(255) UNIQUE,
-  password_hash VARCHAR(255),
-  created_at TIMESTAMP,
-  subscription_tier VARCHAR(50) DEFAULT 'free'
-)
+**What:** Two separate services for user data, intentionally designed for different use cases.
+**When:** Always maintain this separation. Never merge them.
 
--- Partner relationships
-partnerships (
-  id UUID PRIMARY KEY,
-  user_a_id UUID REFERENCES users,
-  user_b_id UUID REFERENCES users,
-  status VARCHAR(50),  -- pending, active, dissolved
-  created_at TIMESTAMP,
-  UNIQUE(user_a_id, user_b_id)
-)
-
--- Entries (text or audio-based)
-entries (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users,
-  entry_type VARCHAR(50),  -- text, audio
-  content_encrypted TEXT,  -- for text entries
-  audio_storage_key VARCHAR(255),  -- S3 key for audio
-  sharing_level VARCHAR(50) DEFAULT 'none',
-  created_at TIMESTAMP
-)
-
--- Analysis results
-analyses (
-  id UUID PRIMARY KEY,
-  entry_id UUID REFERENCES entries,
-  transcript_encrypted TEXT,
-  sentiment_data JSONB,
-  reframing_content JSONB,  -- main deliverable
-  action_suggestions JSONB,
-  created_at TIMESTAMP
-)
-
--- Partner notes on shared analyses
-partner_notes (
-  id UUID PRIMARY KEY,
-  analysis_id UUID REFERENCES analyses,
-  user_id UUID REFERENCES users,
-  note_encrypted TEXT,
-  created_at TIMESTAMP
-)
+```
+UserIntelligenceService (REAL-TIME PATH)          TherapyDataCollector (BACKGROUND PATH)
+-----------------------------------------------  -----------------------------------------------
+Called synchronously from chat views              Called from Celery worker in analysis graph
+Cached (1hr TTL, signal-invalidated)              No caching (needs fresh data each run)
+Max 6 ORM queries when cache cold                 9+ data source queries
+Safety-gated (high risk = minimal context)        Full data regardless of risk
+Returns lightweight dict for prompt injection     Returns comprehensive therapy context
+Target: < 100ms                                   Target: < 5 seconds
+Runs on every message                             Runs max daily
 ```
 
-**Why PostgreSQL over MongoDB:**
-- Row-Level Security (RLS) for fine-grained access control
-- Column-Level Security (CLS) for sensitive fields
-- Strong ACID compliance for relationship data integrity
-- Proven security track record for regulated data
-- JSON/JSONB support for flexible analysis results
+### Pattern 2: Feature Flag Routing at Pipeline Level
+
+**What:** `ACCUMULATIVE_THERAPY_ENABLED` env variable controls chat behavior.
+**Where it routes:** `apps/chat/services/reframing_graph.py` line 161.
+
+```python
+if getattr(django_settings, 'ACCUMULATIVE_THERAPY_ENABLED', False):
+    return await run_chat_agent_pipeline(...)
+# else: old TWO_MODE pipeline
+```
+
+**Why this specific location:** The flag is checked AFTER safety pre-filter and context gathering, so both paths benefit from UserIntelligenceService context and crisis detection. The flag only changes the LLM interaction style (analyzer vs therapeutic listener).
+
+### Pattern 3: Event-Driven Trigger Chain
+
+**What:** User actions fire Celery tasks that evaluate analysis triggers.
+**Flow:**
+```
+User sends message
+  -> analyze_patterns.delay() [Celery]
+      -> Creates Pattern + InsightSummary records
+          -> post_save signal busts UserIntelligenceService cache
+
+User ends conversation
+  -> on_conversation_ended.delay() [Celery]
+      -> AnalysisTriggerService.evaluate()
+          -> If triggered: dispatch_multi_agent_analysis.delay()
+
+User submits check-in
+  -> on_checkin_submitted.delay() [Celery]
+      -> AnalysisTriggerService.evaluate()
+          -> Only CRITICAL/THRESHOLD tiers dispatched
+```
+
+### Pattern 4: Celery for Background LLM Work
+
+**What:** All multi-LLM-call pipelines run in Celery workers.
+**Why:** Chat endpoint must return in < 5 seconds. Multi-agent analysis takes 30-120 seconds (6-7 LLM calls).
+**Current config:** `CELERY_TASK_ALWAYS_EAGER = True` in development (sync). `False` in production.
+
+### Pattern 5: Encrypted Therapy Data
+
+**What:** All sensitive content uses `EncryptedTextField` (djfernet).
+**Already applied to:** Message.content, InsightReport analysis fields, ConversationSummary, InsightSummary.ai_summary, WeeklySummary.trend_text.
+**Must apply to:** Any new fields storing therapy content.
+
+### Pattern 6: Backend-Mobile Adapter Layer
+
+**What:** Mobile uses an adapter layer to normalize backend snake_case to frontend types.
+**Where:** `mobile/src/features/intelligence/adapters.ts`
+**Contract:** Backend returns `BackendInsightReportSummary` (snake_case), adapter transforms to `InsightReportSummary` (camelCase). Status normalization: `completed` + `is_read=true` -> `'read'`, `completed` + `is_read=false` -> `'generated'`.
 
 ---
 
-## Security Architecture
+## Anti-Patterns to Avoid
 
-### Encryption Layers
+### Anti-Pattern 1: asyncio.run() in Sync Django Views
+**What:** `apps/chat/views.py` uses `asyncio.run()` to call async pipelines from sync views.
+**Why bad:** Creates a new event loop each time. Under ASGI (Daphne), conflicts with the existing event loop. Fragile in production.
+**Current state:** Works in dev because `CELERY_TASK_ALWAYS_EAGER=True` keeps everything in one thread.
+**Instead:** Either make views async (`async def reframe_message()`) or keep pipelines sync. For the Celery analysis path, keep everything sync.
 
-| Layer | Method | Purpose |
-|-------|--------|---------|
-| Transport | TLS 1.3 | Data in transit |
-| Storage | AES-256 | Data at rest (DB, S3) |
-| Application | Field-level encryption | Sensitive content (transcripts, notes) |
-| Client | Platform encryption | Local secure storage |
-
-### Access Control
-
-```
-Zero-Trust Principles:
-1. Every request authenticated (JWT)
-2. Every endpoint authorized (role/ownership check)
-3. Every action logged (audit trail)
-4. Minimum necessary data access
+### Anti-Pattern 2: N+1 Queries in TherapyDataCollector
+**What:** `_get_conversation_summaries()` loops over conversations and queries messages per conversation.
+**Where:** `data_collector.py` lines 143-147.
+**Instead:** Use `annotate()` to batch-count messages:
+```python
+conversations = Conversation.objects.filter(...).annotate(
+    msg_count=Count('messages'),
+    user_msg_count=Count('messages', filter=Q(messages__role='user')),
+)
 ```
 
-**Role-Based Access:**
-- `user`: Access own data only
-- `partner`: Access shared data from linked partner
-- `admin`: Platform administration (no PHI access)
+### Anti-Pattern 3: Module-Level Graph Compilation
+**What:** `chat_graph.py` line 251 compiles graph at import time.
+**Why bad:** Import errors crash the entire module. Prevents dynamic reconfiguration.
+**Good example:** `analysis_graph.py` uses lazy compilation via `_get_compiled_graph()`.
+**Fix:** Apply the same lazy pattern to `chat_graph.py`.
 
-### Privacy-First Design
-
-```
-Principles:
-1. PHI never in logs
-2. PHI never in error messages
-3. PHI never in analytics/telemetry
-4. Audio deleted after configurable retention
-5. Push notifications contain no content
-6. Client-side encryption before upload
-```
-
-### Crisis Detection (Safety)
-
-The Analysis Service must include crisis detection:
-
-```
-Crisis Keywords/Patterns:
-- Suicide ideation
-- Domestic violence indicators
-- Severe mental health crisis
-
-Response:
-1. Flag entry immediately
-2. Surface crisis resources in app
-3. Do NOT provide AI reframing for crisis content
-4. Encourage professional help
-```
+### Anti-Pattern 4: Direct Partner Data Quoting
+**What:** Showing partner's specific words or detailed personal data.
+**Constraint:** Partner data must be "referenced but never directly quoted."
+**Good example:** `partner_dashboard` shows mood trends (aggregate) and activity counts, never specific check-in notes.
+**Apply to:** Any new partner-facing features.
 
 ---
 
-## Build Order (Dependencies)
+## Build Order (Dependency-Corrected)
 
-Based on component dependencies, recommended build sequence:
+Based on the gaps identified above, here is the dependency-aware build order.
 
-### Phase 1: Foundation
-**Build:** Auth Service, User Service, PostgreSQL schema, API Gateway
+### Phase 1: Fix Foundation (Make existing code run)
 
-**Why First:** Everything depends on authentication and user management. Cannot test any feature without users.
+**Why first:** The analysis pipeline cannot execute due to sync/async mismatches. All downstream features depend on working analysis.
 
-**Deliverable:** Users can register, log in, create profile
+| Task | Files to Modify | Dependency |
+|------|----------------|------------|
+| Fix agent signatures: sync, accept `(state, model)` | `agents/pattern_analyst.py`, `emotion_interpreter.py`, `balance_mediator.py`, `resolution_strategist.py`, `report_synthesizer.py`, `ethics_guardian.py` | None |
+| Fix analysis_graph.py wrappers | `analysis_graph.py` (align with agent signatures) | Agent fixes |
+| Fix lazy compilation in chat_graph.py | `chat_agent/chat_graph.py` | None |
+| Wire `on_conversation_ended` into chat views | `apps/chat/views.py` | None |
+| Wire `on_checkin_submitted` into checkins | `apps/checkins/views.py` (or signals) | None |
+| End-to-end test: trigger -> analysis -> report save | Test file | All above |
 
-### Phase 2: Core Recording (Text)
-**Build:** Mobile client (chat interface), Analysis Service (text only), basic LLM integration
+**Blocks:** Phase 2, 3, 4
 
-**Why Second:** Text recording is simpler than audio. Proves core value (reframing) without audio complexity.
+### Phase 2: Health Score API + Push Notifications
 
-**Deliverable:** Users can log situations via text, receive AI reframing
+**Why second:** Simplest new features. Unblock mobile work.
 
-### Phase 3: Audio Pipeline
-**Build:** Audio Service, expo-audio recording, transcription integration, enhanced Analysis Service
+| Task | Files to Modify/Create | Dependency |
+|------|----------------------|------------|
+| Add health score API endpoint | `apps/intelligence/views.py`, `urls.py`, `serializers.py` | None |
+| Push notification on report completion | `analysis_graph.py` save_report_node, `apps/core/notifications.py` | Phase 1 (reports must generate) |
+| Push notification on health score alert | `apps/patterns/tasks.py` compute_daily_health_scores | None |
 
-**Why Third:** Audio is more complex (recording, upload, transcription) but builds on existing analysis infrastructure.
+**Blocks:** Phase 4 (mobile needs endpoints)
 
-**Deliverable:** Users can record audio, receive transcription + reframing
+### Phase 3: Chat Agent Enhancement + Insight Delivery
 
-### Phase 4: Partner Features
-**Build:** Sharing Service, partner linking flow, shared views
+**Why third:** Builds on working analysis pipeline.
 
-**Why Fourth:** Partner features require stable individual experience first. More complex permission logic.
+| Task | Files to Modify | Dependency |
+|------|----------------|------------|
+| Wire InsightDeliveryManager into chat_graph | `chat_agent/chat_graph.py` | Phase 1 (reports exist to deliver) |
+| Persist ConflictInformation to DB | New model or JSON field on Conversation | None |
+| Conversation end detection logic | `apps/chat/views.py` or new signal | None |
 
-**Deliverable:** Partners can link accounts, share analyses, view together
+**Blocks:** Nothing (can parallel with Phase 4)
 
-### Phase 5: Production Hardening
-**Build:** Enhanced security, audit logging, crisis detection, retention policies, premium features
+### Phase 4: Mobile Intelligence Screens
 
-**Why Fifth:** Polish and security hardening after core features stable.
+**Why fourth:** Requires backend APIs from Phase 2.
 
-**Deliverable:** Production-ready secure application
+| Task | Files to Create/Modify | Dependency |
+|------|----------------------|------------|
+| Health score display component | `mobile/src/features/intelligence/` | Phase 2 (API endpoint) |
+| Push notification deep linking | `mobile/src/services/notifications.ts` | Phase 2 (push notifications) |
+| Report list badge/pull-to-refresh | `mobile/src/features/intelligence/components/` | None |
+
+### Phase 5: Rollout + Production Readiness
+
+**Why last:** Everything must work before enabling for users.
+
+| Task | Details | Dependency |
+|------|---------|------------|
+| PostgreSQL migration | Switch from SQLite to PostgreSQL | All phases |
+| `ACCUMULATIVE_THERAPY_ENABLED=true` | Enable in staging, then production | Phase 1, 3 |
+| Monitoring: pipeline duration, success rates | Logging/metrics in analysis_graph.py | Phase 1 |
+| Per-user feature flag (optional A/B) | Extend from env-level to user-level | Phase 1 |
 
 ---
 
@@ -437,86 +631,25 @@ Based on component dependencies, recommended build sequence:
 
 | Concern | At 100 users | At 10K users | At 1M users |
 |---------|--------------|--------------|-------------|
-| Database | Single PostgreSQL | Read replicas | Sharding by user_id |
-| Audio Storage | Single S3 bucket | Regional buckets | CDN + regional storage |
-| AI Processing | Direct API calls | Queue + workers | Auto-scaling workers + caching |
-| Real-time | WebSocket per user | Redis Pub/Sub | Dedicated real-time service |
-
-**MVP Focus:** Design for 10K users from start. Sharding decisions can wait.
-
----
-
-## Technology Stack Summary
-
-| Layer | Technology | Version | Rationale |
-|-------|------------|---------|-----------|
-| Mobile | React Native + Expo | SDK 52+ | Cross-platform, rapid iteration |
-| Navigation | expo-router | Latest | File-based routing, familiar |
-| Audio | expo-audio | Latest | Replaces deprecated expo-av |
-| Secure Storage | expo-secure-store | Latest | Platform-native encryption |
-| Backend | Node.js + Express | Node 20+ | Unified JS stack, real-time capable |
-| Database | PostgreSQL | 16+ | RLS, encryption, reliability |
-| Object Storage | AWS S3 | - | Encrypted audio storage |
-| Transcription | OpenAI gpt-4o-transcribe | - | Best accuracy, streaming |
-| AI Analysis | OpenAI GPT-4o / GPT-4o-mini | - | Reframing quality |
-| Cache | Redis | 7+ | Session, rate limiting |
-| Hosting | AWS / GCP | - | HIPAA-eligible services |
-
----
-
-## Anti-Patterns to Avoid
-
-### 1. Storing Audio Indefinitely
-**What:** Keeping all audio recordings forever
-**Why Bad:** Legal liability, storage costs, privacy risk
-**Instead:** Implement configurable retention (default 7 days), delete audio after analysis
-
-### 2. PHI in Logs
-**What:** Logging transcripts, emotions, or content for debugging
-**Why Bad:** Compliance violation, security risk
-**Instead:** Log only metadata (entry_id, timestamp, status), never content
-
-### 3. Synchronous Audio Processing
-**What:** Making user wait for transcription + analysis
-**Why Bad:** Poor UX for long recordings
-**Instead:** Queue audio processing, notify user when complete
-
-### 4. Shared Data Without Consent
-**What:** Automatically sharing all data with partner
-**Why Bad:** Privacy violation, trust erosion
-**Instead:** Explicit per-entry or per-account sharing preferences
-
-### 5. Direct LLM Output to Users
-**What:** Showing raw LLM response without safety filtering
-**Why Bad:** Risk of inappropriate/harmful suggestions
-**Instead:** Post-generation safety filter, crisis detection
+| Chat response time | LocMemCache, < 1s | Redis cache (prod config exists), < 1s | Redis Cluster, CDN |
+| Analysis pipeline | CELERY_TASK_ALWAYS_EAGER (sync) | 2-3 Celery workers | Dedicated analysis worker pool, priority queues by tier |
+| Health score computation | Daily batch, < 1 min total | Daily batch, ~10 min | Partitioned batch by user_id hash, staggered |
+| Trigger evaluation | Daily sweep, trivial | Daily sweep, ~5 min | Sharded evaluation, event-driven only (drop periodic sweep) |
+| Database | SQLite (current dev) | PostgreSQL (prod config exists) | PostgreSQL + read replicas, pgbouncer |
+| Cache | LocMemCache (dev) | Redis (production.py configured on db/2) | Redis Cluster |
+| LLM API costs | ~$0.50/analysis (6-7 calls) | $5K/month | Rate limiting, cheaper models for lower tiers, caching common analyses |
+| Push notifications | Direct Expo push | Batch via Celery | Dedicated notification worker, batching |
 
 ---
 
 ## Sources
 
-### Official Documentation
-- [Expo Audio Documentation](https://docs.expo.dev/versions/latest/sdk/audio/)
-- [OpenAI Speech-to-Text API](https://platform.openai.com/docs/guides/speech-to-text)
-- [OpenAI Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering)
-
-### Architecture References
-- [Mental Health App Development Guide 2026](https://topflightapps.com/ideas/how-to-build-a-mental-health-app/)
-- [HIPAA Compliant App Development 2025](https://appinventiv.com/blog/develop-hipaa-compliant-app/)
-- [HIPAA Compliant Mobile Apps 2026](https://openforge.io/hipaa-compliant-mobile-apps-in-2026-a-practical-guide/)
-- [PostgreSQL vs MongoDB 2025](https://xenoss.io/blog/postgresql-mongodb-comparison)
-
-### Couples App Design
-- [Building a Relationship App Guide](https://www.dhiwise.com/post/build-relationship-app)
-- [Couples App Design Research](https://medium.com/design-bootcamp/relationships-beyond-matchmaking-designing-a-couple-app-for-a-better-love-life-f38ae5f39180)
-- [Shared Data Architecture Patterns](https://www.vendia.com/blog/shared-data-architecture-patterns/)
-
-### AI/LLM References
-- [MIND-SAFE Framework for Mental Health Chatbots](https://mental.jmir.org/2025/1/e75078)
-- [LLM Sentiment Analysis Architecture](https://www.searchunify.com/resource-center/sudo-technical-blogs/decoding-customer-sentiment-a-deep-dive-into-advanced-sentiment-analysis-with-llms-and-graphs)
-- [React Native Mental Health App with Stream](https://getstream.io/blog/mental-health-react-native/)
-
-### Backend Architecture
-- [Node.js Backend 2026](https://www.nucamp.co/blog/node.js-and-express-in-2026-backend-javascript-for-full-stack-developers)
-- [Node.js vs Python Backend 2025](https://kanhasoft.com/blog/node-js-vs-python-which-is-best-for-backend-development-in-2025/)
-- [Expo for React Native 2025](https://hashrocket.com/blog/posts/expo-for-react-native-in-2025-a-perspective)
+- Direct codebase analysis of all files referenced in this document (HIGH confidence)
+- `apps/intelligence/services/analysis_graph.py` -- verified LangGraph StateGraph pattern, sync `graph.invoke()` usage
+- `apps/core/services/user_intelligence.py` -- verified Django cache pattern with signal invalidation
+- `apps/chat/services/reframing_graph.py` -- verified feature flag routing mechanism
+- `config/settings/base.py` -- verified all settings: Celery config, LLM config, feature flag, cache, trigger config
+- `config/settings/production.py` -- verified Redis cache, PostgreSQL, Celery async mode
+- `config/celery.py` -- verified Beat schedule for all periodic tasks
+- `mobile/src/features/intelligence/` -- verified adapter pattern, API calls, hook implementations
+- All 6 agent files in `apps/intelligence/services/agents/` -- verified signature mismatch
