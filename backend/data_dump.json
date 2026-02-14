@@ -1,0 +1,3731 @@
+[
+{
+  "model": "sites.site",
+  "fields": {
+    "domain": "example.com",
+    "name": "example.com"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 1,
+  "fields": {
+    "token": 1,
+    "blacklisted_at": "2026-02-03T13:46:33.683Z"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 2,
+  "fields": {
+    "token": 2,
+    "blacklisted_at": "2026-02-03T14:02:55.975Z"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 3,
+  "fields": {
+    "token": 3,
+    "blacklisted_at": "2026-02-03T14:18:53.239Z"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 4,
+  "fields": {
+    "token": 4,
+    "blacklisted_at": "2026-02-03T14:34:37.498Z"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 5,
+  "fields": {
+    "token": 5,
+    "blacklisted_at": "2026-02-03T14:49:28.129Z"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 6,
+  "fields": {
+    "token": 6,
+    "blacklisted_at": "2026-02-08T12:17:49.639Z"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 7,
+  "fields": {
+    "token": 7,
+    "blacklisted_at": "2026-02-08T12:18:23.206Z"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 8,
+  "fields": {
+    "token": 8,
+    "blacklisted_at": "2026-02-08T12:56:14.607Z"
+  }
+},
+{
+  "model": "token_blacklist.blacklistedtoken",
+  "pk": 9,
+  "fields": {
+    "token": 9,
+    "blacklisted_at": "2026-02-08T18:13:42.958Z"
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$oE4JQClOncM3yANPjLdPrW$+nb0p/bcrTmZPLYSyiTUwk4DzLW2h92aSwKahtEPYZc=",
+    "last_login": "2026-02-01T18:33:18.802Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-01T18:33:16.709Z",
+    "email": "hbilly2002@naver.com",
+    "disclaimer_accepted": true,
+    "disclaimer_accepted_at": "2026-02-01T18:33:17.318Z",
+    "disclaimer_version": "1.0",
+    "onboarding_completed": true,
+    "tutorial_completed": true,
+    "expo_push_token": "",
+    "display_name": "",
+    "avatar_color": "#C4A092",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$5drDtcMtOgTupauECdKzj8$RJOcROZDDduTwC2B6bhyqn/+/PSUw1K44YqMK0MSVTY=",
+    "last_login": "2026-02-01T18:35:28.649Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-01T18:35:27.939Z",
+    "email": "hbilly2002@gmail.com",
+    "disclaimer_accepted": true,
+    "disclaimer_accepted_at": "2026-02-01T18:35:28.578Z",
+    "disclaimer_version": "1.0",
+    "onboarding_completed": true,
+    "tutorial_completed": true,
+    "expo_push_token": "",
+    "display_name": "",
+    "avatar_color": "#C4A092",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "couples.couple",
+  "pk": 1,
+  "fields": {
+    "user1": [
+      "hbilly2002@naver.com"
+    ],
+    "user2": [
+      "hbilly2002@gmail.com"
+    ],
+    "status": "active",
+    "connected_at": "2026-02-01T18:39:53.224Z",
+    "disconnected_at": null,
+    "created_at": "2026-02-01T18:39:45.123Z",
+    "updated_at": "2026-02-01T18:39:53.224Z"
+  }
+},
+{
+  "model": "couples.invitecode",
+  "pk": 1,
+  "fields": {
+    "code": "9NDT7A",
+    "creator": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "expires_at": "2026-02-02T18:39:45.138Z",
+    "used_by": [
+      "hbilly2002@gmail.com"
+    ],
+    "used_at": "2026-02-01T18:39:53.238Z",
+    "created_at": "2026-02-01T18:39:45.138Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 1,
+  "fields": {
+    "couple": 1,
+    "session_id": "0ba2c116-6ed5-4efe-9988-e45b16392f00",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-01T18:43:04.250Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-01T18:43:05.291Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-01T18:43:04.250Z",
+    "expires_at": "2026-02-01T18:48:04.250Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 2,
+  "fields": {
+    "couple": 1,
+    "session_id": "7339d0a7-e82b-4113-a3fb-9682cbdbd6da",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:03:42.909Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:03:42.909Z",
+    "expires_at": "2026-02-03T14:08:42.909Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 3,
+  "fields": {
+    "couple": 1,
+    "session_id": "1806d8f6-98cc-4a6b-9ef8-f6e0c2f26d56",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:04:01.018Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:04:01.018Z",
+    "expires_at": "2026-02-03T14:09:01.018Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 4,
+  "fields": {
+    "couple": 1,
+    "session_id": "fbb08d01-367e-4db6-9b34-932289696500",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:04:21.187Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:04:34.502Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:04:21.187Z",
+    "expires_at": "2026-02-03T14:09:21.187Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 5,
+  "fields": {
+    "couple": 1,
+    "session_id": "d1bdbb61-9e18-413c-b476-7e532e701fb2",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:04:22.752Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:04:22.752Z",
+    "expires_at": "2026-02-03T14:09:22.752Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 6,
+  "fields": {
+    "couple": 1,
+    "session_id": "cff34538-b644-441d-8569-8490a7f1da9e",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:06:35.217Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:06:35.217Z",
+    "expires_at": "2026-02-03T14:11:35.217Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 7,
+  "fields": {
+    "couple": 1,
+    "session_id": "750b8354-9a21-446e-8f2d-313563203a18",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:06:38.026Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:06:38.026Z",
+    "expires_at": "2026-02-03T14:11:38.026Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 8,
+  "fields": {
+    "couple": 1,
+    "session_id": "6da76234-9eda-42a8-a141-b238c1e8f74d",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:19:08.833Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:19:08.833Z",
+    "expires_at": "2026-02-03T14:24:08.833Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 9,
+  "fields": {
+    "couple": 1,
+    "session_id": "fb23033d-d737-4cd8-951c-d0e63f73a75f",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:19:09.856Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:19:09.856Z",
+    "expires_at": "2026-02-03T14:24:09.856Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 10,
+  "fields": {
+    "couple": 1,
+    "session_id": "0e33ffd3-46de-47bb-9c32-536c33645ea4",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:19:40.553Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:19:40.553Z",
+    "expires_at": "2026-02-03T14:24:40.552Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 11,
+  "fields": {
+    "couple": 1,
+    "session_id": "69438897-6a98-42d0-910b-70a7edccc9fe",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:19:43.549Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:19:43.549Z",
+    "expires_at": "2026-02-03T14:24:43.549Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 12,
+  "fields": {
+    "couple": 1,
+    "session_id": "73d75743-1d8f-4e20-a2c9-a20708b493ff",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:28:51.279Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:28:51.279Z",
+    "expires_at": "2026-02-03T14:33:51.279Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 13,
+  "fields": {
+    "couple": 1,
+    "session_id": "204c0f71-bdd7-498e-a02a-463123917bd9",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:28:52.398Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:28:52.398Z",
+    "expires_at": "2026-02-03T14:33:52.397Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 14,
+  "fields": {
+    "couple": 1,
+    "session_id": "99b5e15f-0c95-435f-8ab3-a130eda12200",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:31:25.796Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:31:25.796Z",
+    "expires_at": "2026-02-03T14:36:25.796Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 15,
+  "fields": {
+    "couple": 1,
+    "session_id": "7f206d33-a329-412c-b9c7-99454739e3c8",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:31:41.243Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:31:41.243Z",
+    "expires_at": "2026-02-03T14:36:41.243Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 16,
+  "fields": {
+    "couple": 1,
+    "session_id": "2232a19d-d028-41f2-8d5a-343195c00abd",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:32:01.770Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": null,
+    "responder_consented_at": null,
+    "status": "pending",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:32:01.770Z",
+    "expires_at": "2026-02-03T14:37:01.769Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 17,
+  "fields": {
+    "couple": 1,
+    "session_id": "288dffc2-bf3d-4697-aca7-a86a6af38d9d",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:32:22.802Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:32:24.579Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:32:22.802Z",
+    "expires_at": "2026-02-03T14:37:22.802Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 18,
+  "fields": {
+    "couple": 1,
+    "session_id": "acb5ebfe-476d-44c9-a272-c5582083b5bd",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:32:31.243Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:32:33.526Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:32:31.243Z",
+    "expires_at": "2026-02-03T14:37:31.243Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 19,
+  "fields": {
+    "couple": 1,
+    "session_id": "ef5a9e9d-3082-4beb-b23e-539b9f198a17",
+    "requester": [
+      "hbilly2002@gmail.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:34:45.892Z",
+    "responder": [
+      "hbilly2002@naver.com"
+    ],
+    "responder_consented": false,
+    "responder_consented_at": "2026-02-03T14:34:48.919Z",
+    "status": "declined",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:34:45.892Z",
+    "expires_at": "2026-02-03T14:39:45.891Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 20,
+  "fields": {
+    "couple": 1,
+    "session_id": "06d7d7bc-3373-4188-9eae-6219e2ec2813",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:34:54.455Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:34:59.289Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:34:54.455Z",
+    "expires_at": "2026-02-03T14:39:54.455Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 21,
+  "fields": {
+    "couple": 1,
+    "session_id": "abc5f58d-a4b7-441c-9ca0-93b774c40a71",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:40:27.409Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:40:28.361Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:40:27.409Z",
+    "expires_at": "2026-02-03T14:45:27.408Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 22,
+  "fields": {
+    "couple": 1,
+    "session_id": "28f128ad-d1d1-4710-b610-5e4ae8d71ad0",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:43:23.599Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:43:25.711Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:43:23.599Z",
+    "expires_at": "2026-02-03T14:48:23.599Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 23,
+  "fields": {
+    "couple": 1,
+    "session_id": "21168c66-387d-4897-9d05-98438cfe61af",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:47:09.169Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:47:09.650Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:47:09.169Z",
+    "expires_at": "2026-02-03T14:52:09.169Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 24,
+  "fields": {
+    "couple": 1,
+    "session_id": "fa17e04a-1e2a-4dba-a514-7c58e810f402",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:49:40.976Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:49:41.804Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:49:40.976Z",
+    "expires_at": "2026-02-03T14:54:40.976Z"
+  }
+},
+{
+  "model": "consents.recordingconsent",
+  "pk": 25,
+  "fields": {
+    "couple": 1,
+    "session_id": "0a6507b8-df02-4467-b403-20f130cf2ec7",
+    "requester": [
+      "hbilly2002@naver.com"
+    ],
+    "requester_consented": true,
+    "requester_consented_at": "2026-02-03T14:50:43.657Z",
+    "responder": [
+      "hbilly2002@gmail.com"
+    ],
+    "responder_consented": true,
+    "responder_consented_at": "2026-02-03T14:50:44.421Z",
+    "status": "both_consented",
+    "requester_ip": null,
+    "responder_ip": null,
+    "created_at": "2026-02-03T14:50:43.657Z",
+    "expires_at": "2026-02-03T14:55:43.656Z"
+  }
+},
+{
+  "model": "consents.disclaimerconsent",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "version": "1.0",
+    "content_hash": "1.0",
+    "consented_at": "2026-02-01T18:33:17.332Z",
+    "ip_address": "192.168.0.43",
+    "user_agent": "Expo/1017756 CFNetwork/3860.400.22 Darwin/25.3.0"
+  }
+},
+{
+  "model": "consents.disclaimerconsent",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "version": "1.0",
+    "content_hash": "1.0",
+    "consented_at": "2026-02-01T18:35:28.591Z",
+    "ip_address": "192.168.0.140",
+    "user_agent": "okhttp/4.12.0"
+  }
+},
+{
+  "model": "onboarding.userprofile",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "attachment_anxiety": 1,
+    "attachment_avoidance": 5,
+    "conflict_style": "confront",
+    "communication_frequency": "daily",
+    "created_at": "2026-02-01T18:39:36.688Z",
+    "updated_at": "2026-02-01T18:39:36.701Z"
+  }
+},
+{
+  "model": "onboarding.userprofile",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "attachment_anxiety": 1,
+    "attachment_avoidance": 5,
+    "conflict_style": "confront",
+    "communication_frequency": "daily",
+    "created_at": "2026-02-01T18:39:42.533Z",
+    "updated_at": "2026-02-01T18:39:42.547Z"
+  }
+},
+{
+  "model": "onboarding.usergoals",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "primary_goal": "improvement",
+    "focus_areas": [
+      "conflict",
+      "trust",
+      "intimacy"
+    ],
+    "created_at": "2026-02-01T18:39:36.793Z",
+    "updated_at": "2026-02-01T18:39:36.806Z"
+  }
+},
+{
+  "model": "onboarding.usergoals",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "primary_goal": "improvement",
+    "focus_areas": [
+      "communication",
+      "intimacy",
+      "listening"
+    ],
+    "created_at": "2026-02-01T18:39:42.649Z",
+    "updated_at": "2026-02-01T18:39:42.661Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "055595a2-aa25-4b8d-b666-0cb2f2ddf866",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "안녕하세요 반갑습니다. 네 녹음중입니다.",
+    "conversation_type": "narration",
+    "summary": "안녕하세요 반갑습니다. 네 녹음중입니다.",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-08T12:20:50.170Z",
+    "updated_at": "2026-02-08T12:20:50.170Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "05a367e4-d6e3-455f-b456-be7a21764d89",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "한국어 수업.",
+    "conversation_type": "live",
+    "summary": "한국어 수업.",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:49:53.220Z",
+    "updated_at": "2026-02-03T14:49:53.220Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "0a5d572f-2a90-4fa4-99b2-8af330108047",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "안녕하세요.",
+    "conversation_type": "narration",
+    "summary": "안녕하세요.",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:25:32.351Z",
+    "updated_at": "2026-02-03T14:25:32.351Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "2b097b7e-5f3e-46fc-b406-4d9f6cf3b924",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "",
+    "conversation_type": "text",
+    "summary": "",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:10:25.482Z",
+    "updated_at": "2026-02-03T14:11:46.022Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "3352b399-d0ed-4e2c-b67a-3317c9fbdfd6",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "을린다.",
+    "conversation_type": "live",
+    "summary": "을린다.",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:35:08.479Z",
+    "updated_at": "2026-02-03T14:35:08.479Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "41711cd8-cacd-47de-ab37-94abedd104d8",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "행사장에서 안전사고가 발생했다.",
+    "conversation_type": "live",
+    "summary": "행사장에서 안전사고가 발생했다.",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:43:57.711Z",
+    "updated_at": "2026-02-03T14:43:57.711Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "44958a8a-19ad-44e8-9729-4493020d173b",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "흠...",
+    "conversation_type": "live",
+    "summary": "흠...",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:50:51.171Z",
+    "updated_at": "2026-02-03T14:50:51.171Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "4afbdef0-5497-4a55-baa9-e3e93764ad91",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "couple": 1,
+    "title": "",
+    "conversation_type": "text",
+    "summary": "",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-01T18:43:42.740Z",
+    "updated_at": "2026-02-01T18:45:05.875Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "60d7d36f-9add-4cfc-862c-86ebb8eaf1b3",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "",
+    "conversation_type": "text",
+    "summary": "",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-01T18:40:37.663Z",
+    "updated_at": "2026-02-01T18:40:59.233Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "73430655-ea1b-40fd-8409-038ede63064f",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "couple": 1,
+    "title": "안녕하세요 홍경택 씨. 저 지금 제가 해야 될 일이 겁나 많은데 아무것도 못하고 있어서 정...",
+    "conversation_type": "narration",
+    "summary": "안녕하세요 홍경택 씨. 저 지금 제가 해야 될 일이 겁나 많은데 아무것도 못하고 있어서 정신이 하나도 없고 집중이 하나도 안 되거든요. 그러니까 이런 모금을 굳이 저한테까지 시키지 않으셨으면 좋겠어요 지금은요. 죄송해요.",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-08T12:20:20.987Z",
+    "updated_at": "2026-02-08T12:20:20.987Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "87622b7e-23c8-4f82-a03c-b03db9402001",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "녹음 시작했는데 왜 알림이 안 올라?",
+    "conversation_type": "live",
+    "summary": "녹음 시작했는데 왜 알림이 안 올라?",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:40:37.585Z",
+    "updated_at": "2026-02-03T14:40:37.585Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "87edc37b-449e-4807-b64f-36dd81079e9d",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "",
+    "conversation_type": "text",
+    "summary": "",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-08T18:14:01.344Z",
+    "updated_at": "2026-02-08T18:14:01.344Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "8eaa3c4f-482e-4a97-bbce-08c6f6c29953",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "안녕하세요.",
+    "conversation_type": "narration",
+    "summary": "안녕하세요.",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:23:00.678Z",
+    "updated_at": "2026-02-03T14:23:00.678Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "bad74a49-c0b6-42d7-b20f-403884061560",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "쓱",
+    "conversation_type": "narration",
+    "summary": "쓱",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:22:29.872Z",
+    "updated_at": "2026-02-03T14:22:29.872Z"
+  }
+},
+{
+  "model": "chat.conversation",
+  "pk": "f32877f4-129f-4fc2-ace1-379b90b517a6",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "title": "마음이 불안해졌다.",
+    "conversation_type": "live",
+    "summary": "마음이 불안해졌다.",
+    "emotion_indicator": null,
+    "is_active": true,
+    "created_at": "2026-02-03T14:47:41.846Z",
+    "updated_at": "2026-02-03T14:47:41.846Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "045eaf04-fbf4-4bd7-a862-e22a196ff3eb",
+  "fields": {
+    "conversation": "60d7d36f-9add-4cfc-862c-86ebb8eaf1b3",
+    "role": "user",
+    "content": "오늘 와이프가 왜 맨날 늦어? 라고 해서 일이 있었어 라고 했는데 화가 났어요",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-01T18:40:37.716Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "0f256686-7010-42d7-9bac-19e87a8060c9",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:14.691Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "111b9f52-7e94-4419-a5f8-00558813a4cb",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:19.286Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "11e0c608-f44f-4eeb-9f74-7da41ef0114d",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.746Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "202ad0b6-c22a-48c4-bd0c-93675b870a15",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.947Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "21eec3f1-c90c-4417-8e33-c6251130d3ee",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:19.311Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "223396d5-da13-49fb-b85a-6b42a9894868",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:15.270Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "26df910b-3b64-4a6f-be16-f4b7b99738ef",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.615Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "32ea0f87-a9f8-4a1d-9091-9976d7c0cb6b",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:14.668Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "36bf361e-fb02-45b7-8262-8a89d57d5099",
+  "fields": {
+    "conversation": "2b097b7e-5f3e-46fc-b406-4d9f6cf3b924",
+    "role": "user",
+    "content": "오늘 이런 일이 있었어요",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-03T14:10:25.534Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "38e604fa-df3f-41c6-b3f8-274cdc03ae45",
+  "fields": {
+    "conversation": "60d7d36f-9add-4cfc-862c-86ebb8eaf1b3",
+    "role": "assistant",
+    "content": "아내분께서 화를 내셔서 당황스러우셨겠어요. 열심히 일을 마치고 돌아왔는데 따뜻한 환영 대신 날카로운 말을 들으면 마음이 참 무거울 것 같습니다. 혹시 아내분이 '왜 맨날 늦어?'라고 물었을 때, 평소보다 더 화가 난 상태였나요? 그리고 '일이 있었어'라는 대답 이후에 아내분이 구체적으로 어떤 반응을 보이셨는지 조금 더 자세히 들려주실 수 있을까요?",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-01T18:40:59.220Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "3e4b262a-4586-4cde-9c17-229ed159c99e",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:19.196Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "46433709-35b5-4f1b-8c81-92ac8e0ec260",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.730Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "46e19c05-3e4f-4ddf-834d-d31a9f895c9d",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.704Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "4c310777-f2d0-4fca-8adb-4ddac6b70a3a",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:15.170Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "5192d5a8-f75c-4304-98ba-7c9d78a7cace",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:15.019Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "56286fdc-e42c-492a-8064-aa5ca3b9eca9",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.592Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "5638b007-defb-4562-a604-d64274aa3817",
+  "fields": {
+    "conversation": "4afbdef0-5497-4a55-baa9-e3e93764ad91",
+    "role": "user",
+    "content": "자주 그래요",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-01T18:44:02.234Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "57d26738-1eac-41eb-8ce6-0868f40a4b5a",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.645Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "69c36168-635a-4c40-a466-14e3e5aafd80",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:14.786Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "6a04d5e9-5ac1-4c7f-a6fd-15afc090c1b2",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.820Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "6db091c9-4429-421e-98e3-01cbedf4ff0a",
+  "fields": {
+    "conversation": "2b097b7e-5f3e-46fc-b406-4d9f6cf3b924",
+    "role": "user",
+    "content": "파트너가 이렇게 말했는데",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-03T14:11:42.484Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "73c8556d-9b25-46f1-bf21-8d8fb284ce8a",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:19.081Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "7529ab56-b4b6-4841-bdfc-89035c86a118",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.857Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "7a8f7ad1-2fb9-4fa0-8e0c-15e727338a60",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.440Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "7c1db4f1-6ab3-4262-ba3e-53ec3297450e",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:19.170Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "7ce5ba3d-a866-4d80-b670-65b7f4d49afa",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.968Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "8544fe7b-98bd-4452-a08f-602d4359da43",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:14.554Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "887f5faf-e8e9-4236-8a8d-fd664b53504b",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:02.049Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "9147b540-6c17-4791-a1fe-65cabe3d74cd",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:14.580Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "91e782c4-f26a-41d1-ba3a-8651b50882a4",
+  "fields": {
+    "conversation": "2b097b7e-5f3e-46fc-b406-4d9f6cf3b924",
+    "role": "assistant",
+    "content": "파트너분께서 어떤 말씀을 하셨는지 궁금하네요. 그 말을 들으셨을 때 마음이 어떠셨나요? 구체적으로 어떤 상황에서 나온 말이었는지, 그리고 그 말에 대해 어떻게 반응하셨는지도 함께 알려주시면 제가 상황을 더 잘 이해할 수 있을 것 같아요.",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-03T14:11:46.016Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "93c191b7-df28-4313-b1b8-eb6e7dce1e87",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:15.298Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "9abe42ec-9c16-4495-8fa0-05f9a755448f",
+  "fields": {
+    "conversation": "4afbdef0-5497-4a55-baa9-e3e93764ad91",
+    "role": "assistant",
+    "content": "남편분의 '왜 맨날 늦어?'라는 말이 마치 고생하고 돌아온 본인의 노력을 몰라주는 비난처럼 들려서 많이 속상하셨겠어요. '일이 있었다'고 설명하셨음에도 화가 가라앉지 않으신 상황이시군요. 혹시 남편분은 그 대답을 듣고 어떤 반응을 보이셨나요? 그리고 평소에도 귀가 시간 문제로 비슷한 대화가 자주 오가는 편인지 궁금합니다.",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-01T18:43:45.395Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "9c8e985d-3258-4c37-83e5-05e3b82d51d4",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.393Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "a2c832bc-5001-463b-bfd2-eab5eb300f0c",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.832Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "ac247803-97dd-400e-b526-25c5199401f1",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.965Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "af8dfb2b-f6d2-458f-99d6-a5fdd90122cd",
+  "fields": {
+    "conversation": "055595a2-aa25-4b8d-b666-0cb2f2ddf866",
+    "role": "assistant",
+    "content": "안녕하세요, 반갑습니다. 지금 녹음 중이시군요. 마음속에 있는 이야기들을 차근차근 꺼내어 기록하는 과정이 때로는 참 소중하고 필요할 때가 있지요. 편안한 마음으로 당신의 감정을 들려주셔도 괜찮습니다. 어떤 이야기를 들려주셔도 저는 충분히 이해하며 곁에 있을게요.",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T12:21:23.322Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "b4b62962-9443-4d1f-8885-4ed6310ec896",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.938Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "bae7bce8-82cc-4c95-bee5-7ab647f9eb09",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:14.808Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "bbe628b4-4d2c-4a21-bfda-5b14e208e094",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:15.387Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "bdc93394-912d-4d0a-9647-6dd3b9a3d8b0",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:15.137Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "c21de56e-8732-4d3d-960c-12ba6d82263e",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:01.629Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "c413d733-05be-4fa7-9207-2bc17f3dfc15",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:14.926Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "c50321a2-4c0b-4643-baf9-a04987723d9d",
+  "fields": {
+    "conversation": "4afbdef0-5497-4a55-baa9-e3e93764ad91",
+    "role": "user",
+    "content": "이제 분석해줘",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-01T18:45:00.100Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "c8048cad-e273-4375-ac5c-8f3a7f10a54c",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:14.902Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "c8674502-61c3-4d58-afca-deaaf97564bf",
+  "fields": {
+    "conversation": "055595a2-aa25-4b8d-b666-0cb2f2ddf866",
+    "role": "user",
+    "content": "안녕하세요 반갑습니다. 네 녹음중입니다.",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T12:21:18.459Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "ce8b02d3-e704-457e-9814-dce87029195f",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.847Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "d462544c-5e6e-4a4d-846b-951c1ffd51c0",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 0, '_i': 1, '_k': None, 'status': 'fulfilled'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:19.054Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "ddabc7b6-6800-439d-9ece-2f6a8ddbb691",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:15.047Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "e084e2a1-f7aa-49f4-a2db-e85bda6a1371",
+  "fields": {
+    "conversation": "4afbdef0-5497-4a55-baa9-e3e93764ad91",
+    "role": "assistant",
+    "content": "반복되는 귀가 시간 갈등으로 인해 마음이 많이 지치셨을 것 같습니다. 수고했다는 위로 대신 날 선 질문을 먼저 받게 되면, 나의 노고가 부정당하는 기분이 들어 화가 나는 것이 당연합니다.\n\n상대방은 이렇게 들었을 수 있어요:\n남편분은 이 대답을 '상황이 이랬으니 내 늦은 귀가를 당연하게 받아들여라'라는 통보나, 대화를 피하려는 회피로 느꼈을 가능성이 있습니다.\n\n왜 이런 차이가 생겼을까요:\n사용자님은 '사건의 이유(일)'에 집중하는 반면, 남편분은 '기다림으로 인한 소외감이나 서운함'이라는 감정에 집중하고 있어 대화의 초점이 어긋나 있습니다.\n\n다음에 시도해볼 것:\n- 감정을 먼저 읽어주는 '선 공감' 대화를 시도해 보세요. (예: '많이 기다렸지? 오늘따라 일이 안 끝나서 나도 마음이 급했어.')\n- 남편이 비난조로 말할 때, 그 이면에 '당신과 시간을 보내고 싶다'는 욕구가 있는지 확인해 보세요. (예: '나랑 저녁 같이 먹고 싶어서 기다린 거야?')\n- 서로 감정이 가라앉은 주말에 '귀가 시간'에 대한 서로의 기준과 감정을 미리 공유하는 규칙을 만들어 보세요.",
+    "has_reframing": true,
+    "reframing_data": {
+      "analysis": {
+        "what_you_said": "\"일이 있었어\"라고 상황을 설명하며 방어적인 입장을 취하셨습니다.",
+        "how_they_heard": "남편분은 이 대답을 '상황이 이랬으니 내 늦은 귀가를 당연하게 받아들여라'라는 통보나, 대화를 피하려는 회피로 느꼈을 가능성이 있습니다.",
+        "how_you_heard_them": "사용자님은 남편의 \"왜 맨날 늦어?\"라는 말을 나의 성실함을 비난하고 통제하려는 공격으로 해석하셨습니다.",
+        "why_the_gap": "사용자님은 '사건의 이유(일)'에 집중하는 반면, 남편분은 '기다림으로 인한 소외감이나 서운함'이라는 감정에 집중하고 있어 대화의 초점이 어긋나 있습니다.",
+        "original_quotes": [
+          "왜 맨날 늦어?",
+          "일이 있었어"
+        ]
+      },
+      "suggestions": [
+        "감정을 먼저 읽어주는 '선 공감' 대화를 시도해 보세요. (예: '많이 기다렸지? 오늘따라 일이 안 끝나서 나도 마음이 급했어.')",
+        "남편이 비난조로 말할 때, 그 이면에 '당신과 시간을 보내고 싶다'는 욕구가 있는지 확인해 보세요. (예: '나랑 저녁 같이 먹고 싶어서 기다린 거야?')",
+        "서로 감정이 가라앉은 주말에 '귀가 시간'에 대한 서로의 기준과 감정을 미리 공유하는 규칙을 만들어 보세요."
+      ],
+      "is_abuse_detected": false
+    },
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-01T18:45:05.864Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "e0ebe1a1-c477-43bc-a7ab-d4bfb0b2e57e",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:02.068Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "e2eccb31-5fb8-4184-b43a-a18805d54a9e",
+  "fields": {
+    "conversation": "2b097b7e-5f3e-46fc-b406-4d9f6cf3b924",
+    "role": "assistant",
+    "content": "네, 오늘 어떤 일이 있으셨나요? 마음이 많이 쓰이시는 상황인 것 같아요. 어떤 일이 있었는지, 그리고 그때 기분이 어떠셨는지 편하게 말씀해 주시면 제가 잘 들어보고 함께 고민해 드릴게요.",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-03T14:10:30.475Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "e917e309-541f-48a6-b095-c2f808c4d94e",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.728Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "eb18dd76-4bdf-4e43-8926-b72ee267dd7a",
+  "fields": {
+    "conversation": "4afbdef0-5497-4a55-baa9-e3e93764ad91",
+    "role": "user",
+    "content": "오늘 남편이  왜 맨날 늦어? 라고해서 일이 있었어 차고 했는데 화가났어요",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-01T18:43:42.846Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "ecdcb786-2c5b-4f19-86cc-b62a365ef571",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:15.414Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "f15c9e00-9b57-4755-b6b0-5e3c9b5314fa",
+  "fields": {
+    "conversation": "4afbdef0-5497-4a55-baa9-e3e93764ad91",
+    "role": "assistant",
+    "content": "비슷한 상황이 반복되고 있다니, 집에 돌아오는 발걸음이 매번 무겁고 스트레스가 크셨겠어요. '자주 그렇다'는 말씀은 남편분이 귀가 시간에 대해 예민하게 반응하는 편이거나, 두 분 사이의 생활 패턴 차이가 좁혀지지 않고 있다는 의미로 들리네요. 혹시 남편분이 그 말을 할 때의 표정이나 말투는 어떠한가요? 그리고 사용자가 '일이 있었다'고 말했을 때, 남편분은 보통 수긍하는 편인가요 아니면 계속해서 서운함을 표현하는 편인가요?",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-01T18:44:05.309Z"
+  }
+},
+{
+  "model": "chat.message",
+  "pk": "f2f13f6b-4970-4844-9955-ff52630a76f9",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "role": "user",
+    "content": "{'_h': 2, '_i': 0, '_j': None, '_k': [{'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}, {'promise': {'_h': 0, '_i': 0, '_j': None, '_k': None}}], 'status': 'pending'}",
+    "has_reframing": false,
+    "reframing_data": null,
+    "is_saved": false,
+    "token_count": null,
+    "created_at": "2026-02-08T18:14:18.474Z"
+  }
+},
+{
+  "model": "chat.conversationsummary",
+  "pk": "115d828d-fdfc-4db8-bff7-80116bf43f5c",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "summary_text": "제공해주신 데이터는 실제 대화가 아닌 시스템 코드(JSON 형태)의 반복으로 구성되어 있어, 구체적인 갈등 내용이나 감정을 파악하기 어렵습니다.\n\n**데이터 분석 요약:**\n- **주제:** '약속(promise)'의 이행 여부와 관련된 시스템 상태값의 반복.\n- **맥락:** 대기(pending)와 이행(fulfilled) 상태가 무한히 반복되는 구조적 패턴.\n- **특징:** 실제 언어적 소통 대신 데이터 로그만 존재하여 파트너 정보나 구체적 우려사항을 확인할 수 없음.",
+    "message_count": 33,
+    "created_at": "2026-02-08T18:14:21.606Z"
+  }
+},
+{
+  "model": "chat.conversationsummary",
+  "pk": "4ad1a441-2306-4921-b9bc-b2cbdd98b48f",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "summary_text": "제공된 데이터는 실제 대화가 아닌 시스템 코드(JSON 형태)의 반복으로, **약속(promise)**의 생성(pending)과 이행(fulfilled)이 반복되는 구조입니다. 이를 바탕으로 요약하면 다음과 같습니다.\n\n반복되는 **약속의 불이행과 대기 상태**가 갈등의 핵심입니다. 사용자는 지속적으로 신뢰를 확인하려 하나, 상황이 해결되지 않는 데서 오는 **불안과 피로감**이 감지됩니다. 파트너는 약속을 반복하지만 실질적인 결과가 부족하며, **반복적인 약속-대기 패턴**이 해결되지 않은 과제로 남았습니다. 사용자는 데이터 중심의 체계적이고 반복적인 확인을 통해 소통하는 스타일을 보입니다.",
+    "message_count": 17,
+    "created_at": "2026-02-08T18:14:18.204Z"
+  }
+},
+{
+  "model": "chat.conversationsummary",
+  "pk": "4b7b995c-3932-446c-9e4e-4e17dfc11ab5",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "summary_text": "제공된 데이터는 실제 대화가 아닌 시스템 로그 형태의 코드로 보입니다. 이를 바탕으로 분석한 요약입니다.\n\n**[요약]**\n반복되는 **'약속(promise)'의 지연(pending)과 이행(fulfilled)**이 갈등의 핵심입니다. 사용자는 여러 개의 약속이 대기 상태에 머무는 것에 대해 불안과 우려를 느끼며, 이것이 즉각 해결되기를 반복적으로 확인하고 있습니다. 파트너는 약속을 결국 이행하지만 처리 과정에서 지연이 발생하며, 사용자는 이를 정형화된 데이터 형태로 꼼꼼히 추적하는 **체계적이고 반복적인 소통 스타일**을 보입니다. 아직 모든 약속이 실시간으로 즉시 처리되지 못하는 점이 미결 과제로 남아 있습니다.",
+    "message_count": 32,
+    "created_at": "2026-02-08T18:14:21.878Z"
+  }
+},
+{
+  "model": "chat.conversationsummary",
+  "pk": "582cddce-9ff0-4de1-ade6-d1c78c20c427",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "summary_text": "제공해주신 데이터는 실제 대화가 아닌 시스템 코드(JSON 형태)의 반복으로 보입니다. 데이터에 기반하여 분석한 내용은 다음과 같습니다.\n\n*   **갈등 주제 및 맥락:** 약속(promise)의 이행 여부와 관련된 시스템 프로세스상의 충돌.\n*   **감정 및 우려:** '보류(pending)'와 '이행(fulfilled)'이 반복되며 발생하는 불안정성.\n*   **파트너 정보:** 다수의 약속을 생성하지만 즉각 해결하지 못하는 상태.\n*   **미결 문제:** 반복되는 보류 상태의 근본적 해결책 부재.\n*   **소통 스타일:** 감정 배제 후 상태값 위주의 데이터 중심적/기계적 소통.",
+    "message_count": 16,
+    "created_at": "2026-02-08T18:14:17.869Z"
+  }
+},
+{
+  "model": "chat.conversationsummary",
+  "pk": "98146fc4-1923-441c-8ac9-e4f4813cc278",
+  "fields": {
+    "conversation": "87edc37b-449e-4807-b64f-36dd81079e9d",
+    "summary_text": "제공해주신 데이터는 대화 내용이 아닌 시스템 코드(JSON 형태)로 보입니다. 해당 코드에는 **'약속(promise)'이 3건 대기(pending) 중**이라는 정보 외에 구체적인 대화나 감정 상태가 포함되어 있지 않습니다.\n\n만약 실제 대화 내용이 있다면 다시 공유해 주세요. 현재 데이터를 바탕으로 요약하면 다음과 같습니다.\n\n**[요약]**\n상호 간의 **약속 이행 여부**가 주요 쟁점입니다. 사용자는 약속된 사항들이 처리되지 않고 '대기' 상태에 머무는 것에 대해 우려를 느낄 수 있습니다. 파트너는 현재 약속을 완수하지 못한 상태이며, 이로 인해 신뢰 관계의 미결 과제가 남아 있습니다. 사용자는 체계적인 데이터나 리스트를 통해 상황을 관리하려는 소통 스타일을 보입니다.",
+    "message_count": 1,
+    "created_at": "2026-02-08T18:14:14.428Z"
+  }
+},
+{
+  "model": "chat.sharedreframing",
+  "pk": "764a761d-769d-4818-8dd6-b7b659616282",
+  "fields": {
+    "message": "e084e2a1-f7aa-49f4-a2db-e85bda6a1371",
+    "shared_by": [
+      "hbilly2002@gmail.com"
+    ],
+    "shared_with": [
+      "hbilly2002@naver.com"
+    ],
+    "privacy_level": "full",
+    "partner_response": null,
+    "is_read": false,
+    "notified_at": null,
+    "shared_at": "2026-02-01T18:45:16.788Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "12f89951-e0ef-4a49-a2fe-963913eec7f5",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "87622b7e-23c8-4f82-a03c-b03db9402001",
+    "couple": 1,
+    "recording_type": "live",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "녹음 시작했는데 왜 알림이 안 올라?",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:40:36.096Z",
+    "updated_at": "2026-02-03T14:40:36.096Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "160a30c1-9984-487c-b7d0-d9595f5a1a30",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "41711cd8-cacd-47de-ab37-94abedd104d8",
+    "couple": 1,
+    "recording_type": "live",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "행사장에서 안전사고가 발생했다.",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:43:55.163Z",
+    "updated_at": "2026-02-03T14:43:55.163Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "21f56fef-ab1f-4040-9818-56781f533cbb",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": null,
+    "couple": 1,
+    "recording_type": "live",
+    "status": "failed",
+    "error_message": "음성 인식에 실패했습니다: 'Transcription' object has no attribute 'duration'",
+    "duration": null,
+    "full_text": null,
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:32:41.121Z",
+    "updated_at": "2026-02-03T14:32:41.121Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "2914c696-0fd0-400a-a767-dfff9ab284b3",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "3352b399-d0ed-4e2c-b67a-3317c9fbdfd6",
+    "couple": 1,
+    "recording_type": "live",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "을린다.",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:35:06.202Z",
+    "updated_at": "2026-02-03T14:35:06.202Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "529348a3-52b3-4ecb-b5e5-9a2acf3014ca",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "conversation": null,
+    "couple": 1,
+    "recording_type": "live",
+    "status": "failed",
+    "error_message": "음성 인식에 실패했습니다: 'Transcription' object has no attribute 'duration'",
+    "duration": null,
+    "full_text": null,
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:32:44.092Z",
+    "updated_at": "2026-02-03T14:32:44.092Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "5854b25a-bdf3-42ec-9728-d610b5d07587",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "05a367e4-d6e3-455f-b456-be7a21764d89",
+    "couple": 1,
+    "recording_type": "live",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "한국어 수업.",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:49:52.189Z",
+    "updated_at": "2026-02-03T14:49:52.189Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "6c767dc1-ac1d-41b2-8c81-175ea21e6f0a",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "f32877f4-129f-4fc2-ace1-379b90b517a6",
+    "couple": 1,
+    "recording_type": "live",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "마음이 불안해졌다.",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:47:39.916Z",
+    "updated_at": "2026-02-03T14:47:39.916Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "9cb01883-a72f-46a9-b340-f0a9689a2900",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "8eaa3c4f-482e-4a97-bbce-08c6f6c29953",
+    "couple": 1,
+    "recording_type": "narration",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "안녕하세요.",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:22:59.044Z",
+    "updated_at": "2026-02-03T14:22:59.044Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "ad46d34c-2f75-428d-badd-1e898fb0712e",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "44958a8a-19ad-44e8-9729-4493020d173b",
+    "couple": 1,
+    "recording_type": "live",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "흠...",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:50:50.119Z",
+    "updated_at": "2026-02-03T14:50:50.119Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "b66d2ad5-3cdc-48d5-84b3-beb845d8398a",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": null,
+    "couple": 1,
+    "recording_type": "narration",
+    "status": "failed",
+    "error_message": "OPENAI_API_KEY is not configured. Set it in .env or environment variables.",
+    "duration": null,
+    "full_text": null,
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:20:03.539Z",
+    "updated_at": "2026-02-03T14:20:03.539Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "c3e9846b-b224-43dd-aac1-93f33cabf182",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": null,
+    "couple": 1,
+    "recording_type": "narration",
+    "status": "failed",
+    "error_message": "음성 인식에 실패했습니다: Error code: 400 - {'error': {'message': \"response_format 'verbose_json' is not compatible with model 'gpt-4o-transcribe-api-ev3'. Use 'json' or 'text' instead.\", 'type': 'invalid_request_error', 'param': 'response_format', 'code': 'unsupported_value'}}",
+    "duration": null,
+    "full_text": null,
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:21:34.758Z",
+    "updated_at": "2026-02-03T14:21:34.758Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "d341216f-6596-43c5-9f25-eeacef220e75",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": null,
+    "couple": 1,
+    "recording_type": "narration",
+    "status": "processing",
+    "error_message": null,
+    "duration": null,
+    "full_text": null,
+    "audio_file": "audio/temp/recording.m4a",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T13:49:06.650Z",
+    "updated_at": "2026-02-03T13:49:06.650Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "d9f5fef6-ef70-4138-afc6-b519f3f991d3",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "conversation": "73430655-ea1b-40fd-8409-038ede63064f",
+    "couple": 1,
+    "recording_type": "narration",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "안녕하세요 홍경택 씨. 저 지금 제가 해야 될 일이 겁나 많은데 아무것도 못하고 있어서 정신이 하나도 없고 집중이 하나도 안 되거든요. 그러니까 이런 모금을 굳이 저한테까지 시키지 않으셨으면 좋겠어요 지금은요. 죄송해요.",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-08T12:20:17.655Z",
+    "updated_at": "2026-02-08T12:20:17.655Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "e2e02db9-f3c8-49ed-a324-15205b5adc97",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "055595a2-aa25-4b8d-b666-0cb2f2ddf866",
+    "couple": 1,
+    "recording_type": "narration",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "안녕하세요 반갑습니다. 네 녹음중입니다.",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": "comfort",
+    "created_at": "2026-02-08T12:20:48.481Z",
+    "updated_at": "2026-02-08T12:20:48.481Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "ef622818-747c-414d-af4b-5be0c0343b93",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "0a5d572f-2a90-4fa4-99b2-8af330108047",
+    "couple": 1,
+    "recording_type": "narration",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "안녕하세요.",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": "keep",
+    "created_at": "2026-02-03T14:25:30.504Z",
+    "updated_at": "2026-02-03T14:25:30.504Z"
+  }
+},
+{
+  "model": "audio.audiorecording",
+  "pk": "fc635f7d-7f11-4c83-9074-aca9a830353e",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "conversation": "bad74a49-c0b6-42d7-b20f-403884061560",
+    "couple": 1,
+    "recording_type": "narration",
+    "status": "completed",
+    "error_message": null,
+    "duration": 0.0,
+    "full_text": "쓱",
+    "audio_file": "",
+    "emotion_intensity": null,
+    "post_action": null,
+    "created_at": "2026-02-03T14:22:26.872Z",
+    "updated_at": "2026-02-03T14:22:26.872Z"
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "0b893f8c-0076-4e73-a84c-5f3c8a7d979a",
+  "fields": {
+    "recording": "160a30c1-9984-487c-b7d0-d9595f5a1a30",
+    "speaker": "A",
+    "speaker_label": null,
+    "text": "행사장에서 안전사고가 발생했다.",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "25d288b0-2258-4e6b-b8f7-a4b8631c367f",
+  "fields": {
+    "recording": "6c767dc1-ac1d-41b2-8c81-175ea21e6f0a",
+    "speaker": "A",
+    "speaker_label": null,
+    "text": "마음이 불안해졌다.",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "38b33ecd-6707-430f-89dc-c1c25655f205",
+  "fields": {
+    "recording": "ef622818-747c-414d-af4b-5be0c0343b93",
+    "speaker": "user",
+    "speaker_label": null,
+    "text": "안녕하세요.",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "4b079473-f2a2-4b83-8256-54572a92eaca",
+  "fields": {
+    "recording": "e2e02db9-f3c8-49ed-a324-15205b5adc97",
+    "speaker": "user",
+    "speaker_label": null,
+    "text": "안녕하세요 반갑습니다. 네 녹음중입니다.",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "50b7dde8-7241-48e8-a2e3-179a6f27127f",
+  "fields": {
+    "recording": "9cb01883-a72f-46a9-b340-f0a9689a2900",
+    "speaker": "user",
+    "speaker_label": null,
+    "text": "안녕하세요.",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "55f839b0-f2ea-468f-9493-48ae10a1a649",
+  "fields": {
+    "recording": "fc635f7d-7f11-4c83-9074-aca9a830353e",
+    "speaker": "user",
+    "speaker_label": null,
+    "text": "쓱",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "8eb23287-cd37-4361-9eba-b99ba2d1f07f",
+  "fields": {
+    "recording": "ad46d34c-2f75-428d-badd-1e898fb0712e",
+    "speaker": "A",
+    "speaker_label": null,
+    "text": "흠...",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "8f24e81a-60b3-4461-b33d-305875eed543",
+  "fields": {
+    "recording": "5854b25a-bdf3-42ec-9728-d610b5d07587",
+    "speaker": "A",
+    "speaker_label": null,
+    "text": "한국어 수업.",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "a4ba9570-63a8-4229-91f5-1919be1357eb",
+  "fields": {
+    "recording": "12f89951-e0ef-4a49-a2fe-963913eec7f5",
+    "speaker": "A",
+    "speaker_label": null,
+    "text": "녹음 시작했는데 왜 알림이 안 올라?",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "c0ac11f6-fcba-4382-aee4-43ba677da51d",
+  "fields": {
+    "recording": "d9f5fef6-ef70-4138-afc6-b519f3f991d3",
+    "speaker": "user",
+    "speaker_label": null,
+    "text": "안녕하세요 홍경택 씨. 저 지금 제가 해야 될 일이 겁나 많은데 아무것도 못하고 있어서 정신이 하나도 없고 집중이 하나도 안 되거든요. 그러니까 이런 모금을 굳이 저한테까지 시키지 않으셨으면 좋겠어요 지금은요. 죄송해요.",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "audio.transcriptsegment",
+  "pk": "d6b3fdc3-9dda-4b5c-ac05-dba12baeb6e4",
+  "fields": {
+    "recording": "2914c696-0fd0-400a-a767-dfff9ab284b3",
+    "speaker": "A",
+    "speaker_label": null,
+    "text": "을린다.",
+    "start_time": 0.0,
+    "end_time": 0.0,
+    "emotion_intensity": null,
+    "order": 0
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "1f7f9eeb-d692-41a8-a706-4879dd3ec3b8",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "couple": 1,
+    "conversation": "73430655-ea1b-40fd-8409-038ede63064f",
+    "pattern_type": "trigger_phrase",
+    "content": "굳이 저한테까지 시키지 않으셨으면 좋겠어요",
+    "category": null,
+    "severity": 2,
+    "context_snippet": "상대방의 요청이 불필요하거나 부적절하다는 점을 지적하며 경계를 설정함",
+    "created_at": "2026-02-08T12:20:24.928Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "2e671cd1-249b-42bb-83ee-d205453811f3",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "couple": 1,
+    "conversation": "73430655-ea1b-40fd-8409-038ede63064f",
+    "pattern_type": "escalation",
+    "content": "에스컬레이션 점수: 4/10",
+    "category": null,
+    "severity": 2,
+    "context_snippet": "",
+    "created_at": "2026-02-08T12:20:24.947Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "55d36b2a-c08f-4408-aa65-631433216f39",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "conversation": "f32877f4-129f-4fc2-ace1-379b90b517a6",
+    "pattern_type": "recurring_topic",
+    "content": "정서적 불안",
+    "category": "의사소통",
+    "severity": 2,
+    "context_snippet": "",
+    "created_at": "2026-02-03T14:47:54.787Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "9e8cd608-8aeb-4b9d-b47c-cce64d2adc47",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "conversation": "87622b7e-23c8-4f82-a03c-b03db9402001",
+    "pattern_type": "trigger_phrase",
+    "content": "왜",
+    "category": null,
+    "severity": 1,
+    "context_snippet": "녹음 시작 상황에서 상대방의 행동이나 시스템의 상태에 대해 의문을 제기하며 대화를 시작함.",
+    "created_at": "2026-02-03T14:40:40.869Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "a1e7855e-eb47-478c-81f4-3eb7dcffa883",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "conversation": "8eaa3c4f-482e-4a97-bbce-08c6f6c29953",
+    "pattern_type": "recurring_topic",
+    "content": "인사 및 대화 시작",
+    "category": "의사소통",
+    "severity": 2,
+    "context_snippet": "",
+    "created_at": "2026-02-03T14:23:04.569Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "b0c2ba67-2e33-4ffc-b270-bfc571dcc837",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "couple": 1,
+    "conversation": "73430655-ea1b-40fd-8409-038ede63064f",
+    "pattern_type": "recurring_topic",
+    "content": "시간 관리 및 과업 부하",
+    "category": "시간",
+    "severity": 1,
+    "context_snippet": "",
+    "created_at": "2026-02-08T12:20:24.941Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "b39a452b-d6eb-4da1-88c7-77e75bf084a7",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "couple": 1,
+    "conversation": "73430655-ea1b-40fd-8409-038ede63064f",
+    "pattern_type": "recurring_topic",
+    "content": "업무 분담 및 요청 거절",
+    "category": "의사소통",
+    "severity": 1,
+    "context_snippet": "",
+    "created_at": "2026-02-08T12:20:24.935Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "bc6c88c6-fb2e-4269-96c2-d71147dfaf0f",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "conversation": "87622b7e-23c8-4f82-a03c-b03db9402001",
+    "pattern_type": "recurring_topic",
+    "content": "기기 작동 및 소통 방식",
+    "category": "의사소통",
+    "severity": 2,
+    "context_snippet": "",
+    "created_at": "2026-02-03T14:40:40.876Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "bf45fdbc-e075-4d55-9b18-954f891f8e6a",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "conversation": "bad74a49-c0b6-42d7-b20f-403884061560",
+    "pattern_type": "recurring_topic",
+    "content": "의사소통 태도",
+    "category": "의사소통",
+    "severity": 1,
+    "context_snippet": "",
+    "created_at": "2026-02-03T14:22:34.727Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "dd2e8e43-95e7-4579-a01c-37c7f1b1a33e",
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "couple": 1,
+    "conversation": "73430655-ea1b-40fd-8409-038ede63064f",
+    "pattern_type": "trigger_phrase",
+    "content": "아무것도 못하고 있어서",
+    "category": null,
+    "severity": 2,
+    "context_snippet": "자신의 업무 과부하 상태를 강조하며 상대방의 요청을 거절하는 상황",
+    "created_at": "2026-02-08T12:20:24.922Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "ea690ab3-c71c-4a9e-a0d1-d3446f82846a",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "conversation": "3352b399-d0ed-4e2c-b67a-3317c9fbdfd6",
+    "pattern_type": "recurring_topic",
+    "content": "데이터 부족",
+    "category": "기타",
+    "severity": 1,
+    "context_snippet": "",
+    "created_at": "2026-02-03T14:35:12.678Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "ee303f87-67b8-4910-b3c0-947442d3b7dc",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "conversation": "44958a8a-19ad-44e8-9729-4493020d173b",
+    "pattern_type": "recurring_topic",
+    "content": "미파악",
+    "category": "기타",
+    "severity": 2,
+    "context_snippet": "",
+    "created_at": "2026-02-03T14:50:53.788Z"
+  }
+},
+{
+  "model": "patterns.pattern",
+  "pk": "f7510599-ce26-44b0-b0b7-040b1486af04",
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "couple": 1,
+    "conversation": "bad74a49-c0b6-42d7-b20f-403884061560",
+    "pattern_type": "trigger_phrase",
+    "content": "쓱",
+    "category": null,
+    "severity": 1,
+    "context_snippet": "상대방의 질문이나 대화 시도에 대해 제대로 된 답변 대신 회피하거나 무성의하게 반응할 때 사용됨.",
+    "created_at": "2026-02-03T14:22:34.721Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "0c1d5e93-7cc0-4372-81c9-25be1861d2ae",
+  "fields": {
+    "conversation": "bad74a49-c0b6-42d7-b20f-403884061560",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [
+      {
+        "text": "쓱",
+        "context": "상대방의 질문이나 대화 시도에 대해 제대로 된 답변 대신 회피하거나 무성의하게 반응할 때 사용됨."
+      }
+    ],
+    "recurring_topics": [
+      {
+        "topic": "의사소통 태도",
+        "category": "의사소통",
+        "count": 1
+      }
+    ],
+    "escalation_score": 2,
+    "ai_summary": "단답형 혹은 의성어 위주의 반응은 상대방으로 하여금 대화 의지가 없다는 인상을 줄 수 있습니다. 이러한 수동적인 태도는 본격적인 갈등의 전조 증상이 되거나 상대의 답답함을 유발하는 요인이 됩니다.",
+    "created_at": "2026-02-03T14:22:34.734Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "1466f0d2-3763-4c32-92ea-6f9359099d3f",
+  "fields": {
+    "conversation": "41711cd8-cacd-47de-ab37-94abedd104d8",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [],
+    "recurring_topics": [],
+    "escalation_score": 0,
+    "ai_summary": "",
+    "created_at": "2026-02-03T14:44:00.922Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "44214312-a7a5-49f3-b1fc-440fd4dd9e0a",
+  "fields": {
+    "conversation": "055595a2-aa25-4b8d-b666-0cb2f2ddf866",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [],
+    "recurring_topics": [],
+    "escalation_score": 0,
+    "ai_summary": "현재 대화는 분석 가능한 갈등 요소가 포함되어 있지 않은 초기 인사 단계입니다. 부부간의 구체적인 대화 내용이 입력되면 패턴 분석이 가능합니다.",
+    "created_at": "2026-02-08T12:20:52.570Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "4cff8cd1-7756-47c2-90b8-d4e3a521ef67",
+  "fields": {
+    "conversation": "3352b399-d0ed-4e2c-b67a-3317c9fbdfd6",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [],
+    "recurring_topics": [
+      {
+        "topic": "데이터 부족",
+        "category": "기타",
+        "count": 1
+      }
+    ],
+    "escalation_score": 0,
+    "ai_summary": "입력된 텍스트가 단편적(을린다)이어서 갈등의 맥락이나 패턴을 파악할 수 없습니다. 분석을 위해 구체적인 대화 상황을 제공해 주시기 바랍니다.",
+    "created_at": "2026-02-03T14:35:12.685Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "5be38d12-389e-4aa9-a547-e412d64b36be",
+  "fields": {
+    "conversation": "73430655-ea1b-40fd-8409-038ede63064f",
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "trigger_phrases": [
+      {
+        "text": "아무것도 못하고 있어서",
+        "context": "자신의 업무 과부하 상태를 강조하며 상대방의 요청을 거절하는 상황"
+      },
+      {
+        "text": "굳이 저한테까지 시키지 않으셨으면 좋겠어요",
+        "context": "상대방의 요청이 불필요하거나 부적절하다는 점을 지적하며 경계를 설정함"
+      }
+    ],
+    "recurring_topics": [
+      {
+        "topic": "업무 분담 및 요청 거절",
+        "category": "의사소통",
+        "count": 1
+      },
+      {
+        "topic": "시간 관리 및 과업 부하",
+        "category": "시간",
+        "count": 1
+      }
+    ],
+    "escalation_score": 4,
+    "ai_summary": "화자는 현재 자신의 과도한 업무량으로 인한 스트레스를 호소하며, 상대방의 추가적인 요청에 대해 명확한 거절 의사를 표현하고 있습니다. 감정적으로 격앙된 상태이나 '죄송해요'라는 표현을 덧붙여 최소한의 예의를 유지하려 노력하는 패턴을 보입니다.",
+    "created_at": "2026-02-08T12:20:24.955Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "5e98f9f7-6feb-4be8-9696-f0c27bd113a9",
+  "fields": {
+    "conversation": "87622b7e-23c8-4f82-a03c-b03db9402001",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [
+      {
+        "text": "왜",
+        "context": "녹음 시작 상황에서 상대방의 행동이나 시스템의 상태에 대해 의문을 제기하며 대화를 시작함."
+      }
+    ],
+    "recurring_topics": [
+      {
+        "topic": "기기 작동 및 소통 방식",
+        "category": "의사소통",
+        "count": 3
+      }
+    ],
+    "escalation_score": 2,
+    "ai_summary": "대화의 시작 단계로, 특정 상황(녹음 알림 미발생)에 대한 의문 제기로 대화가 시작되었습니다. 현재는 정보 확인 단계에 가까우나, '왜'라는 표현의 어조에 따라 상대방이 방어적인 태도를 취할 가능성이 잠재되어 있습니다.",
+    "created_at": "2026-02-03T14:40:40.883Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "67f1aa6a-1ca3-4e85-81c9-f4cd14795f99",
+  "fields": {
+    "conversation": "8eaa3c4f-482e-4a97-bbce-08c6f6c29953",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [],
+    "recurring_topics": [
+      {
+        "topic": "인사 및 대화 시작",
+        "category": "의사소통",
+        "count": 2
+      }
+    ],
+    "escalation_score": 0,
+    "ai_summary": "현재 대화는 단순한 인사로 시작되었으며, 갈등이나 감정적 대립 요소가 발견되지 않았습니다. 분석을 진행하기 위해서는 구체적인 대화 데이터가 필요합니다.",
+    "created_at": "2026-02-03T14:23:04.575Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "6b9b0f09-6643-4224-8c3a-1a559e016449",
+  "fields": {
+    "conversation": "0a5d572f-2a90-4fa4-99b2-8af330108047",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [],
+    "recurring_topics": [],
+    "escalation_score": 0,
+    "ai_summary": "분석할 대화 내용이 포함되어 있지 않습니다. 일상적인 인사만으로는 갈등 패턴이나 특정 트리거를 식별할 수 없습니다.",
+    "created_at": "2026-02-03T14:25:45.279Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "8c38defb-8ed1-4691-a206-ef446b8a1059",
+  "fields": {
+    "conversation": "44958a8a-19ad-44e8-9729-4493020d173b",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [],
+    "recurring_topics": [
+      {
+        "topic": "미파악",
+        "category": "기타",
+        "count": 2
+      }
+    ],
+    "escalation_score": 1,
+    "ai_summary": "대화가 시작되는 단계이거나 단순한 추임새만 관찰되었습니다. 갈등의 양상이나 특정 패턴을 파악하기 위해 추가적인 대화 데이터가 필요합니다.",
+    "created_at": "2026-02-03T14:50:53.795Z"
+  }
+},
+{
+  "model": "patterns.insightsummary",
+  "pk": "cd3702ad-68b0-4d79-bed6-71918b2a1312",
+  "fields": {
+    "conversation": "f32877f4-129f-4fc2-ace1-379b90b517a6",
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "trigger_phrases": [],
+    "recurring_topics": [
+      {
+        "topic": "정서적 불안",
+        "category": "의사소통",
+        "count": 4
+      }
+    ],
+    "escalation_score": 1,
+    "ai_summary": "화자 A가 자신의 현재 심리적 상태(불안)를 짧게 표출하며 대화를 시작했습니다. 상대방의 반응이 나타나지 않아 갈등 패턴을 확정하기 어려우나, 감정 상태를 직접적으로 전달하려는 시도로 관찰됩니다.",
+    "created_at": "2026-02-03T14:47:54.794Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 1,
+  "fields": {
+    "text_ko": "오늘 하루 중 가장 기분 좋았던 순간은?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.008Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 2,
+  "fields": {
+    "text_ko": "요즘 가장 많이 생각하는 것은?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.010Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 3,
+  "fields": {
+    "text_ko": "이번 주말에 같이 하고 싶은 것이 있다면?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.011Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 4,
+  "fields": {
+    "text_ko": "오늘 나에게 고마웠던 것이 있다면?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.011Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 5,
+  "fields": {
+    "text_ko": "요즘 스트레스 받는 일이 있다면?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.011Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 6,
+  "fields": {
+    "text_ko": "오늘 점심은 뭐 먹었어? 맛있었어?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.011Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 7,
+  "fields": {
+    "text_ko": "요즘 빠져있는 것이 있다면?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.011Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 8,
+  "fields": {
+    "text_ko": "오늘 하루를 한 단어로 표현한다면?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.012Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 9,
+  "fields": {
+    "text_ko": "최근에 웃었던 일이 있다면?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.012Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 10,
+  "fields": {
+    "text_ko": "요즘 관심 있는 것이 있다면?",
+    "category": "daily",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.012Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 11,
+  "fields": {
+    "text_ko": "올해 꼭 이루고 싶은 목표가 있다면?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.012Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 12,
+  "fields": {
+    "text_ko": "10년 후 우리는 어떤 모습일까?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.012Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 13,
+  "fields": {
+    "text_ko": "같이 도전해보고 싶은 것이 있다면?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.012Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 14,
+  "fields": {
+    "text_ko": "은퇴 후에 하고 싶은 것은?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.012Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 15,
+  "fields": {
+    "text_ko": "버킷리스트에 있는 것 하나 알려줘",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.012Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 16,
+  "fields": {
+    "text_ko": "요즘 배우고 싶은 것이 있다면?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.013Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 17,
+  "fields": {
+    "text_ko": "5년 안에 이루고 싶은 것은?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.013Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 18,
+  "fields": {
+    "text_ko": "가장 하고 싶은 일은 무엇이야?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.013Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 19,
+  "fields": {
+    "text_ko": "꿈꾸는 삶의 모습이 있다면?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.013Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 20,
+  "fields": {
+    "text_ko": "우리가 함께 성장하려면 어떻게 해야 할까?",
+    "category": "dreams",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.013Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 21,
+  "fields": {
+    "text_ko": "우리가 처음 만났을 때 첫인상은?",
+    "category": "memories",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.013Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 22,
+  "fields": {
+    "text_ko": "함께한 여행 중 가장 좋았던 곳은?",
+    "category": "memories",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.013Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 23,
+  "fields": {
+    "text_ko": "우리의 가장 웃긴 에피소드는?",
+    "category": "memories",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.014Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 24,
+  "fields": {
+    "text_ko": "상대방이 나를 감동시킨 순간은?",
+    "category": "memories",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.014Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 25,
+  "fields": {
+    "text_ko": "우리의 첫 데이트 기억나?",
+    "category": "memories",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.014Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 26,
+  "fields": {
+    "text_ko": "가장 기억에 남는 생일 선물은?",
+    "category": "memories",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.014Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 27,
+  "fields": {
+    "text_ko": "우리가 함께 극복한 어려움이 있다면?",
+    "category": "memories",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.014Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 28,
+  "fields": {
+    "text_ko": "가장 행복했던 순간은?",
+    "category": "memories",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.014Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 29,
+  "fields": {
+    "text_ko": "둘이 함께한 가장 특별한 날은?",
+    "category": "memories",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.014Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 30,
+  "fields": {
+    "text_ko": "서로에게 배운 것이 있다면?",
+    "category": "memories",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.014Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 31,
+  "fields": {
+    "text_ko": "상대방에게 가장 감사한 점은?",
+    "category": "gratitude",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.015Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 32,
+  "fields": {
+    "text_ko": "상대방의 가장 좋은 점 3가지는?",
+    "category": "gratitude",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.015Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 33,
+  "fields": {
+    "text_ko": "최근에 상대방이 해준 것 중 감사한 것은?",
+    "category": "gratitude",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.015Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 34,
+  "fields": {
+    "text_ko": "우리 관계에서 가장 자랑스러운 것은?",
+    "category": "gratitude",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.016Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 35,
+  "fields": {
+    "text_ko": "상대방에게 꼭 말해주고 싶은 것이 있다면?",
+    "category": "gratitude",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.016Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 36,
+  "fields": {
+    "text_ko": "상대방이 있어서 좋은 점은?",
+    "category": "gratitude",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.016Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 37,
+  "fields": {
+    "text_ko": "오늘 상대방에게 고마운 것이 있다면?",
+    "category": "gratitude",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.016Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 38,
+  "fields": {
+    "text_ko": "상대방이 나를 더 나은 사람으로 만들어준 점은?",
+    "category": "gratitude",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.016Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 39,
+  "fields": {
+    "text_ko": "함께해서 감사한 순간은?",
+    "category": "gratitude",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.017Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 40,
+  "fields": {
+    "text_ko": "상대방의 어떤 점이 매력적이야?",
+    "category": "gratitude",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.017Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 41,
+  "fields": {
+    "text_ko": "같이 가보고 싶은 여행지가 있다면?",
+    "category": "future",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.017Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 42,
+  "fields": {
+    "text_ko": "5년 후 우리의 일상은 어떨까?",
+    "category": "future",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.017Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 43,
+  "fields": {
+    "text_ko": "같이 살고 싶은 집은 어떤 모습일까?",
+    "category": "future",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.017Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 44,
+  "fields": {
+    "text_ko": "노후에 같이 하고 싶은 취미는?",
+    "category": "future",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.017Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 45,
+  "fields": {
+    "text_ko": "아이에 대한 생각이 있다면?",
+    "category": "future",
+    "difficulty_level": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.017Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 46,
+  "fields": {
+    "text_ko": "우리의 미래에서 가장 기대되는 것은?",
+    "category": "future",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.018Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 47,
+  "fields": {
+    "text_ko": "10년 후 우리는 무엇을 하고 있을까?",
+    "category": "future",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.018Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 48,
+  "fields": {
+    "text_ko": "함께 이루고 싶은 꿈이 있다면?",
+    "category": "future",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.018Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 49,
+  "fields": {
+    "text_ko": "미래의 우리에게 해주고 싶은 말은?",
+    "category": "future",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.018Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 50,
+  "fields": {
+    "text_ko": "앞으로 같이 만들고 싶은 추억은?",
+    "category": "future",
+    "difficulty_level": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.018Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 51,
+  "fields": {
+    "text_ko": "나에게 바라는 점이 있다면 솔직하게 말해줘",
+    "category": "deep",
+    "difficulty_level": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.018Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 52,
+  "fields": {
+    "text_ko": "우리 관계에서 개선하고 싶은 점은?",
+    "category": "deep",
+    "difficulty_level": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.019Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 53,
+  "fields": {
+    "text_ko": "가장 두려운 것은 무엇이야?",
+    "category": "deep",
+    "difficulty_level": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.019Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 54,
+  "fields": {
+    "text_ko": "사랑한다는 걸 어떻게 표현하면 좋을까?",
+    "category": "deep",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.019Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 55,
+  "fields": {
+    "text_ko": "혼자만의 시간이 필요할 때 어떻게 말하면 좋을까?",
+    "category": "deep",
+    "difficulty_level": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.019Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 56,
+  "fields": {
+    "text_ko": "서로에 대해 아직 모르는 것이 있다면?",
+    "category": "deep",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.019Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 57,
+  "fields": {
+    "text_ko": "내가 더 잘할 수 있는 것이 있다면?",
+    "category": "deep",
+    "difficulty_level": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.019Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 58,
+  "fields": {
+    "text_ko": "우리가 더 가까워지려면 어떻게 해야 할까?",
+    "category": "deep",
+    "difficulty_level": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.019Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 59,
+  "fields": {
+    "text_ko": "상대방을 더 이해하기 위해 알고 싶은 것은?",
+    "category": "deep",
+    "difficulty_level": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.020Z"
+  }
+},
+{
+  "model": "prompts.dailyprompt",
+  "pk": 60,
+  "fields": {
+    "text_ko": "우리 관계에서 가장 중요한 것은 무엇일까?",
+    "category": "deep",
+    "difficulty_level": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T13:03:36.020Z"
+  }
+},
+{
+  "model": "prompts.dailypromptassignment",
+  "pk": 1,
+  "fields": {
+    "couple": 1,
+    "prompt": 19,
+    "assigned_date": "2026-02-09"
+  }
+},
+{
+  "model": "account.emailaddress",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "email": "hbilly2002@naver.com",
+    "verified": false,
+    "primary": false
+  }
+},
+{
+  "model": "account.emailaddress",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "email": "hbilly2002@gmail.com",
+    "verified": false,
+    "primary": false
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "jti": "ffb6e8af0aac4fe7b130587057d937c8",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MDU3NTU5NywiaWF0IjoxNzY5OTcwNzk3LCJqdGkiOiJmZmI2ZThhZjBhYWM0ZmU3YjEzMDU4NzA1N2Q5MzdjOCIsInVzZXJfaWQiOiIxIn0.47o35bIh_sdMCmYbImMy9s0os1vX4YewY33KQkflqmY",
+    "created_at": "2026-02-01T18:33:17.344Z",
+    "expires_at": "2026-02-08T18:33:17Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "jti": "fdbd96534d744bbe89d2bc762bb5de82",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MDU3NTcyOCwiaWF0IjoxNzY5OTcwOTI4LCJqdGkiOiJmZGJkOTY1MzRkNzQ0YmJlODlkMmJjNzYyYmI1ZGU4MiIsInVzZXJfaWQiOiIyIn0.Jojn6cglHbDcYCgebxTU6ukRUCZqKf2CGpLTmGjC_yE",
+    "created_at": "2026-02-01T18:35:28.604Z",
+    "expires_at": "2026-02-08T18:35:28Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "jti": "fbc849d7b6774042afbfdb172e1e77f3",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MDczMTE5MywiaWF0IjoxNzcwMTI2MzkzLCJqdGkiOiJmYmM4NDlkN2I2Nzc0MDQyYWZiZmRiMTcyZTFlNzdmMyIsInVzZXJfaWQiOiIxIn0.V8wzmd5gYQrFZm2mbZBTNGNHC7cTDh1Bde53XCEMsRc",
+    "created_at": "2026-02-03T13:46:33.679Z",
+    "expires_at": "2026-02-10T13:46:33Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "jti": "9e9ca4fefdcb4aaa93beb70c84babb0e",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MDczMjE3NSwiaWF0IjoxNzcwMTI3Mzc1LCJqdGkiOiI5ZTljYTRmZWZkY2I0YWFhOTNiZWI3MGM4NGJhYmIwZSIsInVzZXJfaWQiOiIyIn0.hE2kvjnJiua_PVf7Bs77TXEXY1g4cGf0Fr8Ze22YTs0",
+    "created_at": "2026-02-03T14:02:55.971Z",
+    "expires_at": "2026-02-10T14:02:55Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "jti": "6782bd3153ea4778bc1e3378068e8c0b",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MDczMzEzMywiaWF0IjoxNzcwMTI4MzMzLCJqdGkiOiI2NzgyYmQzMTUzZWE0Nzc4YmMxZTMzNzgwNjhlOGMwYiIsInVzZXJfaWQiOiIxIn0.6wBclTBct3PWEiOIDiEbywrnQZXlxna6_lhmG1CEQYM",
+    "created_at": "2026-02-03T14:18:53.235Z",
+    "expires_at": "2026-02-10T14:18:53Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "jti": "471fd13e6cfa4421ae4e92cd14cd9ed8",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MDczNDA3NywiaWF0IjoxNzcwMTI5Mjc3LCJqdGkiOiI0NzFmZDEzZTZjZmE0NDIxYWU0ZTkyY2QxNGNkOWVkOCIsInVzZXJfaWQiOiIyIn0.qPpcyzSDVVQFe5zU4qCAajVBzjReNa6m_Zoe7pYDk1Q",
+    "created_at": "2026-02-03T14:34:37.496Z",
+    "expires_at": "2026-02-10T14:34:37Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 7,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "jti": "643db6c6d8f54ff8804c05d758ed66a8",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MDczNDk2OCwiaWF0IjoxNzcwMTMwMTY4LCJqdGkiOiI2NDNkYjZjNmQ4ZjU0ZmY4ODA0YzA1ZDc1OGVkNjZhOCIsInVzZXJfaWQiOiIxIn0.IQ3IB42XbHHJLh0yAjpPjpKIWeSvpyGy-SH8qS9heZ4",
+    "created_at": "2026-02-03T14:49:28.125Z",
+    "expires_at": "2026-02-10T14:49:28Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "jti": "a7c201f17d334eadbc6e10b4c7a8c9b7",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MTE1Nzg2OSwiaWF0IjoxNzcwNTUzMDY5LCJqdGkiOiJhN2MyMDFmMTdkMzM0ZWFkYmM2ZTEwYjRjN2E4YzliNyIsInVzZXJfaWQiOiIyIn0.HS4y8xy86S1vc7Pc6_EpdqNyWEgjJDeEqsFMJOdE20w",
+    "created_at": "2026-02-08T12:17:49.636Z",
+    "expires_at": "2026-02-15T12:17:49Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 9,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "jti": "2fbd9008a7f14f268f240ff213c142d2",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MTE1NzkwMywiaWF0IjoxNzcwNTUzMTAzLCJqdGkiOiIyZmJkOTAwOGE3ZjE0ZjI2OGYyNDBmZjIxM2MxNDJkMiIsInVzZXJfaWQiOiIxIn0.qcrTN9V87OHtpECcbwh2cDyfUorGHii0mXQW9GhfDFY",
+    "created_at": "2026-02-08T12:18:23.203Z",
+    "expires_at": "2026-02-15T12:18:23Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 10,
+  "fields": {
+    "user": [
+      "hbilly2002@gmail.com"
+    ],
+    "jti": "0ac323997b6e42e2aaecbd97b05ac30a",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MTE2MDE3NCwiaWF0IjoxNzcwNTU1Mzc0LCJqdGkiOiIwYWMzMjM5OTdiNmU0MmUyYWFlY2JkOTdiMDVhYzMwYSIsInVzZXJfaWQiOiIyIn0.iUsMnky90XeeDs3BOjK0PBCbQWhxJ5VDoDU37comVwg",
+    "created_at": "2026-02-08T12:56:14.602Z",
+    "expires_at": "2026-02-15T12:56:14Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 11,
+  "fields": {
+    "user": [
+      "hbilly2002@naver.com"
+    ],
+    "jti": "92dc190887584848a6232a5c769cb0a9",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MTE3OTIyMiwiaWF0IjoxNzcwNTc0NDIyLCJqdGkiOiI5MmRjMTkwODg3NTg0ODQ4YTYyMzJhNWM3NjljYjBhOSIsInVzZXJfaWQiOiIxIn0.XPyibeAweciWkjTTBK8MJyYQ9dCagM3FoAc8I_qa2rY",
+    "created_at": "2026-02-08T18:13:42.953Z",
+    "expires_at": "2026-02-15T18:13:42Z"
+  }
+}
+]
