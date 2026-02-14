@@ -98,8 +98,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md -- SQLite to PostgreSQL migration with encrypted field verification (PROD-01)
-- [ ] 06-02-PLAN.md -- Mobile push notification configuration: Firebase, EAS, app.json (PROD-02, PROD-03)
+- [x] 06-01-PLAN.md -- SQLite to PostgreSQL migration with encrypted field verification (PROD-01)
+- [~] 06-02-PLAN.md -- Mobile push notification configuration: Firebase, EAS, app.json (PROD-02, PROD-03) — app.json configured, Firebase/EAS registration deferred
 
 ### Phase 7: Chat Agent
 **Goal**: Users experience the chat as a therapeutic listener that accumulates context across sessions, not an instant analyzer
@@ -169,7 +169,7 @@ v1.1: 5 -> 6 -> 7 -> 8 -> 9
 | 4. Partner & Engagement | v1.0 | 5/5 | Complete | 2026-02-08 |
 | Post-4. v1 Hardening | v1.0 | 4/4 | Complete | 2026-02-08 |
 | 5. Foundation & Stack | v1.1 | 4/4 | Complete | 2026-02-13 |
-| 6. Infrastructure | v1.1 | 0/TBD | Not started | - |
+| 6. Infrastructure | v1.1 | 2/2 | Complete (partial 06-02) | 2026-02-15 |
 | 7. Chat Agent | v1.1 | 0/TBD | Not started | - |
 | 8. Analysis & Insights | v1.1 | 0/TBD | Not started | - |
 | 9. Health Dashboard & Launch | v1.1 | 0/TBD | Not started | - |
