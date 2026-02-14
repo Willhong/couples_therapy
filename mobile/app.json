@@ -3,7 +3,21 @@
     "name": "CouplesAI",
     "slug": "couples-ai",
     "version": "1.0.0",
+    "scheme": "couplesai",
     "newArchEnabled": true,
+    "plugins": [
+      "expo-notifications"
+    ],
+    "android": {
+      "package": "com.couplesai.app",
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
