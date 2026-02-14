@@ -95,11 +95,11 @@ Plans:
   1. Application runs on PostgreSQL 16 with all existing data intact — encrypted fields (Fernet) decrypt correctly after migration
   2. Mobile app registers push tokens and backend stores them — POST /api/v1/push/register succeeds
   3. Backend can send a push notification to a registered device and it appears on the device
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md -- SQLite to PostgreSQL migration with encrypted field verification (PROD-01)
+- [ ] 06-02-PLAN.md -- Mobile push notification configuration: Firebase, EAS, app.json (PROD-02, PROD-03)
 
 ### Phase 7: Chat Agent
 **Goal**: Users experience the chat as a therapeutic listener that accumulates context across sessions, not an instant analyzer
