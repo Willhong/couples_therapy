@@ -47,3 +47,7 @@ Thumbs.db
 .omc/
 .planning/agent-history.json
 mobile/ios/
+
+
+.npm-cache/
+.temp/
